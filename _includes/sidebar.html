@@ -3,7 +3,7 @@
         <h4>文章分类</h4>
         <ul class="nav nav-pills" role="tablist">
             {% for cat in site.categories %}
-            <li role="presentation"><a href="{{site.baseurl}}/category/#{{ cat[0] }}">{{ cat[0] }}<span class="badge">1</span></a></li>
+            <li role="presentation"><a href="{{site.baseurl}}/category.html/#{{ cat[0] }}">{{ cat[0] }}<span class="badge">1</span></a></li>
             {% endfor %}
         </ul>
     </div>
