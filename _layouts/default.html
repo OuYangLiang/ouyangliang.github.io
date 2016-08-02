@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    {% include head.html %}
+    <body>
+        {% include header.html %}
+
+        <div class="container">
+
+            <div class="blog-header">
+                <h1 class="blog-title">OuYang's Personal Blog</h1>
+                <p class="lead blog-description"><!--The official example template of creating a blog with Bootstrap.--></p>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-8 blog-main">
+                    {{ content }}
+                </div>
+
+                {% include sidebar.html %}
+            </div>
+
+        </div>
+
+        <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+        <script src="{{site.baseurl}}/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    </body>
+</html>
+

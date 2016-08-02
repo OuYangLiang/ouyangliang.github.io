@@ -1,0 +1,13 @@
+---
+layout: default
+---
+{% for post in site.posts %}
+<div class="blog-post">
+    <h2 class="blog-post-title">{{ post.title }}</h2>
+    <p class="blog-post-meta">{{ post.date | date: "%d %b, %Y" }}</p>
+    <blockquote>
+        <p>{{ post.excerpt }} </p>
+        <p><a class="btn btn-primary btn-lg" href="{{ post.url | prepend: site.baseurl }}" role="button">更多...</a></p>
+    </blockquote>
+</div>
+{% endfor %}
