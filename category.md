@@ -1,6 +1,6 @@
 ---
 layout: page
-permalink: /category.html
+permalink: /category
 ---
 <div id="categories">
     {% for cat in site.categories %}
