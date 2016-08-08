@@ -192,14 +192,14 @@ create table employee (
 +----+------+--------+--------+
 | id | num  | depart | name   |
 +----+------+--------+--------+
-|  1 | 1001 |   5100 | 张三   |
-|  2 | 1002 |   5200 | 李四   |
-|  3 | 1003 |   5300 | 王五   |
-|  4 | 1004 |   5100 | 刘大   |
+| 10 | 1010 |   5100 | 张三   |
+| 20 | 1020 |   5200 | 李四   |
+| 30 | 1030 |   5300 | 王五   |
+| 40 | 1040 |   5100 | 刘大   |
 +----+------+--------+--------+
 ```
 
-首先事务S1在`可重复读`级别下，以条件`id = 1`查询员工表，如下：
+首先事务S1在`可重复读`级别下，以条件`id = 10`查询员工表，如下：
 
 ```mysql
 mysql> set autocommit = 0;
@@ -208,22 +208,22 @@ Query OK, 0 rows affected (0.00 sec)
 mysql> set session transaction isolation level repeatable read;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> select * from employee where id = 1;
+mysql> select * from employee where id = 10;
 +----+------+--------+--------+
 | id | num  | depart | name   |
 +----+------+--------+--------+
-|  1 | 1001 |   5100 | 张三   |
+| 10 | 1010 |   5100 | 张三   |
 +----+------+--------+--------+
 1 row in set (0.00 sec)
 ```
 
-接着事务S2尝试更新`id = 1`的员工记录，如下：
+接着事务S2尝试更新`id = 10`的员工记录，如下：
 
 ```mysql
 mysql> set autocommit = false;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> update employee set name = '张三2' where id = 1;
+mysql> update employee set name = '张三2' where id = 10;
 Query OK, 1 row affected (0.00 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
@@ -231,7 +231,7 @@ mysql> commit;
 Query OK, 0 rows affected (0.00 sec)
 ```
 
-可以看到事务S2成功的更新了`id = 1`的记录，现在回到事务S1中再次以条件`id = 1`查询员工表，
+可以看到事务S2成功的更新了`id = 10`的记录，现在回到事务S1中再次以条件`id = 10`查询员工表，
 
 ```mysql
 mysql> set autocommit = 0;
@@ -240,19 +240,19 @@ Query OK, 0 rows affected (0.00 sec)
 mysql> set session transaction isolation level repeatable read;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> select * from employee where id = 1;
+mysql> select * from employee where id = 10;
 +----+------+--------+--------+
 | id | num  | depart | name   |
 +----+------+--------+--------+
-|  1 | 1001 |   5100 | 张三   |
+| 10 | 1010 |   5100 | 张三   |
 +----+------+--------+--------+
 1 row in set (0.00 sec)
 
-mysql> select * from employee where id = 1;
+mysql> select * from employee where id = 10;
 +----+------+--------+--------+
 | id | num  | depart | name   |
 +----+------+--------+--------+
-|  1 | 1001 |   5100 | 张三   |
+| 10 | 1010 |   5100 | 张三   |
 +----+------+--------+--------+
 1 row in set (0.00 sec)
 ```
@@ -278,8 +278,8 @@ mysql> select * from employee where depart = 5100;
 +----+------+--------+---------+
 | id | num  | depart | name    |
 +----+------+--------+---------+
-|  1 | 1001 |   5100 | 张三2   |
-|  4 | 1004 |   5100 | 刘大    |
+| 10 | 1010 |   5100 | 张三2   |
+| 40 | 1040 |   5100 | 刘大    |
 +----+------+--------+---------+
 2 rows in set (0.00 sec)
 ```
@@ -290,7 +290,7 @@ mysql> select * from employee where depart = 5100;
 mysql> set autocommit = false;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> insert into employee values (5, 1005, 5100, '赵小');
+mysql> insert into employee values (50, 1050, 5100, '赵小');
 Query OK, 1 row affected (0.00 sec)
 
 mysql> commit;
@@ -310,8 +310,8 @@ mysql> select * from employee where depart = 5100;
 +----+------+--------+---------+
 | id | num  | depart | name    |
 +----+------+--------+---------+
-|  1 | 1001 |   5100 | 张三2   |
-|  4 | 1004 |   5100 | 刘大    |
+| 10 | 1010 |   5100 | 张三2   |
+| 40 | 1040 |   5100 | 刘大    |
 +----+------+--------+---------+
 2 rows in set (0.00 sec)
 
@@ -319,8 +319,8 @@ mysql> select * from employee where depart = 5100;
 +----+------+--------+---------+
 | id | num  | depart | name    |
 +----+------+--------+---------+
-|  1 | 1001 |   5100 | 张三2   |
-|  4 | 1004 |   5100 | 刘大    |
+| 10 | 1010 |   5100 | 张三2   |
+| 40 | 1040 |   5100 | 刘大    |
 +----+------+--------+---------+
 2 rows in set (0.00 sec)
 
@@ -331,20 +331,20 @@ mysql> select * from employee where depart = 5100;
 +----+------+--------+---------+
 | id | num  | depart | name    |
 +----+------+--------+---------+
-|  1 | 1001 |   5100 | 张三2   |
-|  4 | 1004 |   5100 | 刘大    |
-|  5 | 1005 |   5100 | 赵小    |
+| 10 | 1010 |   5100 | 张三2   |
+| 40 | 1040 |   5100 | 刘大    |
+| 50 | 1050 |   5100 | 赵小    |
 +----+------+--------+---------+
 3 rows in set (0.00 sec)
 ```
 
-可以到事务S3第二次查询返回的结果与第一次完全相同，并没有发生幻读的问题，但是在事务S3的两次查询之间，事务S4却成功的创建了一条`depart = 5100`的记录（事务S3退出后再次查询可以看到`id = 5`的记录确实被S4创建成功）。
+可以到事务S3第二次查询返回的结果与第一次完全相同，并没有发生幻读的问题，但是在事务S3的两次查询之间，事务S4却成功的创建了一条`depart = 5100`的记录（事务S3退出后再次查询可以看到`id = 50`的记录确实被S4创建成功）。
 
 所以，在默认情况下，MySQL InnoDB在`可重复读`级别下以非阻塞式的方式，（仅仅从查询结果看）避免了`不可重复读`与`幻读`的问题，但是却不能真正解决实际的业务发并问题。要想真正避免并发问题，必须在查询的时候以`lock in share mode`的方式显示的加锁。
 
 ### 5.2 MySQL InnoDB的Serializable级别
 
-既然在`可重复读`级别下，InnoDB已经可以避免脏读、不可重复读与幻读了，那`Serializable`级别存在的意思何在呢？在上面的例子中，事务S4插入`id = 5`这条记录后，事务S3并不会发现，而当它尝试插入相同的记录时，却会发生主键重复的错误。而在`Serializable`级别下，就不会发生这样的情况：
+既然在`可重复读`级别下，InnoDB已经可以避免脏读、不可重复读与幻读了，那`Serializable`级别存在的意义何在呢？在上面的例子中，事务S4插入`id = 50`这条记录后，事务S3并不会发现，而当它尝试插入相同的记录时，却会发生主键重复的错误。而在`Serializable`级别下，就不会发生这样的情况：
 
 在`Serializable`级别下重试之前的示例，事务S3以条件`depart = 5100`查询员工表，
 
@@ -359,8 +359,8 @@ mysql> select * from employee where depart = 5100;
 +----+------+--------+---------+
 | id | num  | depart | name    |
 +----+------+--------+---------+
-|  1 | 1001 |   5100 | 张三2   |
-|  4 | 1004 |   5100 | 刘大    |
+| 10 | 1010 |   5100 | 张三2   |
+| 40 | 1040 |   5100 | 刘大    |
 +----+------+--------+---------+
 2 rows in set (0.00 sec)
 ```
@@ -371,10 +371,10 @@ mysql> select * from employee where depart = 5100;
 mysql> set autocommit = false;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> insert into employee values (5, 1005, 5100, '赵小');
+mysql> insert into employee values (50, 1050, 5100, '赵小');
 ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
 ```
 
-可以看到，事务S4并不能成功的插入`id = 5`这条记录（在该例中，depart字段值小于5200的记录都无法插入），事务S3也不会发生`可重复读`级别下主键重复那样的问题了，而具体的原因是因为在`Serializable`级别下，depart索引被加了间隙锁。
+可以看到，事务S4并不能成功的插入`id = 50`这条记录（事实上在该例中，depart字段值小于5200的记录都无法插入），事务S3也不会发生`可重复读`级别下主键重复那样的问题了，而具体的原因是因为在`Serializable`级别下，depart索引被加了间隙锁。
 
-关于InnoDB的锁机制，请参考笔者的另一篇文章[MySQL InnoDB锁机制](http://example.net/)。
+关于InnoDB的锁机制，请参考笔者的另一篇文章[MySQL InnoDB锁机制](http://{{site.baseurl}}/mysql/2014/06/14/MySQL-InnoDB锁机制.html)。
