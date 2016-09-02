@@ -3,68 +3,26 @@
  */
 body {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  background-color: #f5f5f5;
 }
 
-/*
- * Masthead for nav
- */
-
-.blog-masthead {
-  background-color: #428bca;
-  -webkit-box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
-          box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+.masthead {
+    position: relative;
+    padding: 15rem 1rem;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(0,0,0,.1);
+    background-color: #6f5499;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#563d7c), to(#6f5499));
+    background-image: -webkit-linear-gradient(top, #563d7c 0%, #6f5499 100%);
+    background-image: -o-linear-gradient(top, #563d7c 0%, #6f5499 100%);
+    background-image: linear-gradient(to bottom, #563d7c 0%, #6f5499 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#563d7c', endColorstr='#6F5499', GradientType=0);
+    background-repeat: repeat-x;
 }
 
-/* Nav links */
-.blog-nav-item {
-  position: relative;
-  display: inline-block;
-  padding: 10px;
-  font-weight: 500;
-  color: #cdddeb;
-}
-.blog-nav-item:hover,
-.blog-nav-item:focus {
-  color: #fff;
-  text-decoration: none;
-}
-
-/* Active state gets a caret at the bottom */
-.blog-nav .active {
-  color: #fff;
-}
-.blog-nav .active:after {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 0;
-  margin-left: -5px;
-  vertical-align: middle;
-  content: " ";
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid;
-  border-left: 5px solid transparent;
-}
-
-
-/*
- * Blog name and description
- */
-.blog-header {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-.blog-title {
-  margin-top: 30px;
-  margin-bottom: 0;
-  font-size: 60px;
-  font-weight: normal;
-  color: #337ab7;
-}
-.blog-description {
-  font-size: 20px;
-  color: #999;
+.masthead h1 {
+    color: #fff;
+    font-size: 8rem;
 }
 
 /* Sidebar modules for boxing content */
@@ -107,4 +65,4 @@ body {
   font-size: 80%;
 }
 
-
+img{ width: 100%; height: auto;max-width: 100%; display: block; }
