@@ -52,7 +52,7 @@ public static void main(String[] args) throws InterruptedException {
 
 上面程序VM参数-Xmn10m -XX:SurvivorRatio=8，表示新生代大小为10M，且Eden区与Survivor比例为8，也就是说每个Survivor区的小大为1M，不足于存放示例中的obj对象。
 
-在执行`obj = new byte[1 * 1024 * 1025]`前，如果Eden空间不足，会触发一次minor GC，并且在GC时obj对象（在前一轮循环时创建）还是可用的，所占的空间还不能被回收。
+在执行`obj = new byte[1 * 1024 * 1025]`前，如果Eden空间不足，会触发一次minor GC，**注意在GC时obj对象（在前一轮循环时创建）还是可用的，所占的空间还不能被回收**。
 
 执行上面程序时，通过jstat命令得到下面的输出：
 
