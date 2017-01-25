@@ -1,0 +1,198 @@
+---
+layout: post
+title:  "HashMap原理"
+date:   2015-07-07 10:19:16 +0800
+categories: java
+---
+
+在阅读HashMap的原码之前，一直对它的原理感到好奇。HashMap是如何在以接近O(1)的时间复杂度来实现根据一个对象(key)定位到另一个对象(value)的。带着这样的疑问慢慢品味着原码，一步步解开HashMap神秘的面纱。
+
+<br/>
+
+学过数据结构的人都知道，查询对象最简单、高效的办法是使用数组，其时间复杂度为O(1)，但是数组对插入和删除操作不太友好；链表对数据的插入和删除操作表现得更好，但是查询对象的代价却高了很多，需要遍历整个链表，时间复杂度为O(n)。
+
+<br/>
+
+HashMap的实现巧妙的利用了数组和链表，实现了另一种数据结构（哈希表），同时具备了数组和链表两种结构的优点。
+
+![HashMap内部数据结构]({{site.baseurl}}/pic/hashmap/1.svg)
+
+HashMap的内部维护了一个数组table，其元素类型是Entry。
+
+```java
+/**
+  * The table, resized as necessary. Length MUST Always be a power of two.
+  */
+transient Entry[] table;
+```
+
+<br/>
+
+HashMap在底层将键－值对当成一个整体进行处理，这个整体就是Entry对象，它是HashMap的一个静态内部类，通过他的属性不难发现它就是一个存放键－值对的链表结构。
+
+```java
+static class Entry<K,V> implements Map.Entry<K,V> {
+    final K key;
+    V value;
+    Entry<K,V> next;
+    final int hash;
+    ...
+}
+```
+
+<br/>
+
+我们知道任何对象都有一个hashCode方法，因为该方法是定义在Object类中的。HashMap根据key对象的hashCode方法得到一个hash值，再结合数组table的长度计算出该key对象所对应的位置，最后将键－值以Entry对象的形式存放在对应位置上。这里Entry为什么要设计成一个链表结构呢？原因很简单，因为不同的对象（key）可能产生相同的hashCode，这种情况称作hash冲突。不难理解，当hash冲突很多时，HashMap的性能会受到很大的影响。
+
+---
+
+## HashMap的初始化
+
+```java
+public HashMap(int initialCapacity, float loadFactor) {
+    // Find a power of 2 >= initialCapacity
+    int capacity = 1;
+    while (capacity < initialCapacity)
+        capacity <<= 1;
+
+    this.loadFactor = loadFactor;
+    threshold = (int)(capacity * loadFactor);
+    table = new Entry[capacity];
+    init();
+}
+```
+
+<br/>
+
+HashMap的创建需要提供两个参数：容量capacity与扩容因子loadFactor。当我们使用默认构造方法创建HashMap时，capacity的默认值是16，而loadFactor的默认值是0.75。初始化HashMap时，主要的工作是以容量为长度创建一个空的Entry数组table。同时根据容量大小与扩容因子计算出threshold。当HashMap中键-值对总数超过threshold时，HashMap会对table进行扩容，降低hash冲突的概率来提升查询效率，后面会详细解释。
+
+---
+
+## put方法
+
+```java
+public V put(K key, V value) {
+    int hash = hash(key.hashCode());
+    int i = indexFor(hash, table.length);
+    for (Entry<K,V> e = table[i]; e != null; e = e.next) {
+        Object k;
+        if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+            V oldValue = e.value;
+            e.value = value;
+            e.recordAccess(this);
+            return oldValue;
+        }
+    }
+
+    modCount++;
+    addEntry(hash, key, value, i);
+    return null;
+}
+```
+
+<br/>
+
+当我们往HashMap中put元素的时候，首先根据key对象的hashCode重新计算hash值，根据hash值得到这个元素在数组中的位置（下标）。数组元素以链表的形式存放，新加入的放在链头，最先加入的放在链尾。这里可能会产生一个疑问，为什么要对key对象的hashCode进行二次hash呢？这里其实是加入了高位计算，防止低位不变，高位变化时，造成的hash冲突。
+
+```java
+static int hash(int h) {
+    // This function ensures that hashCodes that differ only by
+    // constant multiples at each bit position have a bounded
+    // number of collisions (approximately 8 at default load factor).
+    h ^= (h >>> 20) ^ (h >>> 12);
+    return h ^ (h >>> 7) ^ (h >>> 4);
+}
+```
+
+<br/>
+
+在得到一个散列的hash值后，我们还需要将这个hash值映射到数组table的一个位置（下标），最简单的办法是根据数组的长度进行取模运算，但是这样效率上会差一些。HashMap使用了另一个办法来实现的：
+
+```java
+static int indexFor(int h, int length) {
+    return h & (length-1);
+}
+```
+
+<br/>
+
+它使用key对象的hash值与数组长度减1的值进行“与”操作来计算数组的下标，这个办法很巧妙，但是要求数组的长度必须是2的n次方。为什么呢？因为2的n次方减去1转换成二进制后才是全“1”的，hash值与全“1”的值进行与操作时才不会导致数组位置的浪费。在HashMap的构造方法中，也确保了数组的长度为2的n次方：
+
+```java
+// Find a power of 2 >= initialCapacity
+int capacity = 1;
+while (capacity < initialCapacity)
+    capacity <<= 1;
+```
+
+<br/>
+
+确定了key对象对于的数组下标后，剩下的事就比较好办了。for循环用于遍历数组位置上的链表，判断key对象是否已经存在链表中，这里的重点是key对象的equals方法，如果存在的话，就直接用新的value覆盖老的值；如果不存在的话，就将新的键－值对加入链表的头，并且检查是否需要进行扩容。
+
+---
+
+## get方法
+
+```java
+public V get(Object key) {
+    int hash = hash(key.hashCode());
+    for (Entry<K,V> e = table[indexFor(hash, table.length)];
+         e != null;
+         e = e.next) {
+        Object k;
+        if (e.hash == hash && ((k = e.key) == key || key.equals(k)))
+            return e.value;
+    }
+    return null;
+}
+```
+
+<br/>
+
+在了解put的过程后，理解get方法这段代码就很容易了：从HashMap中查询元素时，首先根据key的hashCode值进行二次hash，再把hash值与数据table的长度减1进行“与”操作得到下标，最后通过key对象的equals方法在对应位置的链表中找到需要的元素，就是这么简单。
+
+---
+
+## HashMap的扩容
+
+现在我们已经掌握了HashMap最重要的原理，当HashMap存储的键－值对越来越多时，hash冲突的概率也越来越高，因为数组的长度是不变的，而链表却在不断的变大。由key对象的hash值定位到数组位置的时间复杂度是O(1)，但遍历链表的时间复杂度是O(n)，当冲突越来越多时，HashMap的写入与查询效率都会受到影响，因为这两个操作都需要遍历链表。
+
+```java
+public HashMap(int initialCapacity, float loadFactor) {
+    ...
+    this.loadFactor = loadFactor;
+    threshold = (int)(capacity * loadFactor);
+    ...
+}
+```
+
+<br/>
+
+为了提高效率，HashMap内部增加了一个扩容的机制：当HashMap中键-值对总数超过threshold时，HashMap会对table进行扩容，降低hash冲突的概率来提升查询效率。threshold的值是根据数据table的长度与扩容因子相乘计算出来的。如默认时数组的长度为16，扩容因子为0.75，那threshold就等于16 * 0.75 ＝ 12，当HashMap中的键－值对超过12个时，HashMap就会进行扩容，将数组table的长度扩大为原来的两倍。
+
+```java
+void addEntry(int hash, K key, V value, int bucketIndex) {
+    Entry<K,V> e = table[bucketIndex];
+    table[bucketIndex] = new Entry<K,V>(hash, key, value, e);
+    if (size++ >= threshold)
+        resize(2 * table.length);
+}
+
+void resize(int newCapacity) {
+    Entry[] oldTable = table;
+    int oldCapacity = oldTable.length;
+    if (oldCapacity == MAXIMUM_CAPACITY) {
+        threshold = Integer.MAX_VALUE;
+        return;
+    }
+
+    Entry[] newTable = new Entry[newCapacity];
+    transfer(newTable);
+    table = newTable;
+    threshold = (int)(newCapacity * loadFactor);
+}
+```
+
+<br/>
+
+resize方法中的重点是transfer方法，它把当前的table数组中的每个Entry对象重新排列到新的数组中，是一个相对耗时的操作。所以在初始化HashMap时，应该尽量指定一个初始容量，避免不必要的扩容操作。
