@@ -3,27 +3,25 @@ layout: profile
 permalink: /profile
 ---
 <div class="container">
-  <div class="jumbotron">
+  <div class="row">
+    <div class="col-xs-3 text-center">
+      <br>
+      <img src="./icon.jpg" alt="..." class="img-circle" height="150px" width="150px">
+      <h4>欧阳亮 35岁</h4>
+    </div>
 
-    <div class="row">
-      <div class="col-xs-6 text-center">
-        <img src="./icon.jpg" alt="..." class="img-circle" height="200px" width="200px">
-        <h4>欧阳亮 35岁</h4>
-      </div>
-
-      <div class="col-xs-6">
-        <blockquote>
-          <address>
-            10年工龄<br>
-            江省苏  南京市  雨花台区<br>
-            南京大学(自考)  计算机及应用  本科(学士)<br>
-            英语 PET-3级<br><br>
-            微信: w23577550<br>
-            <abbr title="Phone">P:</abbr> 18651612595<br>
-            <abbr title="Email">E:</abbr> <a href="mailto:ouyanggod@gmail.com">ouyanggod@gmail.com</a>
-          </address>
-        </blockquote>
-      </div>
+    <div class="col-xs-9">
+      <blockquote>
+        <address>
+          10年工龄<br>
+          江省苏  南京市  雨花台区<br>
+          南京大学(自考)  计算机及应用  本科(学士)<br>
+          英语 PET-3级<br><br>
+          微信: w23577550<br>
+          <abbr title="Phone">P:</abbr> 18651612595<br>
+          <abbr title="Email">E:</abbr> <a href="mailto:ouyanggod@gmail.com">ouyanggod@gmail.com</a>
+        </address>
+      </blockquote>
     </div>
   </div>
 </div>
