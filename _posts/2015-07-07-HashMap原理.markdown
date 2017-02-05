@@ -196,3 +196,45 @@ void resize(int newCapacity) {
 <br/>
 
 resize方法中的重点是transfer方法，它把当前的table数组中的每个Entry对象重新排列到新的数组中，是一个相对耗时的操作。所以在初始化HashMap时，应该尽量指定一个初始容量，避免不必要的扩容操作。
+
+---
+
+## JDK中其它常用Map的实现
+
+### 1. TreeMap
+
+TreeMap是基于红黑树实现，它没有调优选项，因为该树总处于平衡状态。也正因为此，TreeMap的大部分方法的时间复杂度为Log(n)。
+
+<br/>
+
+HashMap中的元素是无序的，而TreeMap中的元素是根据key进行自然排序的，也可以通过带参数`Comparator`的构造方法指定一个排序规则：
+
+```java
+public TreeMap(Comparator<? super K> comparator) {
+    this.comparator = comparator;
+}
+```
+
+<br/>
+
+HashMap适用于随机插入、删除和定位元素，而Treemap则适用于按自然顺序或自定义顺序进行遍历。性能方面HashMap通常比TreeMap快，建议多使用HashMap，在需要排序的时候才用TreeMap。
+
+### 2. HashTable
+
+Hashtable和HashMap的主要区别在于线程安全以及速度。
+
+1. HashMap是非线程安全的，而HashTable是线程安全的。事实上，HashMap的代码与HashTable非常相似，但是HashTable的大部分方法签名都带有`synchronized`关键字。
+
+2. HashMap中的键－值对可以是null，而Hashtable则不行。
+
+3. HashMap的迭代器(Iterator)是fail-fast迭代器，而Hashtable的迭代器(Enumerator)不是fail-fast的。
+
+<br/>
+
+可以使用`Collections.synchronizedMap(...)`方法将一个HashMap转换成一个线程安全的Map。Java 5引入了ConcurrentHashMap，采用了分段锁的实现提供了更好的并发性能。
+
+### 3. ConcurrentHashMap
+
+ConcurrentHashMap是为并发场景设计的，它采用分段锁的设计，相比于HashTable，它提供了更好的并发性能。
+
+更多关于ConcurrentHashMap的信息，请参考[深入理解ConcurrentHashMap]({{site.baseurl}}/java/2015/08/21/深入理解ConcurrentHashMap.html)。
