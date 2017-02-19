@@ -8,6 +8,7 @@ permalink: /profile
       <br>
       <img src="./icon.jpg" alt="..." class="img-circle" height="150px" width="150px">
       <h4>欧阳亮 35岁</h4>
+      <a href="https://ouyangliang.github.io">我的技术博客</a>
     </div>
 
     <div class="col-xs-9">
