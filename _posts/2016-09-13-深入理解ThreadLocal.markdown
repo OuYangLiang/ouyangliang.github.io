@@ -155,10 +155,131 @@ private void set(ThreadLocal key, Object value) {
 
 上面是关于ThreadLocal在JVM栈和堆空间的一个视图。ThreadLocal的设计涉及两个很重要的因素：
 
-1. 当线程执行结束后，存储在ThreadLocal中的内容可以被正常的GC回收。从上图可知，当线程结束后，ThreadLocalMap不可达，ThreadLocalMap中的Entry也不可达，Entry中的value是可以正常被GC的。这点与Entry是弱引用其实没有关系。
+1. 要求线程执行结束后，通过ThreadLocal存储的内容可以被正常的GC回收。从上图可知，当线程结束后，ThreadLocalMap不可达，ThreadLocalMap中的Entry也不可达，从而Entry中的value是可以正常被GC的。这点与Entry是弱引用其实没有关系。
 
-2. 当ThreadLocal不再使用时（即不可达时），即便引用它的线程还在继续执行，它也可以被正常的GC回收。如果Entry使用强引用，那么当ThreadLocalRef对ThreadLocal的引用不可达时，ThreadLocalMap还持有ThreadLocal的强引用，在线程未结束之前，ThreadLocal将无法被正常的回收。所以ThreadLocalMap.Entry实现采用了弱引用的方式。当ThreadLocalRef对ThreadLocal的引用不可达时，JVM可以安全的回收ThreadLocal对象，之后ThreadLocalMap.Entry的get方法会直接返回null，标识3所对应的场景就是这种情况。
+2. 要求当ThreadLocal不再使用时（即上图中ThreadLocalRef对ThreadLocal的引用失效后），即便引用它的线程还在继续执行，它也可以被正常的GC回收。试想一下，如果Entry使用强引用，那么当ThreadLocalRef对ThreadLocal的引用不可达时，ThreadLocalMap还持有ThreadLocal的强引用，在线程未结束之前，ThreadLocal将无法被正常的回收。所以ThreadLocalMap.Entry实现采用了弱引用的方式。当ThreadLocalRef对ThreadLocal的引用不可达时，JVM可以安全的回收ThreadLocal对象，之后ThreadLocalMap.Entry的get方法会直接返回null，标识3所对应的场景就是这种情况。
 
 ---
 
 ## ThreadLocal.get方法
+
+```java
+public T get() {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null) {
+        ThreadLocalMap.Entry e = map.getEntry(this);
+        if (e != null)
+            return (T)e.value;
+    }
+    return setInitialValue();
+}
+```
+
+<br/>
+
+我们再来看看ThreadLocal的set方法，首先获得当前线程的ThreadLocalMap，如果map为空的话，则调用setInitialValue设计初始值。我们来看看setInitialValue的实现：
+
+```java
+private T setInitialValue() {
+    T value = initialValue();
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+    return value;
+}
+
+protected T initialValue() {
+    return null;
+}
+```
+
+<br/>
+
+在使用ThreadLocal时，我们可以提供一个子类去这实现initialValue方法，通过该方法可以指定一个初始值，从源码可以看到，默认的初始值是null。
+
+<br/>
+
+我们再接着看看ThreadLocalMap的getEntry方法：
+
+```java
+private Entry getEntry(ThreadLocal key) {
+    int i = key.threadLocalHashCode & (table.length - 1);
+    Entry e = table[i];
+    if (e != null && e.get() == key)
+        return e;
+    else
+        return getEntryAfterMiss(key, i, e);
+}
+
+private Entry getEntryAfterMiss(ThreadLocal key, int i, Entry e) {
+    Entry[] tab = table;
+    int len = tab.length;
+
+    while (e != null) {
+        ThreadLocal k = e.get();
+        if (k == key)
+            return e;
+        if (k == null) // 标识 5
+            expungeStaleEntry(i);
+        else
+            i = nextIndex(i, len);
+        e = tab[i];
+    }
+    return null;
+}
+```
+
+<br/>
+
+如果你已经掌握了ThreadLocalMap的set方法，那理解getEntry是很容易的。当下标i对应的位置不为空，且与入参ThreadLocal是同一个对象时，直接返回该位置的Entry。否则跳转到getEntryAfterMiss方法，采用遍历table数组的方式继续查询是否存在满足条件的Entry。标识5表示某个ThreadLocal对象已经被GC回收了，这里将清除对应的Entry所占有的位置。
+
+---
+
+## ThreadLocal.remove方法
+
+```java
+public void remove() {
+    ThreadLocalMap m = getMap(Thread.currentThread());
+    if (m != null)
+        m.remove(this);
+}
+
+// ThreadLocalMap的remove方法
+private void remove(ThreadLocal key) {
+    Entry[] tab = table;
+    int len = tab.length;
+    int i = key.threadLocalHashCode & (len-1);
+    for (Entry e = tab[i];
+         e != null;
+         e = tab[i = nextIndex(i, len)]) {
+        if (e.get() == key) {
+            e.clear();
+            expungeStaleEntry(i);
+            return;
+        }
+    }
+}
+```
+
+<br/>
+
+至此，你应该已经掌握了ThreadLocalMap解决冲突的方式：根据ThreadLocal.threadLocalHashCode与table数组长度减1的值进行“与”操作获得起始下标位置，然后从起始位置开始遍历寻找一个可用的空位。remove方法也是采用遍历的方式定位入参ThreadLocal在当前线程ThreadLocalMap中的Entry，并调用Reference.clear方法及expungeStaleEntry方法进行空位清除。
+
+---
+
+## ThreadLocal内存泄漏的问题
+
+通过ThreadLocal在JVM栈和堆空间的视图中，我们很容易明白保存在ThreadLocalMap中的对象（someObj）与ThreadLocal本身并没有直接联系。JVM能够正常的回收someObj的途径只有两个：
+
+1. 调用ThreadLocal.remove方法。
+2. 对应的线程执行结束，从而ThreadLocalMap至Entry、Entry至someObj的引用链失效。
+
+但是在一些Web环境中，线程可能维护在一个容器内部的线程池，它们的生命周期可能大于具体的Web应用。保存在线程ThreadLocalMap中的someObj对象，如果是第三方类加载器（比如tomcat的WebClassLoader）加载的，而我们没有显式的通过ThreadLocal.remove方法移的话，这些someObj对象将无法被GC回收。如果你熟悉java类加载机制的话，就会发现加载这些someObj的类加载器也将无法被回收，从而会导致永久代的溢出，即java.lang.OutOfMemoryError: PermGen space异常。
+
+所以很重要的一点，如果我们使用了ThreadLocal，务必使用remove方法进行清除。
+
+我曾经看到阿里有人在工具类中使用ThreadLocal来解决SimpleDateFormat线程不安全的问题，当时由于没有发现显示的使用remove方法，错误的认为这会导致内存泄漏的问题。而事实上，这么使用是正确的，并不会出现内存泄漏的问题，因为其实也很简单，因为SimpleDateFormat是jdk的类，它是由AppClassLoader加载的，而非第三方实现的类加载器加载的，所以不会导致第三方类加载器无法被回收的问题。
