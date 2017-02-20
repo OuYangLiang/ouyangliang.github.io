@@ -278,8 +278,10 @@ private void remove(ThreadLocal key) {
 1. 调用ThreadLocal.remove方法。
 2. 对应的线程执行结束，从而ThreadLocalMap至Entry、Entry至someObj的引用链失效。
 
-但是在一些Web环境中，线程可能维护在一个容器内部的线程池，它们的生命周期可能大于具体的Web应用。保存在线程ThreadLocalMap中的someObj对象，如果是第三方类加载器（比如tomcat的WebClassLoader）加载的，而我们没有显式的通过ThreadLocal.remove方法移的话，这些someObj对象将无法被GC回收。如果你熟悉java类加载机制的话，就会发现加载这些someObj的类加载器也将无法被回收，从而会导致永久代的溢出，即java.lang.OutOfMemoryError: PermGen space异常。
+<br/>
 
-所以很重要的一点，如果我们使用了ThreadLocal，务必使用remove方法进行清除。
+但是在一些Web环境中，线程可能维护在一个容器内部的线程池，它们的生命周期可能大于具体的Web应用。保存在线程ThreadLocalMap中的someObj对象，如果是第三方类加载器（比如tomcat的WebClassLoader）加载的，而我们没有显式的通过ThreadLocal.remove方法移的话，这些someObj对象将无法被GC回收。如果你熟悉java类加载机制的话，就会发现加载这些someObj的类加载器也将无法被回收，从而会导致永久代的溢出，即java.lang.OutOfMemoryError: PermGen space异常。所以很重要的一点，如果我们使用了ThreadLocal，务必使用remove方法进行清除。
+
+<br/>
 
 我曾经看到阿里有人在工具类中使用ThreadLocal来解决SimpleDateFormat线程不安全的问题，当时由于没有发现显示的使用remove方法，错误的认为这会导致内存泄漏的问题。而事实上，这么使用是正确的，并不会出现内存泄漏的问题，因为其实也很简单，因为SimpleDateFormat是jdk的类，它是由AppClassLoader加载的，而非第三方实现的类加载器加载的，所以不会导致第三方类加载器无法被回收的问题。
