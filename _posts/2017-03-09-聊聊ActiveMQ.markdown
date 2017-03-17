@@ -91,7 +91,7 @@ Message Group的实际原理，使得Producer与Consumer的上线发布顺序有
 
 <br/>
 
-ActionMQ本身也提供了这种情况的处理办法，在activemq.xml文件中：
+ActiveMQ本身也提供了这种情况的处理办法，在activemq.xml文件中：
 
 ```xml
 <destinationPolicy>
@@ -155,7 +155,7 @@ failover:(tcp://localhost:61616,tcp://remotehost:61626)?randomize=false
 
 <br/>
 
-failover完全是在客户端进行失败转移控制的，换句话说，Broker之间是完成隔离的，彼此之间互不通信。如果客户端之间的配置没有按照严格的规范来，很容易出现Producer与Consumer连接到不同Broker的问题，导致消息堆积。为了解决这个问题，ActiveMQ提供了另一个机制：Networks Of Brokers。
+failover完全是在客户端进行失败转移控制的，换句话说，Broker之间是完全隔离的，彼此之间互不通信。如果客户端之间的配置没有按照严格的规范来，很容易出现Producer与Consumer连接到不同Broker的问题，导致消息堆积。为了解决这个问题，ActiveMQ提供了另一个机制：Networks Of Brokers。
 
 ### Networks Of Brokers
 
