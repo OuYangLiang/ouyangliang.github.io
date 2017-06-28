@@ -36,7 +36,7 @@ permalink: /profile
       <ul class="text-info">
         <li class="">数据结构、操作系统、数据库系统概论、计算机组成与原理、计算机网络等扎实的专业知识，使得我在学习和工作中得心应手。</li>
         <li class="">良好的英文读写能力，使得我在学习新知识时信息来源更加广泛和准确。</li>
-        <li class="">精通JAVA语言(including Java 8)，具有良好的编码习惯和成熟的编程思想，对面向对象、领域驱动设计等思想有深入的理解。</li>
+        <li class="">精通JAVA语言，具有良好的编码习惯和成熟的编程思想，对面向对象、领域驱动设计等思想有深入的理解。</li>
         <li class="">熟悉大型网站的架构演进过程，善于构建基于互联网高并发、低延迟的后端交易系统，熟悉技术构架、数据存储架构与部署架构，能够准确分析当前系统瓶颈并提出合理的架构方案解决。</li>
         <li class="">熟悉JVM体系结构，掌握常用垃圾收集器的特点、应用场景，熟悉如何调优JVM降低应用的延迟和提升系统的吞吐量。熟练使用工具分析heapdump、javacore文件分析和定位问题；熟悉Java Classloader机制，实现过自定义Classloader实现自动更新的项目。</li>
         <li class="">深入理解常用设计模式及其使用场景，能灵活、适度的应用到实际项目中。</li>
@@ -707,5 +707,15 @@ permalink: /profile
     </div>
   </div>
   <!-- 项目经验 -->
+
+  <div class="panel panel-info">
+    <div class="panel-heading text-center">
+      <h3 class="panel-title">个人简介</h3>
+    </div>
+    <div class="panel-body">
+      编程是一程乐趣，而不止是一份工作。
+    </div>
+  </div>
+  <!-- 个人简介 -->
 
 </div>
