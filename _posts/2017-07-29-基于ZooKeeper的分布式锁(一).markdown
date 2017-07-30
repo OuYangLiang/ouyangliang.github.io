@@ -104,11 +104,11 @@ public void lock(String clientId, String resource) throws KeeperException, Inter
             return;
         }
 
-        this.listenLock(clientId, resource);
+        this.listenLock(resource);
     }
 }
 
-private void listenLock(String clientId, String resource) throws InterruptedException, KeeperException {
+private void listenLock(String resource) throws InterruptedException, KeeperException {
     Semaphore s = new Semaphore(0);
 
     try {
@@ -127,7 +127,7 @@ private void listenLock(String clientId, String resource) throws InterruptedExce
 
     } catch (KeeperException e) {
         if (e.code().equals(KeeperException.Code.CONNECTIONLOSS)) {
-            this.listenLock(clientId, resource);
+            this.listenLock(resource);
             return;
         } else {
             throw e;
