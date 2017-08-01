@@ -83,7 +83,7 @@ private void waitUntilLocked(String myPath, String clientId, String resource)
 
 `waitUntilLocked`方法的作用就是判断自己是加锁成功，还是等待。`getChildren`方法返回所有的子节点，`isLocked`方法判断当前客户端创建的子节点myPath是否具有最小的序列号，如果是的话表示当前客户端加锁成功，直接返回。否则的话就通过`findWatchPath`方法找到需要监视的子节点，即找到比当前客户端创建的子节点的序列号小的前一个子节点，然后阻塞并监听该节点的删除事件，`watchAndWait`方法与简单锁的`listenLock`完全一样，只是方法命名不同而已。
 
-锁的释放相关于简单锁的实现更容易些，因为每个客户端创建的都是唯一的子节点，所以链接丢失时只需要进行重试即可，不需要额外的判断了。
+锁的释放相对于简单锁的实现更容易些，因为每个客户端创建的都是唯一的子节点，所以链接丢失时只需要进行重试即可，不需要额外的判断了。
 
 <br/>
 
