@@ -20,4 +20,16 @@ categories: 中间件
 
 ![整体架构]({{site.baseurl}}/pic/ZK-eventdriven/1.svg)
 
-（未完待续...）
+在系统中一共有三种角色，分别是Master服务器，Worker服务器和客户端，它们的作用分别如下：
+
+* 客户端
+
+    客户端用于发布事件，即把事件保存到ZooKeeper上对应的分组节点下。
+
+* Master服务器
+
+    Master服务器有两个主要的职责：一是监控Worker服务器，当Worker服务器发生故障下线、或者有新的Worker服务器加入集群时，重新对每个Worker进行分组分配，避免Worker单点问题同时实现负载均衡。二是当客户端发布的事件所对应的分组如果还没有分配给Worker时，将该分组分配给负载最小的Worker。
+
+* Worker服务器
+
+    Worker服务器用来消费事件，客户端提交的事件会由Master服务器以分组为单位分配给各个Worker。
