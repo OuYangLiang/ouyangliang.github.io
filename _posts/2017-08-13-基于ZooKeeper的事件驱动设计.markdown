@@ -60,4 +60,38 @@ categories: 中间件
 
 ---
 
-（未完待续）
+既然是一个事件驱动框架，我们自然需要为不同类型的事件注册不同的订阅者，那么框架为我们提供了哪些接口呢？我们来看一下几个关键的类。
+
+![框架接口类]({{site.baseurl}}/pic/ZK-eventdriven/3.svg)
+
+Event类是事件的封装实体，这个没什么好讲的。Client类的作用也很明显，客户端使用它来提交事件。重点看看Subscribers与BaseSubscriber两个接口。BaseSubscriber是订阅者接口，所有的订阅者都需要实现onEvent方法，当订阅的事件发生时，这个方法就会被调用，我们可以在这里实现业务逻辑，参数event表示当前的事件。而Subscribers接口设计的目的是需要我们提供一个从事件类型到订阅者的关系转换，在启动WorkServer时（start方法），我们需要提供这样一个实现。在事件发生时，WorkServer通过Subscribers得到观注该事件的订阅者，然后逐个调用它们的onEvent方法，下面是一段删减过的代码示例：
+
+```java
+String json = this.getContent(group + Config.SEPARATOR + event, null);
+Event e = Event.fromJson(json);
+subscribers.getSubscribers(e.getType()).forEach((s) -> {
+    s.onEvent(e);
+});
+```
+
+<br/>
+
+对于Master的实现，它在分配的算法上存在扩展点，所以我们在分配方面做了一个抽象，相关的类图如下。
+
+![Master实现抽象]({{site.baseurl}}/pic/ZK-eventdriven/4.svg)
+
+Worker类是一个Worker服务器实例的抽象，包括它的标识（name属性）和当前分配给它处理的分组任务（group属性）。Situation类是集群当前状态的一个现状，或者说是快照吧，记录了哪些集群的配置情况（Configuration对象），当前一共有多少个分组（groups属性），当前有多少Worker服务器实例以及每个Worker的分配情况。当Master服务器监听到新的分组请求，或者发现Worker故障下线、或新的Worker加入集群时，就会分别通过调用Assigner的onNewGroup方法和onWorkerChange方法进行任务分配。框架本身提供了一个DefaultAssigner类，基于公平的原则实现的分配算法。这里还是存在一起扩展的余地的，比如最常见的基于权值的分配、基于Hash的分配等等。
+
+## 目前存在哪些问题
+
+---
+
+1. 系统的并行性是基于事件的分组来设计的，在实际场景中，不同类型的事件，在数量级上往往差别巨大。比如会员升级和会员下单的频率明显不一样。所以我们在考虑分组的粒度问题上，需要结合实际场景，尽量使得每个分组的事件产生频度不要相差太大，否则Worker之间的负载会不均衡。
+
+2. 这个限制来自于ZooKeeper，ZK建议每个节点的内容最好不要超过1M，也就是说我们的事件内容最大不应该超过这个限制。对象一个事件来说，这通常不是问题，但如果事件的内容确实很大，我们也可以只把事件的内容存在其它地方，ZK中仅仅中保留事件的标识。
+
+3. 提交到request分组下的事件节点，我们用的是PERSISTENT_SEQUENTIAL类型的节点。熟悉ZK的同学都知道connection_loss异常需要我们进行重试，而前一次请求我们并不知道是否已经成功。即使我们在重试前，把当前的事件查询出来检查一遍，也不能彻底解决问题，因为事件有可能已经被worker消费掉。所以实现上我们只是简单的进行了重试，这也意味着事件有可能会被重复消费，对于关键场景，我们需要在订阅者端对事件进行判重。
+
+4. 前面我们提到，当Worker故障下线、或新的Worker加入集群时，master会进行重新分配，这样就存在同一个分组被多个Worker同时处理的时间片断，虽然很短暂，但我们也不得不约定，Worker能够处理一个事件的前提是先删除这个节点，否则就会存在事件重复消费的情况。但如果在删除时发生了connection_less异常，并且前一次请求已经删除成功的话，重试的结果会是失败，这样当前Worker又不能直接处理该事件，这样又会发生事件丢失。
+
+*最后附上源码地址*：[https://github.com/OuYangLiang/ZK-eventdriven](https://github.com/OuYangLiang/ZK-eventdriven)
