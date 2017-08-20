@@ -8,7 +8,7 @@ permalink: /profile
       <br>
       <img src="./icon.jpg" alt="..." class="img-circle" height="150px" width="150px">
       <h4>欧阳亮 35岁</h4>
-      <a href="https://ouyangliang.github.io">我的技术博客</a>
+      <a href="https://ouyangliang.github.io">技术博客: https://ouyangliang.github.io</a>
     </div>
 
     <div class="col-xs-9">
@@ -42,10 +42,10 @@ permalink: /profile
         <li class="">深入理解常用设计模式及其使用场景，能灵活、适度的应用到实际项目中。</li>
         <li class="">精通多线程、对各个层面的性能调优有深入的理解。</li>
         <li class="">对数据库理论，模型设计、隔离级别、锁机制、sql调优等有深入的研究和理解。熟悉MySQL数据库，理解其各种不同存储引擎的特点，调优方案。</li>
-        <li class="">熟悉J2EE主流技术和框架（jsp、servlet、struts、spring、mybatis、ajax、webservice等，太多开源框架，在此不一一例举）。</li>
-        <li class="">熟悉前端技术javascript、jQuery、dojo、jqGrid、css、sitemesh、bootstrap等常用技术。</li>
-        <li class="">熟悉报表生成工具jasperreport及java excel api，常用模板技术velocity & freemarker。</li>
-        <li class="">系统学习过linux，熟练的linux技能使得我在工作中更加得心应手。</li>
+        <li class="">熟悉ZooKeeper、Kafka、ActiveMQ等带用中间件技术。</li>
+        <li class="">了解J2EE主流技术和框架（jsp、servlet、struts、spring、mybatis、ajax、webservice等，太多开源框架，在此不一一例举）。</li>
+        <li class="">了解前端技术javascript、jQuery、dojo、jqGrid、css、sitemesh、bootstrap等常用技术。</li>
+        <li class="">系统学习过linux，曾使用gentoo两年以上，熟练的linux技能使得我在工作中更加得心应手。</li>
       </ul>
     </div>
   </div>
