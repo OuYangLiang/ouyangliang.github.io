@@ -6,6 +6,8 @@ categories: 中间件
 ---
 # 一、命令行操作
 
+---
+
 ### 启动Kafka
 
 ```shell
@@ -27,7 +29,7 @@ categories: 中间件
 ### 查询topic详细信息
 
 ```shell
-./bin/kafka-topics.sh --zookeeper localhost:2181 --describe test_topic
+./bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic test_topic
 ```
 
 ### 查询consumer group列表
@@ -53,3 +55,182 @@ categories: 中间件
 ```shell
 ./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test_topic
 ```
+
+<br/>
+
+### 二、生产者开发
+
+---
+
+首先使用maven导入kafka客户端库：
+
+```xml
+<dependency>
+  <groupId>org.apache.kafka</groupId>
+  <artifactId>kafka-clients</artifactId>
+  <version>0.11.0.0</version>
+</dependency>
+```
+
+<br/>
+
+向kafka发送消息相对于消费来说，要简单很多。我们需要一个`KafkaProducer`对象，实例化的时候需要传入一个`Properties`对象来配置一些参数，关于这些参数，我们稍后会详细解释。
+
+```java
+public void send() {
+    Properties props = new Properties();
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    props.put(ProducerConfig.ACKS_CONFIG, "all");
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerSerializer");
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+
+    KafkaProducer<Integer, String> producer = new KafkaProducer<>(props);
+    try {
+        // do send job with producer here ...
+    } finally {
+        producer.close();
+    }
+}
+```
+
+<br/>
+
+`ProducerRecord`类，它是我们真正向Kafka发送的对象，是一个Pojo对象，封装了消息相关的信息：消息的key和value，发送的队列与分区，消息的时间，还有消息头信息。例如下面代码给消息设置了一个消息头from，值是System A。
+
+```java
+String topic = "test_topic";
+int partition = 0;
+long timestamp = System.currentTimeMillis();
+int key = 1;
+String value = "this is the message";
+
+List<Header> headers = new LinkedList<>();
+headers.add(new RecordHeader("from", "System A".getBytes(Charset.forName("UTF-8"))) );
+
+ProducerRecord<Integer, String> record = new ProducerRecord<>(topic, partition, timestamp, key, value, headers);
+```
+
+<br/>
+
+发送消息只需要把`ProducerRecord`作为参数传给`KafkaProducer`的`send`方法即可。
+
+```java
+Future<RecordMetadata> f = producer.send(record);
+try {
+    System.out.println("Sent message, offset: " + f.get().offset() + ")");
+} catch (InterruptedException | ExecutionException e) {
+    e.printStackTrace();
+}
+```
+
+<br/>
+
+不难看出，`KafkaProducer.send`方法是异步执行的，异步执行结束后我们通过Future可以拿到一个`RecordMetadata`对象。`RecordMetadata`类很简单，里面封装了本条消息发送的一些信息：如offset、消息的时间，消息的大小等。如果希望同步发送消息，可以在`send`方法后立即调用`Future.get()`方法。
+
+`KafkaProducer.send`方法还有一个重载版本，它接受一个`Callback`对象：
+
+```java
+public interface Callback {
+    public void onCompletion(RecordMetadata metadata, Exception exception);
+}
+```
+
+```java
+/**
+ * Send a record and invoke the given callback when the record has been acknowledged by the server
+ */
+public Future<RecordMetadata> send(ProducerRecord<K, V> record, Callback callback);
+```
+
+<br/>
+
+使用重载版本的`send`方法，我们不需要显示调用`Future.get()`方法，`onCompletion`方法会在消息成功递交之后被自动调用。这里需要注意的是如果消息发送过程中发生错误，`onCompletion`方法中`RecordMetadata`参数为错，`Exception`对象会保存具体的异常信息，但此时我们无法判断是哪个消息发送失败，也就没有办法进行重试了。
+
+<br/>
+
+### 关于分区
+
+我们知道，Kafka topic是分为多个partition的，这么设计的目的是为了进一步提升消息的并行消费能力，同时消息在同一个partition上是保序的。消息发送到哪个分区，是由Producer决定的。
+
+前面我们讲到`ProducerRecord`对象时，partition参数的值决定了消息将被发送至哪个分区。那如果我们没有显式设计partition参数的值，消息将被发送到哪个分区呢？Kafka的设计者提供了一个`Partitioner`接口：
+
+```java
+public interface Partitioner extends Configurable, Closeable {
+    public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster);
+
+    public void close();
+}
+```
+
+<br/>
+
+`DefaultPartitioner`类是`Partitioner`接口的默认实现，当partition没有被显式设置时，消息对应的分区就由`DefaultPartitioner`决定：
+
+```java
+/**
+ * The default partitioning strategy:
+ * <ul>
+ * <li>If a partition is specified in the record, use it
+ * <li>If no partition is specified but a key is present choose a partition based on a hash of the key
+ * <li>If no partition or key is present choose a partition in a round-robin fashion
+ */
+public class DefaultPartitioner implements Partitioner {
+
+    private final ConcurrentMap<String, AtomicInteger> topicCounterMap = new ConcurrentHashMap<>();
+
+    public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+        List<PartitionInfo> partitions = cluster.partitionsForTopic(topic);
+        int numPartitions = partitions.size();
+        if (keyBytes == null) {
+            int nextValue = nextValue(topic);
+            List<PartitionInfo> availablePartitions = cluster.availablePartitionsForTopic(topic);
+            if (availablePartitions.size() > 0) {
+                int part = Utils.toPositive(nextValue) % availablePartitions.size();
+                return availablePartitions.get(part).partition();
+            } else {
+                // no partitions are available, give a non-available partition
+                return Utils.toPositive(nextValue) % numPartitions;
+            }
+        } else {
+            // hash the keyBytes to choose a partition
+            return Utils.toPositive(Utils.murmur2(keyBytes)) % numPartitions;
+        }
+    }
+
+    private int nextValue(String topic) {
+        AtomicInteger counter = topicCounterMap.get(topic);
+        if (null == counter) {
+            counter = new AtomicInteger(ThreadLocalRandom.current().nextInt());
+            AtomicInteger currentCounter = topicCounterMap.putIfAbsent(topic, counter);
+            if (currentCounter != null) {
+                counter = currentCounter;
+            }
+        }
+        return counter.getAndIncrement();
+    }
+}
+```
+
+`DefaultPartitioner`的实现也不难理解：如果消息的key不为空的话，分区的取值基于key做hash运算得出；如果消息为空的话，就采取轮循的方式将消息发送到不同的分区。
+
+<br/>
+
+### Produer重要参数
+
+<table class="table table-bordered table-condensed table-striped">
+<tr class="info"><td>参数</td><td>说明</td><td>默认值</td></tr>
+<tr><td>bootstrap.servers</td><td>kafka broker地址，多个地址的话用逗号隔开，如host1:port,host2:port</td><td></td></tr>
+<tr><td>key.serializer</td><td>消息key序列化类</td><td></td></tr>
+<tr><td>value.serializer</td><td>消息value序列化类</td><td></td></tr>
+<tr><td>acks</td><td>这是个很重要的参数，用于指定消息的持久性。<br/>当它的值为0时，客户端生产者不会等待服务器的响应，也正因为此，返回的RecordMetadata对象中offset值是无意义的，固定为-1。在这个级别上，消息可能会丢失。<br/><br/>当它的值为1时，在partition leader将消息持久化到本地后立即响应客户端，不会等待任何follower的响应。在in-sync集合中的follower响应leader之前，但leader响应了客户端且发生宕机的情况下，会丢失消息。<br/><br/>当值为all时，partition leader将在in-sync集合中所有follower都响应成功后才会响应客户端，这是持久化最强的一个级别，但性能最差的一种。</td><td>1</td></tr>
+<tr><td>linger.ms</td><td>The producer groups together any records that arrive in between request transmissions into a single batched request. Normally this occurs only under load when records arrive faster than they can be sent out. However in some circumstances the client may want to reduce the number of requests even under moderate load. This setting accomplishes this by adding a small amount of artificial delay—that is, rather than immediately sending out a record the producer will wait for up to the given delay to allow other records to be sent so that the sends can be batched together. This can be thought of as analogous to Nagle's algorithm in TCP. This setting gives the upper bound on the delay for batching: once we get batch.size worth of records for a partition it will be sent immediately regardless of this setting, however if we have fewer than this many bytes accumulated for this partition we will 'linger' for the specified time waiting for more records to show up. This setting defaults to 0 (i.e. no delay). Setting linger.ms=5, for example, would have the effect of reducing the number of requests sent but would add up to 5ms of latency to records sent in the absense of load.</td><td>0 ms</td></tr>
+<tr><td>batch.size</td><td>The producer will attempt to batch records together into fewer requests whenever multiple records are being sent to the same partition. This helps performance on both the client and the server. This configuration controls the default batch size in bytes.
+No attempt will be made to batch records larger than this size.Requests sent to brokers will contain multiple batches, one for each partition with data available to be sent.A small batch size will make batching less common and may reduce throughput (a batch size of zero will disable batching entirely). A very large batch size may use memory a bit more wastefully as we will always allocate a buffer of the specified batch size in anticipation of additional records.</td><td>16384</td></tr>
+<tr><td>max.request.size</td><td>The maximum size of a request in bytes. This setting will limit the number of record batches the producer will send in a single request to avoid sending huge requests. This is also effectively a cap on the maximum record batch size. Note that the server has its own cap on record batch size which may be different from this.</td><td>1048576</td></tr>
+</table>
+
+<br/>
+
+### 三、消费者开发
+
+---
