@@ -58,7 +58,7 @@ categories: 中间件
 
 <br/>
 
-### 二、生产者开发
+# 二、生产者开发
 
 ---
 
@@ -74,7 +74,7 @@ categories: 中间件
 
 <br/>
 
-向kafka发送消息相对于消费来说，要简单很多。我们需要一个`KafkaProducer`对象，实例化的时候需要传入一个`Properties`对象来配置一些参数，关于这些参数，我们稍后会详细解释。
+向kafka发送消息相对于订阅来说，要简单很多。我们需要一个`KafkaProducer`对象，实例化的时候需要传入一个`Properties`对象来配置一些参数，关于这些参数，我们稍后会详细解释。
 
 ```java
 public void send() {
@@ -144,15 +144,15 @@ public Future<RecordMetadata> send(ProducerRecord<K, V> record, Callback callbac
 
 <br/>
 
-使用重载版本的`send`方法，我们不需要显示调用`Future.get()`方法，`onCompletion`方法会在消息成功递交之后被自动调用。这里需要注意的是如果消息发送过程中发生错误，`onCompletion`方法中`RecordMetadata`参数为错，`Exception`对象会保存具体的异常信息，但此时我们无法判断是哪个消息发送失败，也就没有办法进行重试了。
+使用重载版本的`send`方法，我们不需要显示调用`Future.get()`方法，`onCompletion`方法会在消息成功递交之后被自动调用。这里需要注意的是如果消息发送过程中发生错误，`onCompletion`方法中`RecordMetadata`参数为空，`Exception`对象会保存具体的异常信息，但此时我们无法判断是哪个消息发送失败，也就没有办法进行重试了。
 
 <br/>
 
 ### 关于分区
 
-我们知道，Kafka topic是分为多个partition的，这么设计的目的是为了进一步提升消息的并行消费能力，同时消息在同一个partition上是保序的。消息发送到哪个分区，是由Producer决定的。
+我们知道，Kafka topic是分为多个分区的，这么设计的目的是为了进一步提升消息的并行消费能力，同时消息在同一个分区上是保序的。消息发送到哪个分区，是由Producer决定的。
 
-前面我们讲到`ProducerRecord`对象时，partition参数的值决定了消息将被发送至哪个分区。那如果我们没有显式设计partition参数的值，消息将被发送到哪个分区呢？Kafka的设计者提供了一个`Partitioner`接口：
+在构造`ProducerRecord`对象时，partition参数的值决定了消息将被发送至哪个分区。那如果我们没有显式设置partition参数的值，消息将被发送到哪个分区呢？Kafka的设计者提供了一个`Partitioner`接口：
 
 ```java
 public interface Partitioner extends Configurable, Closeable {
@@ -164,7 +164,7 @@ public interface Partitioner extends Configurable, Closeable {
 
 <br/>
 
-`DefaultPartitioner`类是`Partitioner`接口的默认实现，当partition没有被显式设置时，消息对应的分区就由`DefaultPartitioner`决定：
+`DefaultPartitioner`类是`Partitioner`接口的默认实现，Producer发送消息时如果没有显式指定分区，那消息对应的分区就由`DefaultPartitioner`决定：
 
 ```java
 /**
@@ -231,6 +231,237 @@ No attempt will be made to batch records larger than this size.Requests sent to 
 
 <br/>
 
-### 三、消费者开发
+# 三、消费者开发
 
 ---
+Kafka Consumer的开发要比Producer复杂一些，这主要是由于Kafka的设计原理导致的。在Kafka中，一个topic被分成了一个或者多个日志分区。分区的引入是为了进一步提升消息的并行消费能力，同时消息在同一个分区上是保序的。Producer将消息写到这些分区的尾部，Consumer则以自己的步调读取。
+
+Kafka另外还引入了Consumer Group的概念，以更高的层次抽象了“点对点”和“发布/订阅”两种传统队列模式。一个topic可以被多个Consumer Group消费，这类似于“发布/订阅”模式；对于一个组内的多个消费者来说，这样的设计达到了并行消费和容灾的效果，topic中的分区以一定的规则分配给它们，一个分区只能被分配给一个Consumer，这类似于“点对点”这种模式。例如下图中的分区0和1分配给了Consumer 1，分区2分配给了Consumer 2，组内消费者和partition的分配关系是一对多的关系：
+
+![Kafka分区与消费者组的关系图]({{site.baseurl}}/pic/kafka/1.svg)
+
+分区和Consumer之间的分配关系是基于**消费者组协调协议**实现的。每个Consumer Group会选择一个broker作为自己的组协调者Group Coordinator。协调者负责管理Consumer Group的状态，它的主要工作就是负责协调分区的分配: 当有新的Consumer加入或者退出Consumer Group时，重新分配分区和Consumer的关系，这个过程叫做Group Rebalance。
+
+当一个新的消费者组第一次订阅一个topic时，会从每个分区开始、或最后的位置开始读取数据，取决于Consumer中参数`auto.offset.reset`的设置。之后Consumer会顺序地读取和消费每个分区中的消息，并不断的提交当前的offset。在某个时刻，分区的结构相对于某个Consumer Group来说可能是这样的：
+
+![Partition分区某个时刻的结构图]({{site.baseurl}}/pic/kafka/2.svg)
+
+当Group Rebalance发生时，分区有可能被分配给另一个Consumer。这时新的Consumer会从上次提交的位置last committed offset开始拉取消息，意味着消息可能会被重复消费（如上图示例中offset 1-6的消息）。
+
+前面的partition结构图中还显示了另外两个位置信息：log end offset指向当前partition中最新一条消息即将写入的位置，而high watermark指向最后一条已经成功复制到所有在in-sync集合中的follower的消息。很明显，消费者只能取到high watermark及之前的消息，high watermark之后的消息，如果复制失败会被丢弃。
+
+<br/>
+
+### 实现
+
+好了，现在我们来看看具体的实现。接收消息时使用KafkaConsumer类，与消息发送类似，也是通过一个`Properties`对象来配置一些参数：
+
+```java
+props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+props.put(ConsumerConfig.GROUP_ID_CONFIG, "DemoConsumer");
+props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerDeserializer");
+props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+KafkaConsumer<Integer, String> consumer = new KafkaConsumer<>(props);
+```
+
+<br/>
+
+为了能够消费消息，Consumer需要指定要订阅的topics，像下面这样。
+
+```java
+consumer.subscribe(Arrays.asList("test_topic"));
+```
+
+<br/>
+
+Kafka的设计需要Consumer自己主动的拉取数据，不像传统队列支持推送的方式，所以一般Consumer获取数据是包装在一个循环内的：
+
+```java
+try {
+    while (running) {
+        ConsumerRecords<String, String> records = consumer.poll(1000);
+        for (ConsumerRecord<String, String> record : records) {
+            // handle record here
+        }
+    }
+} finally {
+    consumer.close();
+}
+```
+
+`poll`方法会从分区拉取数据，但不仅如此，事实上，组内分区的分配、Group Rebalance等情况也是由`poll`方法驱动完成的。传递给`poll`方法的参数控制了消费者在当前位置因为等待消息的到来而阻塞的最长时间，一旦有新的消息就会立即返回；否则会一直等待直到超时才返回。
+
+开发时应该正确的关闭Consumer，这不仅仅是清理已经使用的socket连接，也确保了Consumer及时通知协调者它已经从组中退出，需要做Group Rebalance。前面的例子使用了一个相对较小的timeout来确保在关闭Consumer时不会有太多的延迟。另一种办法是设置较长的timeout，不过这时应该使用`wakeup`调用来从事件循环中退出：
+
+```java
+try {
+    while (true) {
+        ConsumerRecords<Integer, String> records = consumer.poll(Long.MAX_VALUE);
+        for (ConsumerRecord<Integer, String> record : records) {
+            // handle record here
+        }
+    }
+} catch (WakeupException e) {
+    // ignore for shutdown
+} finally {
+    consumer.close();
+}
+```
+
+通过另一个线程调用`consumer.wakeup`来进行中断操作，这个调用会导致抛出`WakeupException`。`wakeup`在其他线程中调用是安全的（`KafkaConsumer`类中只有这个方法是线程安全的）。
+
+<br/>
+
+### 活跃度
+
+作为Consumer Group的一部分，每个Consumer会被分配一部分分区，就像在这些分区上加了一个锁。只要锁被持有，组中的其他成员就不会读取这些分区，锁只属于唯一的Consumer。当你的Consumer是正常状态时，当然是最好不过了，因为这是防止重复消费的唯一方式。但如果Consumer挂掉了，你需要释放掉那个锁，这样才可以将分区重新分配给其他健康的成员。
+
+Kafka的**消费者组协调协议**使用心跳机制解决了这个问题。每个Consumer都会定时地发送心跳给协调者，只要协调者持续接收到心跳，它会假设这个成员是健康的。每次接收到心跳，协调者就开始或者重置计时器。如果时间超过，没有收到Consumer的心跳，协调者标记Consumer为死亡状态，并将分配给该Consumer的分区重新分配给组内的其它Consumer。
+
+计时器的时间间隔是通过参数`session.timeout.ms`配置的，这个参数确保应用程序崩溃或者网络将消费者和协调者隔离的情况下锁会被释放。**所有的网络IO操作在调用`poll`或者其他的阻塞API，都是在前台完成的。Consumer并不使用任何的后台线程**。这就意味着消费者的心跳只有在调用`poll`的时候才会发送给协调者。如果应用程序故障，就不会再发送心跳了，最终就会导致超时，然后组协调者就会开始Group Rebalance操作。
+
+唯一存在的问题是如果Consumer处理消息花费的时间比`session.timeout.ms`还要长，就会触发一次不必要的Group Rebalance。可以通过设置更长的超时时间防止发生这样的情况。默认的超时时间是30秒，不过不要太长，过长的超时时间会导致协调者会花费较长时间才能检测到真正崩溃的Consumer。
+
+### 递交语义
+
+当一个新的Consumer Group第一次订阅一个topic时，会从每个分区开始、或最后的位置开始读取数据，取决于Consumer中参数`auto.offset.reset`的设置。之后Consumer会顺序地读取和处理各个分区中的消息，并不断的提交当前的offset。当Group Rebalance发生时，分区有可能被分配给另一个Consumer。这时新的Consumer会从上次提交的位置last committed offset开始重新拉取和处理消息。如果Consumer已经成功处理了一批消息，但是为这批消息提交offsets之前崩溃了，新的Consumer就会重复处理这批消息。提交offset的频率越高，重复处理的消息量就越少，但吞吐也越低。
+
+参数`enable.auto.commit`控制Consumer是否自动提交offset（默认为true）。如果是自动提交，Consumer会周期性的提交offset，周期间隔时间由参数`auto.commit.interval.ms`指定。间隔时间越小意味着提交的频率就越高，重复处理的消息量就越少，吞吐也越低。**还有一个细节要注意，自动提交offset是发生在`poll`方法的调用时，如果处理消息花费的时间大于周期间隔时间，那提交offset的频率实际上是由处理消息的快慢决定的**。
+
+如果想要自己控制offset的提交，需要把参数`auto.offset.reset`的值设为false。手动控制提交给予应用程序更多的灵活性。
+
+```java
+try {
+    while (true) {
+        ConsumerRecords<Integer, String> records = consumer.poll(Long.MAX_VALUE);
+        for (ConsumerRecord<Integer, String> record : records) {
+            // handle record here
+        }
+
+        try {
+            consumer.commitSync();
+        } catch (CommitFailedException e) {
+            // application specific failure handling
+        }
+    }
+} catch (WakeupException e) {
+    // ignore for shutdown
+} finally {
+    consumer.close();
+}
+```
+
+使用不带参数的`commitSync`方法会在最近一次调用`poll`的返回值中提交offsets。这个方法是同步的，直到提交成功或者出现不可恢复的错误而失败。特别需要关心的是超时问题，这种情况发生时，协调者会将Consumer从组中剔除出去，`commitSync`方法会抛出`CommitFailedException`。应用程序应该处理这种错误，比如尝试从上次成功提交的offset开始回滚。
+
+通常情况下，应该保证只有在消息成功被处理之后，才提交offset。如果Consumer在提交offset之前崩溃了，那么已经成功处理的那部分消息就会被另一个Consumer重复处理。
+
+上面的实现中，Consumer从分区获取消息后，是先处理消息，再提交offset，这样的方式实际上是实现了“At least once”的递交语义。如果把消息处理和提交offset的顺序交换，先提交offset，再处理消息，那就实现了“At most once”的递交语义了，就像下面这样：
+
+![Partition分区某个时刻的结构图]({{site.baseurl}}/pic/kafka/3.svg)
+
+```java
+try {
+    while (true) {
+        ConsumerRecords<Integer, String> records = consumer.poll(Long.MAX_VALUE);
+
+        try {
+            consumer.commitSync();
+            for (ConsumerRecord<Integer, String> record : records) {
+                // handle record here
+            }
+
+        } catch (CommitFailedException e) {
+
+        }
+    }
+} catch (WakeupException e) {
+    // ignore for shutdown
+} finally {
+    consumer.close();
+}
+```
+
+使用自动提交offset的方式提供“at least once”的递交语义，可能被重复处理的消息量和参数`auto.commit.interval.ms`的值有关系，消息处理越快、参数的值越大，在Rebalance发生时可能被重复处理的消息量就可能越多。
+
+<br/>
+
+使用带参数的`commitSync`方法，也可以更细粒度的控制offset的提交，例如：
+
+```java
+try {
+    while (true) {
+        ConsumerRecords<Integer, String> records = consumer.poll(Long.MAX_VALUE);
+        try {
+            for (ConsumerRecord<Integer, String> record : records) {
+                // handle record here ...
+                TopicPartition topicPartition = new TopicPartition(record.topic(), record.partition());
+                consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
+            }
+        } catch (CommitFailedException e) {
+            // application specific failure handling
+        }
+    }
+} catch (WakeupException e) {
+    // ignore for shutdown
+} finally {
+    consumer.close();
+}
+```
+
+在本例中,我们显式地传递要提交的offset给`commitSync`方法。committed offset总是应该是Consumer读取的下一条消息的offset。每处理一条消息就提交一次，很明显会带来严重的性能问题，更理想的方式应该是每处理N条消息就提交一次，N在这时可以作为一个性能调节参数使用。这个例子中的commitSync方法的参数是一个map，从topic partition到一个OffsetAndMetadata的实例。
+
+另一种更理想的办法是基于分区进行分组提交，每当一个分区的消息处理完，就提交一次，然后再处理另一个分区的消息。`ConsumerRecord`类提供了访问分区的方法，如：
+
+```java
+try {
+    while (true) {
+        ConsumerRecords<Integer, String> records = consumer.poll(Long.MAX_VALUE);
+        try {
+            for (TopicPartition partition : records.partitions()) {
+                List<ConsumerRecord<Integer, String>> partitionRecords = records.records(partition);
+                for (ConsumerRecord<Integer, String> record : partitionRecords) {
+                    // handle record here ...
+                }
+                long lastoffset = partitionRecords.get(partitionRecords.size() - 1).offset();
+                consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(lastoffset + 1)));
+            }
+
+        } catch (CommitFailedException e) {
+            // application specific failure handling
+        }
+    }
+} catch (WakeupException e) {
+    // ignore for shutdown
+} finally {
+    consumer.close();
+}
+```
+
+<br/>
+
+到目前为止，我们介绍的都是同步提交offset。实际上也可以使用异步的方式提交，异步的好处是带来更高的吞吐量，但麻烦的是提交失败的情况以及后续的处理需要在一个独立的回调线程中处理。如：
+
+```java
+try {
+    while (true) {
+        ConsumerRecords<Integer, String> records = consumer.poll(Long.MAX_VALUE);
+        for (ConsumerRecord<Integer, String> record : records) {
+            // handle record here
+        }
+
+        consumer.commitAsync(new OffsetCommitCallback() {
+            @Override
+            public void onComplete(Map<TopicPartition, OffsetAndMetadata> arg0, Exception e) {
+                // handle commit result here
+            }
+        });
+    }
+} catch (WakeupException e) {
+    // ignore for shutdown
+} finally {
+    consumer.close();
+}
+```
+
+`Consumer.commitAsync`方法异步提交offset，它接收一个`OffsetCommitCallback`对象用来做提交的回调通知。
