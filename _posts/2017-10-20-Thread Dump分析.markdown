@@ -123,18 +123,24 @@ JNI global references: 6
 
 我们在分析Thread Dump文件时，第二部分的内容是我们分析的重点。而这部分内容中的重点是理解线程的状态和分析线程的stacktrace信息。
 
-**线程状态**
+<br/>
 
-* runnable
+#### 线程状态
+
+* **runnable**
 
     线程正在执行，具体在做什么需要看堆栈信息。处于runnable状态的线程不一定会消耗CPU，像socket IO操作，线程正在从网络上读取数据，尽管线程状态runnable，但实际上却在等待网络io，线程绝大多数时间是被挂起的，只有当数据到达后，线程才会被唤起。挂起发生在本地代码（native）中，虚拟机无法知道，不像显式的调用sleep和wait方法，虚拟机才能知道线程的真正状态，但在本地代码中的挂起，虚拟机无法知道真正的线程状态，因此一概显示为runnable。
 
-* waiting on condition
+* **waiting on condition**
 
     该状态表示线程在等待某个条件的发生，具体是什么原因，需要根据stacktrace来分析。最常见的情况是线程在等待网络的读写，如果网络数据没准备好，线程就等待在那里。如果发现有大量的线程都在处在waiting on condition，从线程stacktrace看，正等待网络读写，这可能是一个网络瓶颈的征兆，因为网络阻塞导致线程无法执行。可能是网络非常忙，几乎消耗了所有的带宽，仍然有大量数据等待网络读写；也可能是网络空闲，但由于路由等问题，导致包无法正常的到达。
 
     另外一种常见情况是该线程在sleep，等待sleep的时间到了时候，将被唤醒。
 
-* Waiting for monitor entry
+* **Waiting for monitor entry与in Object.wait()**
 
-* in Object.wait()
+    这两种情况在多线程的情况下经常出现，Java是通过Monitor来实现线程互斥和协作。可以把monitor理解成一个锁，每个对象实例都有且仅有一个。某个时刻monitor只能被一个线程占有，该线程就是Active Thread，而其它线程都是Waiting Thread，Waiting Thread分布在entry set和wait set两个集合中，所下图所示：
+
+    ![monitor]({{site.baseurl}}/pic/threaddump/2.svg)
+
+    当一个线程尝试对一个对象加锁时（比如synchronized），它会进入到entry set。获取对象锁以后，它变为锁的owner，成为Active thread继续执行任务。当线程获得锁后，又发现其它一些条件不满足，这时它可以主动释放锁并等待（调用锁对象的`wait`方法），并进入wait set。当线程在entry set中时，它们的状态就是**Waiting for monitor entry**；而当线程在wait set中时，它们的状态是**in Object.wait()**。
