@@ -144,3 +144,101 @@ JNI global references: 6
     ![monitor]({{site.baseurl}}/pic/threaddump/2.svg)
 
     当一个线程尝试对一个对象加锁时（比如synchronized），它会进入到entry set。获取对象锁以后，它变为锁的owner，成为Active thread继续执行任务。当线程获得锁后，又发现其它一些条件不满足，这时它可以主动释放锁并等待（调用锁对象的`wait`方法），并进入wait set。当线程在entry set中时，它们的状态就是**Waiting for monitor entry**；而当线程在wait set中时，它们的状态是**in Object.wait()**。
+
+<br/>
+
+#### 一个简单的例子
+
+```java
+public static void main(String[] args) {
+    Object lock = new Object();
+    BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+
+    new Thread(() ->  {
+        synchronized(lock) {
+            while (true) {
+                System.out.println("do something...");
+            }
+        }
+    }, "thread-1").start();
+
+    new Thread(() ->  {
+        synchronized(lock) {
+            while (true) {
+                System.out.println("do something else...");
+            }
+        }
+    }, "thread-2").start();
+
+    new Thread(() ->  {
+        try {
+            String s = queue.take();
+            System.out.println(s);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }, "thread-3").start();
+
+    try {
+        TimeUnit.SECONDS.sleep(60);
+        System.exit(0);
+    } catch (InterruptedException e) {}
+}
+```
+
+上面这个简单的程序，启动了两个线程（thread-1与thread-2）向控制台打印信息，注意，它们都尝试对`lock`对象加锁，不出意外的话应该是线程thread-1加锁成功，thread-2会一直处于等待状态（即Waiting for monitor entry）。线程thread-3尝试从一个空的阻塞队列里面取出元素，主线程main会sleep60秒（状态应该是waiting on condition），然后中止程序的执行，下面是这段程序的Thread Dump：
+
+```
+2017-10-23 17:05:57
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.144-b01 mixed mode):
+"thread-3" #11 prio=5 os_prio=31 tid=0x00007fd60d832000 nid=0x4f03 waiting on condition [0x000000011e18f000]
+   java.lang.Thread.State: WAITING (parking)
+	at sun.misc.Unsafe.park(Native Method)
+	- parking to wait for  <0x000000074000a178> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2039)
+	at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+	at com.personal.oyl.test.App.lambda$2(App.java:34)
+	at com.personal.oyl.test.App$$Lambda$3/1044036744.run(Unknown Source)
+	at java.lang.Thread.run(Thread.java:748)
+
+"thread-2" #10 prio=5 os_prio=31 tid=0x00007feb9c147800 nid=0x4d03 waiting for monitor entry [0x00000001271e5000]
+   java.lang.Thread.State: BLOCKED (on object monitor)
+	at com.personal.oyl.test.App.lambda$1(App.java:24)
+	- waiting to lock <0x0000000740006918> (a java.lang.Object)
+	at com.personal.oyl.test.App$$Lambda$2/1418481495.run(Unknown Source)
+	at java.lang.Thread.run(Thread.java:748)
+
+"thread-1" #9 prio=5 os_prio=31 tid=0x00007feb9c022000 nid=0x4b03 runnable [0x00000001270e2000]
+   java.lang.Thread.State: RUNNABLE
+	at java.io.FileOutputStream.writeBytes(Native Method)
+	at java.io.FileOutputStream.write(FileOutputStream.java:326)
+	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82)
+	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140)
+	- locked <0x000000074001d380> (a java.io.BufferedOutputStream)
+	at java.io.PrintStream.write(PrintStream.java:482)
+	- locked <0x00000007400044b0> (a java.io.PrintStream)
+	at sun.nio.cs.StreamEncoder.writeBytes(StreamEncoder.java:221)
+	at sun.nio.cs.StreamEncoder.implFlushBuffer(StreamEncoder.java:291)
+	at sun.nio.cs.StreamEncoder.flushBuffer(StreamEncoder.java:104)
+	- locked <0x0000000740004468> (a java.io.OutputStreamWriter)
+	at java.io.OutputStreamWriter.flushBuffer(OutputStreamWriter.java:185)
+	at java.io.PrintStream.write(PrintStream.java:527)
+	- eliminated <0x00000007400044b0> (a java.io.PrintStream)
+	at java.io.PrintStream.print(PrintStream.java:669)
+	at java.io.PrintStream.println(PrintStream.java:806)
+	- locked <0x00000007400044b0> (a java.io.PrintStream)
+	at com.personal.oyl.test.App.lambda$0(App.java:16)
+	- locked <0x0000000740006918> (a java.lang.Object)
+	at com.personal.oyl.test.App$$Lambda$1/471910020.run(Unknown Source)
+	at java.lang.Thread.run(Thread.java:748)
+
+"main" #1 prio=5 os_prio=31 tid=0x00007feb9c008800 nid=0xd03 waiting on condition [0x000000010e7c6000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(Native Method)
+	at java.lang.Thread.sleep(Thread.java:340)
+	at java.util.concurrent.TimeUnit.sleep(TimeUnit.java:386)
+	at com.personal.oyl.test.App.main(App.java:30)
+```
+
+可以看到，Thread Dump的信息和我们的预期是一样的。线程thread-1成功加锁`locked <0x0000000740006918> (a java.lang.Object)`，并不断写控制台写，注意看stacktrace信息；thread-2尝试对同一对象进行加锁`waiting to lock <0x0000000740006918> (a java.lang.Object)`，因为锁对象已经被thread-1持有，所以thread-2处于等待状态Waiting for monitor entry。线程thread-3尝试从一个空的阻塞队列里面获取元素，会一直阻塞到队列有元素返回为止，所以状态是waiting on condition；主线程main主动调用sleep方法，处于waiting on condition状态。
