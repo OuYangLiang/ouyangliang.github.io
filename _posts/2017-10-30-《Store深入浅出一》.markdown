@@ -1,0 +1,24 @@
+---
+layout: post
+title:  "《Store深入浅出一》"
+date:   2017-10-30 08:19:16 +0800
+categories: 中间件
+---
+Storm是一个简单的分布式流式计算系统，它提供了对数据流进行实时处理的能力。Storm之于流式处理就像Hadoop之于批处理计算一样，区别在于Hadoop Job最终会运行结整，而Storm会一直持续下去。在设计上Storm是非常简单的，搭建一个简单的入口Sample通常不会很难，但要深入掌握Storm的各个方面，还是需要下一翻功夫的。本文会比较长，我从由浅入深的介绍Storm的各个方面，耐心看完相信您一定会有所收获。
+
+### 一、基本概念
+---
+
+在Storm中，一个分布式计算结构被称为topology（拓扑），由stream（流）、spout（流生成器）和bolt（处理器）组成，如下图所示：
+
+![storm topology]({{site.baseurl}}/pic/storm/1.svg)
+
+**Stream与Tuple**
+
+Stream是一个数据流，流中的每个元素被称为一个Tuple。Tuple是Storm中的核心数据结构，是一个由一个或多个键值对组成的列表对象。
+
+<br/>
+
+**Spout**
+
+Spout代表了Storm Topology中的数据入口，充当一个数据采集器的角色，连接到数据源，将数据转化为一个个的tuple，并将tuple发送给Bolt。
