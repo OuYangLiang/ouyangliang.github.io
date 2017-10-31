@@ -9,6 +9,8 @@ Storm是一个简单的分布式流式计算系统，它提供了对数据流进
 ### 一、基本概念
 ---
 
+**Topology**
+
 在Storm中，一个分布式计算结构被称为topology（拓扑），由stream（流）、spout（流生成器）和bolt（处理器）组成，如下图所示：
 
 ![storm topology]({{site.baseurl}}/pic/storm/1.svg)
@@ -21,4 +23,86 @@ Stream是一个数据流，流中的每个元素被称为一个Tuple。Tuple是S
 
 **Spout**
 
-Spout代表了Storm Topology中的数据入口，充当一个数据采集器的角色，连接到数据源，将数据转化为一个个的tuple，并将tuple发送给Bolt。
+Spout代表了Storm Topology中的数据入口，充当一个数据采集器的角色，连接到数据源，读取并将数据转化为一个个的tuple发送给Bolt。
+
+<br/>
+
+**Bolt**
+
+在Storm Topology中像过滤、转换、运算等操作都是由Bolt来完成的，可以把Bolt看作一个数据处理器。Bolt从一个或多个Spout那接收数据流进行处理，然后选择性的输出出去，形成一个复杂的网络。
+
+<br/>
+
+#### Storm的并发机制
+
+Storm集群中，Topology由四个部分组成：
+
+* **Node（服务器）**
+
+    配置在集群中的服务器，执行一个topology的一部分运算。一个集群包含多个Nodes。
+
+* **Worker Process**
+
+    一个Worker是指服务器中一个独立运行的JVM虚拟机进程，每个服务器中可以启动多个Worker，这取决于服务器的配置的负载情况。
+
+* **Executor**
+
+    Executor是Worker中执行Task的线程。同一个Spout或Bolt的多个Task实例可以指派给一个Executor来执行，默认情况下，Storm会给每个Executor分配一个Task。
+
+* **Task**
+
+    Task是Spout和Bolt的实例。运行时Task的数量是不可变的，但Executor的数量可以动态调整，这是Storm提供的灵活性之一。
+
+假设我们有一个Topology，由一个Spout和两个Bolt组成，部署在一个Worker上，这时Topology的结构如下图所示：
+
+![topology structure]({{site.baseurl}}/pic/storm/2.svg)
+
+默认情况下，Storm为每一个组件设置的并行度是1，在上面的Topology中，每个Spout和Bolt都只是分配了一个Executor和一个Task。当负载上来后，我们没有办法通过增加Executor或服务器的方式来提高这个Topology的吞吐，因为每个组件的Task实例数是不可变的。我们可以在定义Topology的时候，预先设置好各个组件的并行度（即多少个Executor来执行该组件）和Task实例数量。例如把前面的Topology做一个调整，Spout的Task实例数设为2，red Bolt的Task实例数设为4，green Bolt的实例数设为6，Executor的配置不动，那Topology的结构变为下图所示：
+
+![topology structure multi tasks]({{site.baseurl}}/pic/storm/3.svg)
+
+因为Executor的数量未作调整，所以这个Topology的吞吐与前面的那个差别不大，甚至会有小幅下降。但是这个Topology为后面的伸缩提供了更好的支持。Storm支持在不重启Topology的情况下，动态的改变（增减）Worker的数量和Executor的数量，这个过程称为Rebalance。通过Storm web UI，或者CLI tool storm rebalance命令我们可以实现Rebalance。
+
+```shell
+$ storm rebalance topology -n 2 -e spout=2 -e red-bolt=2 -e green-bolt=6
+```
+
+例如我们可以通过上面的命令，把Topology的Worker数量改为2个，Spout和red Bolt的Executor改为2个，green Bolt的Executor改为6个。修改之后，Topology的结构所下所示：
+
+![topology structure multi workers]({{site.baseurl}}/pic/storm/4.svg)
+
+Topology中Executor的总量是由各个组件的并行度之后决定的，再除以Worker的数量，就是每个Worker中Executor的数量了，Storm的并发机制是非常简单的。有一点需要单独指出，在本地模式下增加Worker的数量不会达至预期的效果，因为本地模式本质上是同一个JVM。
+
+<br/>
+
+#### 数据流分组
+
+Storm定义了几种分组的方式：
+
+* Shuffle grouping（随机）
+
+    这种方式会随机分发tuple给Bolt的各个Task实例，每个实例接收到相同数量的tuple。
+
+* Fields grouping
+
+    根据指定字段的值进行分组。
+
+* All grouping
+
+    每个tuple都复制分发给所有的Bolt Task实例。
+
+* Global grouping
+
+    这种分组方式将所有的tuple都路由到唯一一个Task实例上。
+
+* None grouping
+
+    在功能上与Shuffle grouping一样，为将来扩展预留的。
+
+* Direct grouping
+
+    这是一种特殊的路由方式，由发送者（`emitDirect`方法）来决定tuple由哪个Task实例来接收。
+
+* Local or shuffle grouping
+
+    与Shuffle grouping类似，但是会优先选择同一个Worker内的Task实例。由于减少了网络传输，性能上更好。
