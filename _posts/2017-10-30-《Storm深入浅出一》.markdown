@@ -122,4 +122,121 @@ Topology中Executor的总量是由各个组件的并行度之和决定的，再�
 
 ![sample topology]({{site.baseurl}}/pic/storm/5.svg)
 
-例子比较简单，**Sentence Spout**的作用是随机发送一些英文句子；**Split Bolt**负责将句子拆分成单词；**Count Bolt**负责统计每个单词的出现次数；最后由**Report Bolt**将结果输出。
+例子比较简单，Sentence Spout的作用是随机发送一些英文句子；Split Bolt负责将句子拆分成单词；Count Bolt负责统计每个单词的出现次数；最后由Report Bolt将结果输出。
+
+<br/>
+
+**实现Sentence Spout**
+
+首先，Storm要求所有的组件（Spout与Bolt）都实现`IComponent`接口，该接口定义了两个方法。其中，`declareOutputFields`方法用于告诉Storm该组件会发送哪些数据流，以及流中的tuple包含哪些字段Fields；`getComponentConfiguration`方法用于覆盖、指定一些组件级别的配置，`IComponent`接口的源码如下：
+
+```java
+public interface IComponent extends Serializable {
+    /**
+     * Declare the output schema for all the streams of this topology.
+     *
+     * @param declarer this is used to declare output stream ids, output fields, and whether or not each output stream is a direct stream
+     */
+    void declareOutputFields(OutputFieldsDeclarer declarer);
+
+    /**
+     * Declare configuration specific to this component. Only a subset of the "topology.*" configs can
+     * be overridden. The component configuration can be further overridden when constructing the
+     * topology using {@link TopologyBuilder}
+     *
+     */
+    Map<String, Object> getComponentConfiguration();
+}
+```
+
+<br/>
+
+其次，Storm要求所有的Spout组件实现`ISpout`接口。`ISpout`接口定义的方法相对要多一些，大部分时候我们不需要全部实现，为此Storm API提供了一些辅助类，降低Storm的开发工作量，相关的类图如下：
+
+![spout类图]({{site.baseurl}}/pic/storm/6.svg)
+
+`BaseComponent`类与`BaseRichSpout`类，提供了大部分方法的默认实现，所以我们在开发Spout组件的时候，只需要承继`BaseRichSpout`类即可。剩下的工作就是实现`declareOutputFields`、`open`和`nextTuple`三个方法了。`declareOutputFields`方法前面我们提到过，它的作用是告诉Storm该Spout组件会发送哪些数据流，以及流中的tuple包含哪些字段Fields。该示例中，SentenceBolt发送的tuple中只有一个sentence字段，它的实现如下：
+
+```java
+public void declareOutputFields(OutputFieldsDeclarer declarer) {
+    declarer.declare(new Fields("sentence"));
+}
+```
+
+<br/>
+
+`open`方法在该组件的Task实例初始化的时候被调用，它提供了三个参数：
+
+* Map类型的conf
+
+    关于该Spout组件的Storm配置信息。
+
+* TopologyContext
+
+    关于该Spout组件当前Task实例的一些信息，比如task id。
+
+* SpoutOutputCollector
+
+    `SpoutOutputCollector`对象用于发送tuple，它是线程安全的。通常会把该参数作为Spout的实例属性保存下来。
+
+由于我们会在`nextTuple`方法中使用`SpoutOutputCollector`对象发送tuple，所以在`open`方法中我们需要把它保存起来：
+
+```java
+private SpoutOutputCollector collector;
+
+public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+    this.collector = collector;
+}
+```
+
+<br/>
+
+`nextTuple`方法是Spout组件最关键的方法之一，Storm通过调用这个方法来发送tuple。值得注意的是，`nextTuple`方法的内部实现最好不要有阻塞式的操作，因为Storm是在一个专门的线程中不断循环调用该方法的。如果没有数据需要发送，可以睡眠几毫秒再返回，防止空转消耗过多的CPU资源。本例中我们随机发送一些英文句子，`nextTuple`方法实现如下：
+
+```java
+private int index = 0;
+private String[] sentences = {
+    "how are you", "nice to meet you", "what a good day"
+};
+
+public void nextTuple() {
+    this.collector.emit(new Values(sentences[index]));
+    index++;
+    if (index == sentences.length)
+        index = 0;
+    Utils.sleep(5);
+}
+```
+
+<br/>
+
+至此，我们完成了SentenceSpout的实现，关于`ISpout`接口中的其它方法，我们后面再详细介绍。SentenceSpout完整代码如下：
+
+```java
+public class SentenceSpout extends BaseRichSpout {
+    private SpoutOutputCollector collector;
+    private int index = 0;
+    private String[] sentences = {
+        "how are you", "nice to meet you", "what a good day"
+    };
+
+    @Override
+    public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+        this.collector = collector;
+    }
+
+    @Override
+    public void nextTuple() {
+        this.collector.emit(new Values(sentences[index]));
+        index++;
+        if (index == sentences.length)
+            index = 0;
+        Utils.sleep(5);
+    }
+
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields("sentence"));
+    }
+}
+```
