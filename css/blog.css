@@ -7,7 +7,7 @@ body {
 
 .masthead {
     position: relative;
-    padding: 5rem 1rem;
+    padding: 1rem 1rem;
     text-align: center;
     text-shadow: 0 1px 0 rgba(0,0,0,.1);
     background-color: #6f5499;
@@ -21,7 +21,7 @@ body {
 
 .masthead h1 {
     color: #fff;
-    font-size: 8rem;
+    font-size: 6rem;
 }
 
 /* Sidebar modules for boxing content */
@@ -42,7 +42,7 @@ body {
  * Blog
  */
 .blog-main {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.5;
 }
 .blog-post {
@@ -65,3 +65,7 @@ body {
 }
 
 img{ width: 100%; height: auto;max-width: 100%; display: block; }
+
+blockquote{
+  font-size: 14px;
+}

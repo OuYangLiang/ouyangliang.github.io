@@ -1,14 +1,13 @@
 ---
 layout: post
-title:  "《Store深入浅出一》"
+title:  "《Storm深入浅出一》"
 date:   2017-10-30 08:19:16 +0800
 categories: 中间件
 ---
 Storm是一个简单的分布式流式计算系统，它提供了对数据流进行实时处理的能力。Storm之于流式处理就像Hadoop之于批处理计算一样，区别在于Hadoop Job最终会运行结整，而Storm会一直持续下去。在设计上Storm是非常简单的，搭建一个简单的入口Sample通常不会很难，但要深入掌握Storm的各个方面，还是需要下一翻功夫的。本文会比较长，我从由浅入深的介绍Storm的各个方面，耐心看完相信您一定会有所收获。
 
-### 一、基本概念
+### 基本概念
 ---
-
 **Topology**
 
 在Storm中，一个分布式计算结构被称为topology（拓扑），由stream（流）、spout（流生成器）和bolt（处理器）组成，如下图所示：
@@ -33,8 +32,8 @@ Spout代表了Storm Topology中的数据入口，充当一个数据采集器的�
 
 <br/>
 
-#### Storm的并发机制
-
+### Storm的并发机制
+---
 Storm集群中，Topology由四个部分组成：
 
 * **Node（服务器）**
@@ -53,31 +52,37 @@ Storm集群中，Topology由四个部分组成：
 
     Task是Spout和Bolt的实例。运行时Task的数量是不可变的，但Executor的数量可以动态调整，这是Storm提供的灵活性之一。
 
+<br/>
+
 假设我们有一个Topology，由一个Spout和两个Bolt组成，部署在一个Worker上，这时Topology的结构如下图所示：
 
 ![topology structure]({{site.baseurl}}/pic/storm/2.svg)
 
-默认情况下，Storm为每一个组件设置的并行度是1，在上面的Topology中，每个Spout和Bolt都只是分配了一个Executor和一个Task。当负载上来后，我们没有办法通过增加Executor或服务器的方式来提高这个Topology的吞吐，因为每个组件的Task实例数是不可变的。我们可以在定义Topology的时候，预先设置好各个组件的并行度（即多少个Executor来执行该组件）和Task实例数量。例如把前面的Topology做一个调整，Spout的Task实例数设为2，red Bolt的Task实例数设为4，green Bolt的实例数设为6，Executor的配置不动，那Topology的结构变为下图所示：
+默认情况下，Storm为每一个组件设置的并行度是1，在上面的Topology中，每个Spout和Bolt都只是分配了一个Executor和一个Task。当负载上来后，我们没有办法通过增加Executor或服务器的方式来提高这个Topology的吞吐，因为每个组件的Task实例数是不可变的。我们可以在定义Topology的时候，预先设置好各个组件的并行度（即多少个Executor来执行该组件）和Task实例数量。
+
+例如把前面的Topology做一个调整，Spout的Task实例数设为2，red Bolt的Task实例数设为4，green Bolt的实例数设为6，Executor的配置不动，那Topology的结构变为下图所示：
 
 ![topology structure multi tasks]({{site.baseurl}}/pic/storm/3.svg)
 
-因为Executor的数量未作调整，所以这个Topology的吞吐与前面的那个差别不大，甚至会有小幅下降。但是这个Topology为后面的伸缩提供了更好的支持。Storm支持在不重启Topology的情况下，动态的改变（增减）Worker的数量和Executor的数量，这个过程称为Rebalance。通过Storm web UI，或者CLI tool storm rebalance命令我们可以实现Rebalance。
+因为Executor的数量未作调整，所以这个Topology的吞吐与前面的那个差别不大，甚至会有小幅下降。但是这个Topology为后续的伸缩提供了更好的支持。Storm支持在不重启Topology的情况下，动态的改变（增减）Worker的数量和Executor的数量，这个过程称为Rebalance。通过Storm web UI，或者CLI tool storm rebalance命令我们可以实现Rebalance。
 
 ```shell
 $ storm rebalance topology -n 2 -e spout=2 -e red-bolt=2 -e green-bolt=6
+# -n 调整Topology worker数量
+# -e 调整Spout或Bolt的Executor数量，最大不能超过Task实例数
 ```
 
 例如我们可以通过上面的命令，把Topology的Worker数量改为2个，Spout和red Bolt的Executor改为2个，green Bolt的Executor改为6个。修改之后，Topology的结构所下所示：
 
 ![topology structure multi workers]({{site.baseurl}}/pic/storm/4.svg)
 
-Topology中Executor的总量是由各个组件的并行度之后决定的，再除以Worker的数量，就是每个Worker中Executor的数量了，Storm的并发机制是非常简单的。有一点需要单独指出，在本地模式下增加Worker的数量不会达至预期的效果，因为本地模式本质上是同一个JVM。
+Topology中Executor的总量是由各个组件的并行度之和决定的，再除以Worker的数量，就是每个Worker中Executor的数量了，Storm的并发机制是非常简单的。有一点需要单独指出，在本地模式下增加Worker的数量不会达至预期的效果，因为本地模式本质上是同一个JVM。
 
 <br/>
 
-#### 数据流分组
-
-Storm定义了几种分组的方式：
+### 数据流分组
+---
+现在我们了解了Storm的并发机制，你可能会有疑问，一个Bolt可能有多个Task实例，当一个tuple从Spout中发送出去时，会发送给哪个Task实例呢？这个问题就涉及到Storm的数据流分组了，Storm定义了几种分组的方式：
 
 * Shuffle grouping（随机）
 
@@ -106,3 +111,15 @@ Storm定义了几种分组的方式：
 * Local or shuffle grouping
 
     与Shuffle grouping类似，但是会优先选择同一个Worker内的Task实例。由于减少了网络传输，性能上更好。
+
+<br/>
+
+### 一个示例
+---
+单词计数的例子在很多介绍Storm的文章里都是作为Tutorial，因为它够简单，而且非常适合Storm的入门。这里我们使用同样的例子，但我会介绍每个组件时的细节。
+
+单词计数Topology包含了一个Spout与三个Bolt组件，如：
+
+![sample topology]({{site.baseurl}}/pic/storm/5.svg)
+
+例子比较简单，**Sentence Spout**的作用是随机发送一些英文句子；**Split Bolt**负责将句子拆分成单词；**Count Bolt**负责统计每个单词的出现次数；最后由**Report Bolt**将结果输出。
