@@ -240,3 +240,154 @@ public class SentenceSpout extends BaseRichSpout {
     }
 }
 ```
+
+<br/>
+
+**实现Split Bolt**
+
+实现Bolt与Spout类似，Storm要求所有的Bolt都实现IBolt接口，该接口定义了三个方法。`prepare`方法与`ISpout.open`方法的作用类似，在Bolt Task实例初始化的时候会被调用；Bolt中最重要的方法就是`execute`，对于每一个接收到的tuple，Bolt会调用一次该方法，它是Bolt实现主要逻辑的地方。如果Bolt还需要发送数据流的话，一般也是在该方法中实现的；`cleanup`方法一般用在本地模式，集群环境下Storm并不保证该方法一定会被执行。
+
+Storm API同样提供了一些辅助类，降低Bolt的开发工作量，相关的类图如下：
+
+![bolt类图]({{site.baseurl}}/pic/storm/7.svg)
+
+从上面的类图结构看，Split Bolt需要实现`declareOutputFields`、`prepare`与`execute`三个方法。`declareOutputFields`与`prepare`方法的作用与Spout类似，我们不再重复介绍；Split Bolt的主要职责是接收Sentence Spout发出的句子流，拆分成一个个的单词并发送给后续的Bolt处理，这些逻辑都应该实现在`execute`方法中：
+
+```java
+public class SplitBolt extends BaseRichBolt {
+    private OutputCollector collector;
+    public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        this.collector = collector;
+    }
+
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields("word"));
+    }
+
+    public void execute(Tuple input) {
+        String sentence = input.getStringByField("sentence");
+        String[] words = sentence.split(" ");
+        for (String word : words) {
+            collector.emit(new Values(word));
+        }
+    }
+}
+```
+
+从`SplitBolt`的实现我们可以发现，一个Tuple经过一个Bolt处理后，变成了多个Tuple发送出去，数量发生了变化。
+
+<br/>
+
+**实现Count Bolt**
+
+掌握了Split Bolt的开发，后续的其它Bolt也是类似的。Count Bolt的职责是从Split Bolt接收单词流统计出现次数并持久化，这里我们简单些保存在JVM内存中，但生产环境中我们不应该这么做，集群环境下任意一个节点都是不可靠的，Storm会进行故障监控和转移，所以Spout和Bolt都应该是无状态化的。`CountBolt`的实现如下：
+
+```java
+public class CountBolt extends BaseRichBolt {
+    private OutputCollector collector;
+    private HashMap<String, Long> counts;
+
+    public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        this.collector = collector;
+        counts = new HashMap<>();
+    }
+
+    public void execute(Tuple input) {
+        String word = input.getStringByField("word");
+        Long count = counts.get(word);
+        if (null == count)
+            count = 0l;
+        count++;
+        this.counts.put(word, count);
+        this.collector.emit(new Values(word, count));
+    }
+
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields("word", "count"));
+    }
+}
+```
+
+`counts`是在`prepqre`方法中实例化的，这么做是由topology的部署方式决定的。当topology发布时，所有的Bolt和Spout组件会首先进行序列化，然后通过网络发送到集群中。如果Spout或Bolt组件在序列化之前初始化了任何无法序列化的对象，在进行序列化时就会抛出`NotSerializableException`异常，topology的部署就会失败。当然，Count Bolt中的counts是可序列化的，所以不放在`prepare`方法中初始化也没问题。
+
+<br/>
+
+**实现Report Bolt**
+
+Report Bolt在本例子只是简单的每个单词的出现次数，没有什么特别的，这里不作过多讲解了。
+
+```java
+public class ReportBolt extends BaseRichBolt {
+    @Override
+    public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+
+    }
+
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+
+    }
+
+    @Override
+    public void execute(Tuple input) {
+        String word = input.getString(0);
+        Long count  = input.getLong(1);
+        System.out.println("Word: " + word + ", Count: " + count);
+    }
+}
+```
+
+<br/>
+
+**在本地执行Counting Topology**
+
+现在我们已经实现了全部的组件：Spout与Bolt，现在来看看如何在本地模式下运行这个Topology：
+
+```java
+public class CountingTopology {
+    public static void main(String[] args) {
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.setSpout("Sentence Spout", new SentenceSpout(), 1);
+        builder.setBolt("Split Bolt", new SplitBolt(), 1).shuffleGrouping("Sentence Spout");
+        builder.setBolt("Count Bolt", new CountBolt(), 1).fieldsGrouping("Split Bolt", new Fields("word"));
+        builder.setBolt("Report Bolt", new ReportBolt(), 1).globalGrouping("Count Bolt");
+
+        Config conf = new Config();
+        LocalCluster cluster = new LocalCluster();
+
+        cluster.submitTopology("CountingTopology", conf, builder.createTopology());
+
+        Utils.sleep(10000); //sleep 10秒后kill掉
+        cluster.killTopology("CountingTopology");
+        cluster.shutdown();
+    }
+}
+```
+
+`TopologyBuilder`提供了流式接口的API来宝义topology组件之间的数据流。`setSpout`方法注册了一个Spout，赋于组件id为"Sentence Spout"，并指定其并行度为1（即Executor的数量）。
+
+`setBolt`方法注册"Split Bolt"组件时，通过`shuffleGrouping`指示Sentence Spout以随机的方式向该Bolt组件发送数据流。注意，在注册"Count Bolt"时，`fieldsGrouping`指示"Split Bolt"向"Count Bolt"发送数据流时，根据word字段的值来分组路由，对于本例来说这是必要的，因为Count Bolt可能会有多个Task实例。
+
+后面的代码都比较简单了，`LocalCluster`用于在本地模式下执行一个topology，`submitTopology`方法在本地启动和执行topology，10秒后结束。这里单独说明一下，执行过程中会有大量日志输出，大量日志会影响我们观察程序结果，可以在classpath下创建一个log4j2.xml文件（Storm使用了log4j 2）关掉日志输出。
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration monitorInterval="60">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%-4r [%t] %-5p %c{1.} - %msg%n" />
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.apache.zookeeper" level="WARN" />
+    <Root level="warn">
+      <AppenderRef ref="Console" />
+    </Root>
+  </Loggers>
+</configuration>
+```
+
+<br/>
+
+### Storm的容错
+---
