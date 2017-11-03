@@ -3,6 +3,8 @@ layout: post
 title:  "JVM内存区域学习笔记"
 date:   2016-09-01 20:19:16 +0800
 categories: JVM
+keywords: java,jvm,虚拟机,内存模型
+description: java内存模型笔记
 ---
 
 工作中时常需要根据Java虚拟机的知识来分析问题，不赖相关的知识总是学了忘，忘了学，为了加深和巩固这块知识，特意把**周志明**老师《深入理解Java虚拟机：JVM高级特性与最佳实践》书中的知识记录下来，以供参考。

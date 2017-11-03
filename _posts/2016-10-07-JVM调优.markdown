@@ -3,6 +3,8 @@ layout: post
 title:  "JVM调优"
 date:   2016-10-07 20:19:16 +0800
 categories: JVM
+keywords: java,jvm,虚拟机,性能调优,性能优化
+description: 介绍java虚拟机性能优化
 ---
 工作这么多年，有过很多次通过JVM来分析和定位问题、调优生产服务器的性能的经历，却从来没有系统化的总结过JVM的调优过程。正好最近比较有些时间，系统化的总结一下多年积累下来的经验。
 

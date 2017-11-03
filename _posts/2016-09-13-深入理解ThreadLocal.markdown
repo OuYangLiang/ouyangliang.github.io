@@ -3,6 +3,8 @@ layout: post
 title:  "深入理解ThreadLocal"
 date:   2016-09-13 20:19:16 +0800
 categories: java
+keywords: java,threadlocal,线程
+description: 介绍Java ThreadLocal的实现
 ---
 ThreadLocal类，字面含义是线程局部变量，它为多线程的并发问题提供了一种新的思路：当使用ThreadLocal维护变量时，ThreadLocal为每个使用该变量的线程提供独立的变量副本，所以每一个线程都可以独立地改变自己的副本，而不会影响其它线程所对应的副本。从线程的角度看，目标变量就象是线程的本地变量，这也是类名中Local所要表达的意思。
 

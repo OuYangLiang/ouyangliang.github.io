@@ -3,6 +3,8 @@ layout: post
 title:  "深入理解ConcurrentHashMap"
 date:   2015-08-21 10:19:16 +0800
 categories: java
+keywords: java,hashmap,concurrenthashmap
+description: 源码分析concurrenthashmap的实现原理
 ---
 从名字就能看出来，ConcurrentHashMap是专门为并发场景而设计的，相比HashTable，ConcurrentHashMap采用了**分段锁**的设计，只有在同一个分段内才存在竞态关系，不同的分段锁之间没有锁竞争。相比于HashTable对整个Map加锁的设计，分段锁极大的提升了高并发环境下的处理能力。但同时，由于不是对整个Map加锁，也导致一些需要扫描整个Map的方法(如`size`)使用了特殊的实现，还有一些方法(比如`clear`)甚至放弃了对一致性的要求，ConcurrentHashMap是一弱一致性的。
 

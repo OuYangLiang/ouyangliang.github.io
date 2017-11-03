@@ -3,6 +3,8 @@ layout: post
 title:  "聊聊ActiveMQ"
 date:   2017-03-09 20:19:16 +0800
 categories: 中间件
+keywords: 消息队列,active mq,amq
+description: Active MQ构架与设计
 ---
 
 消息队列在互联网系统架构中一直是最关键的组件之一，起着举足轻重的作用，它：

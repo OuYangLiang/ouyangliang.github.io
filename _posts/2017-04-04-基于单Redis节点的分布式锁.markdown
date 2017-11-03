@@ -3,6 +3,8 @@ layout: post
 title:  "基于单Redis节点的分布式锁"
 date:   2017-04-04 20:19:16 +0800
 categories: 中间件
+keywords: 分布式锁,redis,
+description: 介绍如何使用redis实现分布式锁
 ---
 首先，Redis客户端为了获取锁，向Redis节点发送如下命令：
 

@@ -3,6 +3,8 @@ layout: post
 title:  "基于ZooKeeper的分布式锁(一)"
 date:   2017-07-29 08:00:00 +0800
 categories: 中间件
+keywords: 分布式锁,zookeeper,羊群效应
+description: 介绍如何使用zookeeper实现分布式锁
 ---
 借助ZooKeeper的临时节点，很容易实现分布式锁。为了获得一个锁，客户端尝试创建一个znode节点，如果znode节点创建成功，就表示客户端获得了锁并可以继续执行临界区中的代码；如果znode节点创建失败，就监听znode节点的变化，并在检测到znode节点被删除时再次创建节点来获得锁。如果要实现一个非阻塞锁的话，当znode节点创建失败时，就直接返回失败而不是去监听。
 

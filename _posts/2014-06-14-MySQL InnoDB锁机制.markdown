@@ -3,6 +3,8 @@ layout: post
 title:  "MySQL InnoDB锁机制"
 date:   2014-06-14 22:19:16 +0800
 categories: mysql
+keywords: mysql,隔离级别,索引,行锁,innodb
+description: 介绍mysql封锁机制
 ---
 在我们的日常工作中，经常会遇到各种死锁的场景，有的死锁分析起来是比较容易的，比如同类型的事务并发引起的死锁；而不同类型事务并发引起的死锁，分析起来就不是那么容易了。系统化的了解数据库的加锁机制，不仅有助于对现有问题的分析，在设计阶段也能更好的把握系统的性能与复杂业务场景的解决方案。
 
@@ -56,13 +58,13 @@ MySQL官网上有个死锁的例子，但分析得过于概括，这里我们详
 ```mysql
 mysql> CREATE TABLE t (i INT) ENGINE = InnoDB;  
 Query OK, 0 rows affected (1.07 sec)  
-  
+
 mysql> INSERT INTO t (i) VALUES(1);  
 Query OK, 1 row affected (0.09 sec)  
-  
+
 mysql> START TRANSACTION;  
 Query OK, 0 rows affected (0.00 sec)  
-  
+
 mysql> SELECT * FROM t WHERE i = 1 LOCK IN SHARE MODE;  
 +------+  
 | i    |  
@@ -77,7 +79,7 @@ mysql> SELECT * FROM t WHERE i = 1 LOCK IN SHARE MODE;
 ```mysql
 mysql> START TRANSACTION;  
 Query OK, 0 rows affected (0.00 sec)  
-  
+
 mysql> DELETE FROM t WHERE i = 1;  
 ```
 
@@ -86,7 +88,7 @@ mysql> DELETE FROM t WHERE i = 1;
 ```mysql
 mysql> DELETE FROM t WHERE i = 1;  
 Query OK, 1 row affected (0.00 sec)  
-  
+
 mysql>  
 ```
 
@@ -103,7 +105,7 @@ mysql>
 每一张InnoDB表都有且仅有一个特殊的索引，聚族索引（Clustered Index），表中的数据是直接存放在聚族索引的叶子节点中，这样，根据聚族索引查询就会比普通索引更快，因为少了一次IO操作。
 
 通常，**聚族索引就是表的主键；如果表没有主键，那InnoDB会把第一个非空的唯一索引当作聚族索引；如果表既无主键，又无非空的唯一索引，那么InnoDB会创建一个隐藏的索引作为聚族索引。表中的其它索引，都叫做第二索引（Secondary Index），第二索引中只包含自身索引列和聚族索引列的内容，所以当一个表的主键很长时，其它的索引都会受到影响**。
- 
+
 为什么要先讲聚族索引呢？因为这对理解InnoDB加锁机制很重要，**InnoDB加锁的对象不是返回的数据记录，而是查询这些数据时所扫描过的索引。当我们执行一个锁读（SELECT ... LOCK IN SHARE MODE或者SELECT ... FOR UPDATE）时，InnoDB不是对最终的返回结果加锁，而是对查询这些结果时所扫描的索引加锁，如果被扫描的索引不是聚族索引，那被扫描的索引以及它所指向的聚族索引也会被加锁**。由此可知，当一个锁读无法使用索引的话，InnoDB就是遍历整个表（遍历整个聚族索引），从而把整张表都锁住。
 
 ## 3. 以什么样的方式加锁
@@ -195,7 +197,7 @@ mysql> select * from employee where id = 40 for update;
 ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
 mysql> select * from employee where depart = 5100 for update;
 ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
-mysql> 
+mysql>
 ```
 
 其中(5000,1)是在间隙`(-∞, [5100|10])`，(5100,15)是在间隙`([5100|10], [5100|40])`，(5100,55)、(5150,55)与(5200,15)在间隙`([5100|40], [5200|20])`，所以前四个插入都锁等待超时。
