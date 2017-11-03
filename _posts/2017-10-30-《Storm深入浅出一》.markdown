@@ -4,7 +4,7 @@ title:  "《Storm深入浅出一》"
 date:   2017-10-30 08:19:16 +0800
 categories: 中间件
 ---
-Storm是一个简单的分布式流式计算系统，它提供了对数据流进行实时处理的能力。Storm之于流式处理就像Hadoop之于批处理计算一样，区别在于Hadoop Job最终会运行结整，而Storm会一直持续下去。在设计上Storm是非常简单的，搭建一个简单的入口Sample通常不会很难，但要深入掌握Storm的各个方面，还是需要下一翻功夫的。本文会比较长，我从由浅入深的介绍Storm的各个方面，耐心看完相信您一定会有所收获。
+Storm是一个简单的分布式流式计算系统，它提供了对数据流进行实时处理的能力。Storm之于流式处理就像Hadoop之于批处理计算一样，区别在于Hadoop Job最终会运行结束，而Storm会一直持续下去。在设计上Storm是非常简单的，搭建一个简单的入口Sample通常不会很难，但要深入掌握Storm的各个方面，还是需要下一翻功夫的。本文会比较长，我从由浅入深的介绍Storm的各个方面，耐心看完相信您一定会有所收获。
 
 ### 基本概念
 ---
@@ -389,5 +389,102 @@ public class CountingTopology {
 
 <br/>
 
-### Storm的容错
+### Storm的可靠性
 ---
+
+对于前面的示例来说，可靠性显得不是那么重要，但如果是生产环境中的关键数据，某个Bolt处理失败了怎么办？Storm提供了**At least once**的可靠性保证（事实上Storm现在也做到了exactly once的保证，后面我们会介绍）。在Storm中，可靠性的处理机制要从Spout说起，Spout需要记录它发送出去的tuple，当下游的Bolt处理tuple或者子tuple失败时，Spout才能重新发送这些失败的原始tuple。
+
+在有保障的数据处理过程中，Bolt每接收和处理一个tuple都需要向上游组件应答（ack或者fail）。如果一个tuple在整个tuple树中都被成功处理（即相关的Bolt都进行了ack应答），Storm会调用Spout的`ack`方法告之；如果tuple在tuple树中某个环节处理失败（某个Bolt进行了fail应答）或者tuple处理超时，Strom会调用Spout的`fail`方法重新发送该tuple。Storm并没有提供像最多重试N次尝试这样的配置，如果某个tuple天生就会处理失败的话，会导致一个死循环，开发的时候我们应该避免这样的情况发生。
+
+还记得`ISpout`接口中的方法吗？
+
+![spout类图]({{site.baseurl}}/pic/storm/8.svg)
+
+`ack`与`fail`两个方法就是跟可靠性相关的，它们都有一个`Object`类型的参数：msgId，Storm通过这个id来告之Spout哪个tuple处理成功或者失败，这说明每个从Spout发出去的tuple都应该有一个与之对应的id。`SpoutOutputCollector`类有重载版本的`omit`方法可以在发送tuple的时候指定id：
+
+```java
+this.collector.emit(new Values(sentences[index]), msgId);
+```
+
+<br/>
+
+当然，Spout除了在发送tuple的时候指定id外，还需要记录下每个id和tuple的对应关系，这样才能在应答之后做出响应，下面是增加了可靠机制后Sentence Spout的实现：
+
+```java
+public class SentenceSpout extends BaseRichSpout {
+    private static Long count = 1l;
+    private Map<Long, Values> pending;
+    private SpoutOutputCollector collector;
+    private int index = 0;
+    private String[] sentences = {
+        "how are you", "nice to meet you", "what a good day"
+    };
+
+    @Override
+    public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+        this.collector = collector;
+        pending = new HashMap<>();
+    }
+
+    public void nextTuple() {
+        Long msgId = count;
+        Values value = new Values(sentences[index]);
+        pending.put(msgId, value);
+        this.collector.emit(value, msgId);
+        count++;
+        index++;
+        if (index == sentences.length)
+            index = 0;
+        Utils.sleep(5);
+    }
+
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields("sentence"));
+    }
+
+    public void ack(Object msgId) {
+        this.pending.remove(msgId);
+    }
+
+    public void fail(Object msgId) {
+        this.collector.emit(this.pending.get(msgId), msgId);
+    }
+}
+```
+
+在`nextTuple`方法中我们为每个tuple设置了一个唯一的id，并将id与tuple的关系保存在一个map中。这么做其实不好，因为它会导致Spout状态化，作为示例讲解问题不大。在`ack`和`fail`方法中分别实现了Spout的可靠性保证，代码很容易理解，不做过多解释。
+
+<br/>
+
+Bolt要实现可靠的处理机制需要做好两件事情：
+
+1. 在`execute`方法中处理tuple之后需要应答。
+2. 如果Bolt需要向后续的组件发送tuple，需要锚定子tuple和原tuple的关系。
+
+当Bolt成功处理一个tuple后，需要使用`OutputCollector`类的`ack`方法进行应答：
+
+```java
+this.collector.ack(input);
+```
+
+当Bolt处理tuple出现异常时，需要使用`OutputCollector`的`fail`方法进行报错，要求Spout重新发送tuple：
+
+```java
+this.collector.fail(input);
+```
+
+当Bolt发送tuple时，必须锚定子tuple和原tuple的关系，这样下游的Bolt在应答或者报错时，Storm才能跟踪到原始的tuple并通知Spout进行相应的处理。可以使用`OutputCollector`类重载版本的`omit`方法来锚定子tuple和原tuple。下面是增加了可靠机制后`SplitBolt`类中`execute`方法的实现：
+
+```java
+@Override
+public void execute(Tuple input) {
+    String sentence = input.getStringByField("sentence");
+    String[] words = sentence.split(" ");
+    for (String word : words) {
+        collector.emit(input, new Values(word));
+    }
+    this.collector.ack(input);
+}
+```
+
+其中input是原始tuple，new Values(word)是由原始tuple衍生出来的子tuple。Storm的可靠性机制提供**At least once**的保证，比如我们示例中Count Bolt对某个tuple的处理失败了，Spout会重新发送该tuple，意味着同一个tuple会被Split Bolt处理两次。后续文章我们会介绍Storm如何实现**Exactly once**的可靠保证。
