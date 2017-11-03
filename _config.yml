@@ -6,7 +6,7 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title: OuYang's Blog
+title: 晓筱时代的博客
 email: ouyanggod@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
@@ -15,7 +15,7 @@ description: > # this means to ignore newlines until "baseurl:"
 baseurl: ""
 #url: "https://ouyangliang.github.io"
 url: "http://localhost:4000"
-github_username: ouyangliang 
+github_username: ouyangliang
 
 # Build settings
 highlights: pygments
