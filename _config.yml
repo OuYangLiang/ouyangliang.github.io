@@ -20,3 +20,4 @@ github_username: ouyangliang
 # Build settings
 highlights: pygments
 markdown: kramdown
+permalink: /:year/:month/:title

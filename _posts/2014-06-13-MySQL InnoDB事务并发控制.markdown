@@ -379,4 +379,4 @@ ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
 
 可以看到，事务S4并不能成功的插入`id = 50`这条记录（事实上在该例中，depart字段值小于5200的记录都无法插入），事务S3也不会发生`可重复读`级别下主键重复那样的问题了，而具体的原因是因为在`Serializable`级别下，depart索引被加了间隙锁。
 
-关于InnoDB的锁机制，请参考笔者的另一篇文章[MySQL InnoDB锁机制]({{site.baseurl}}/mysql/2014/06/14/MySQL-InnoDB锁机制.html)。
+关于InnoDB的锁机制，请参考笔者的另一篇文章[MySQL InnoDB锁机制]({{site.baseurl}}/2014/06/MySQL-InnoDB锁机制.html)。
