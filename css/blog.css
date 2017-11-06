@@ -4,7 +4,8 @@ body {
 
 /* masthead begin */
 .blog-masthead {
-  background-color: #428bca;
+  //background-color: #428bca;
+  background-color: #000;
   -webkit-box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
           box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
 }
@@ -105,3 +106,20 @@ blockquote{
   font-size: 14px;
 }
 /* Blog end */
+
+/* Footer begin */
+.footer {
+  background-color: #000;
+  -webkit-box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+          box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+
+}
+
+.footer-item {
+  position: relative;
+  padding: 10px;
+  font-weight: 500;
+  text-align:center;
+  color: #cdddeb;
+}
+/* Footer end */
