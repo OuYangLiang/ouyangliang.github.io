@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "《Storm深入浅出一》"
+title:  "Storm深入浅出之入门篇"
 date:   2017-10-30 08:19:16 +0800
 categories: 中间件
 keywords: storm,流式架构教程
