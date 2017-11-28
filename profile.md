@@ -8,7 +8,7 @@ permalink: /profile
       <br>
       <img src="./icon.jpg" alt="..." class="img-circle" height="150px" width="150px">
       <h4>欧阳亮 35岁</h4>
-      <a href="https://ouyangliang.github.io">技术博客: https://ouyangliang.github.io</a>
+      <a href="https://ouyblog.com">技术博客: https://ouyblog.com</a>
     </div>
 
     <div class="col-xs-9">
@@ -18,7 +18,7 @@ permalink: /profile
           江省苏  南京市  雨花台区<br>
           南京大学(自考)  计算机及应用  本科(学士)<br>
           英语 PET-3级<br><br>
-          微信: w23577550<br>
+          微信: 18651612595<br>
           <abbr title="Phone">P:</abbr> 18651612595<br>
           <abbr title="Email">E:</abbr> <a href="mailto:ouyanggod@gmail.com">ouyanggod@gmail.com</a>
         </address>
@@ -43,6 +43,7 @@ permalink: /profile
         <li class="">精通多线程、对各个层面的性能调优有深入的理解。</li>
         <li class="">对数据库理论，模型设计、隔离级别、锁机制、sql调优等有深入的研究和理解。熟悉MySQL数据库，理解其各种不同存储引擎的特点，调优方案。</li>
         <li class="">熟悉ZooKeeper、Kafka、ActiveMQ等带用中间件技术。</li>
+        <li class="">熟悉流式架构及其应用场景，对Storm有比较深入的研究。</li>
         <li class="">了解J2EE主流技术和框架（jsp、servlet、struts、spring、mybatis、ajax、webservice等，太多开源框架，在此不一一例举）。</li>
         <li class="">了解前端技术javascript、jQuery、dojo、jqGrid、css、sitemesh、bootstrap等常用技术。</li>
         <li class="">系统学习过linux，曾使用gentoo两年以上，熟练的linux技能使得我在工作中更加得心应手。</li>
@@ -77,13 +78,13 @@ permalink: /profile
             <b>所在部门</b>
           </div>
           <div class="col-xs-9 col-sm-4 col-md-4 text-info">
-            会员事业部
+            销售研发中心
           </div>
           <div class="col-xs-3 col-sm-2 col-md-2">
             <b>职位</b>
           </div>
           <div class="col-xs-9 col-sm-4 col-md-4 text-info">
-            系统架构师
+            系统架构师（CRM架构组经理）
           </div>
         </div>
 
