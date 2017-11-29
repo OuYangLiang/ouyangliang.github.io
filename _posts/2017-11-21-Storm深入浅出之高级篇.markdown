@@ -1,0 +1,150 @@
+---
+layout: post
+title:  "Storm深入浅出之高级篇"
+date:   2017-11-21 08:19:16 +0800
+categories: 中间件
+keywords: storm,trident,流式架构,流式处理
+description: storm入门教程，由浅入深的介绍Storm Trident高级特性的各个方面
+---
+前面一篇文章[《Storm深入浅出之入门篇》]({{site.baseurl}}/2017/10/Storm深入浅出之入门篇.html)我们介绍了Storm的基本概念、并发性。另外我们还实现了一个简单的单词计数的例子，虽然例子很简单，但还是需要为每一个组件（Spout与Bolt）都开发一个类。对于比较复杂的业务场景来说，Storm的开发工作量可能会变得很高，另外**At least once**的语义保证级别对于一些关键业务场景来说是不够的。为此Storm提供了更高级别的抽象：Trident，它实现了**Exactly Once**的语义保证级别，另外它还提供了流式风格的API，极大的简化了开发工作量。下面我们一步步解开它神秘的面纱。
+
+Trident是Storm的一种高度抽象的实时计算模型，它可以将高吞吐量数据输入、状态化的流式处理与低延时的分布式查询无缝的结合起来。如果你了解Pig或者Cascading这样的高级批处理工具，你就会发现Trident和他们的概念非常相似。Trident同样也提供了像联结（join）、聚合（aggregation）、分组（grouping）、函数（function）以及过滤器（filter）这些流式风格的功能。此外，Trident在持久化存储之上抽象了状态（State）的概念，并提供了增量式处理的基础原语。
+
+### 初识Trident
+---
+最直接的方式不外乎代码了，我们用Trident重新实现单词计数的例子：
+
+```java
+public static void main(String[] args) {
+    @SuppressWarnings("unchecked")
+    FixedBatchSpout spout = new FixedBatchSpout(new Fields("sentence"), 3, new Values("how are you"),
+            new Values("nice to meet you"), new Values("what a good day"));
+
+    TridentTopology topology = new TridentTopology();
+    TridentState wordCounts = topology.newStream("spout1", spout)
+            .each(new Fields("sentence"), new Split(), new Fields("word")).groupBy(new Fields("word"))
+            .persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count")).parallelismHint(6);
+
+    LocalDRPC drpc = new LocalDRPC();
+    topology.newDRPCStream("word", drpc).groupBy(new Fields("args"))
+            .stateQuery(wordCounts, new Fields("args"), new MapGet(), new Fields("count"));
+
+    Config conf = new Config();
+    LocalCluster cluster = new LocalCluster();
+    cluster.submitTopology("drpc-demo", conf, topology.build());
+
+    Utils.sleep(20000);
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "how"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "are"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "nice"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "to"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "meet"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "what"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "a"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "good"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "day"));
+
+    cluster.shutdown();
+    drpc.shutdown();
+}
+```
+
+<br/>
+
+惊呀吗，这一小段代码实现的功能与之前的例子完全相同，包括`SentenceSpout`、`SplitBolt`、`CountBolt`与`ReportBolt`。
+首先，我们创建了一个Spout，与Storm一样，Trident也需要一个Spout作为数据流的产生源。不同的是这里的`FixedBatchSpout`实现的是`IBatchSpout`而不是`ISpout`接口，Trident对Spout的要求与传统的Spout有很大的不同，Trident Spout引入了批次（Batch）的概念，每个Batch包含若干个tuple，同时Trident会为每个Batch赋于一个id标识。Batch引入的原因是为了配合State的更新，实现**Exactly Once**的语义保证的，后面会详细介绍。有了Spout对象，就可以通过`TridentTopology.newStream`方法创建一个流对象`Stream`，它是我们可以使用流式风格开发的关键所在。
+
+<br/>
+
+`Stream.each(new Fields("sentence"), new Split(), new Fields("word"))`的作用是使用`Split`对流中的每个tuple进行处理，这里实际上是把sentence字段进行拆分，并把拆分的结果存放到word字段中。
+
+```java
+public class Split extends BaseFunction {
+    @Override
+    public void execute(TridentTuple tuple, TridentCollector collector) {
+        for(String word: tuple.getString(0).split(" ")) {
+            if(word.length() > 0) {
+                collector.emit(new Values(word));
+            }
+        }
+    }
+}
+```
+
+从`Split`的源码来看，一个tuple经过Function处理过后，有可能产生多个tuple。比如我们例子中的第一个tuple是：
+
+    {"sentence":"how are you"}
+
+经过`Split`处理后变成了三个tuple：
+
+    {"sentence":"how are you", "word":"how"}
+    {"sentence":"how are you", "word":"are"}
+    {"sentence":"how are you", "word":"you"}
+
+<br/>
+
+`groupBy(new Fields("word"))`的作用是根据字段"word"的值对tuple进行分组，这意味着字段"word"相同的tuple都会被路由到相同的分区Partition。`groupBy`方法的返回的结果是一个`GroupedStream`对象，与`Stream`对象类似，但多出一个分组字段的概念。另外，将`GroupedStream`持久到State时，Storm要求我们提供一个`MapState`的实现，而`Stream`只需要提供一个`State`的实现。
+
+`persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count")`的作用是将每个单词的次数进行统计，然后持久化到`MemoryMapState`对象中。`MemoryMapState`是`MapState`的一个实现，它将数据保存到内存中。`persistentAggregate`方法的返回结果是一个`TridentState`对象，后面我们需要借助它来查询`MemoryMapState`中的内容。
+
+<br/>
+
+DRPC是Trident提供的另一个特性，从客户端的角度来看它就像普通的RPC调用那样，你给出入参，它返回你结果。但在服务器端，Trident把你的请求转化成Steam，并以分布式的方式在Storm集群中进行并行处理。
+
+```java
+topology.newDRPCStream("word", drpc).groupBy(new Fields("args"))
+                .stateQuery(wordCounts, new Fields("args"), new MapGet(), new Fields("count"));
+```
+
+<br/>
+
+`TridentTopology.newDRPCStream`方法定义了一个DRPC方法：word，并且返回一个`Stream`对象，这个Stream中的tuple只包含一个字段args，字段的值是客户端的请求参数。例如：`drpc.execute("word", "how")`，第一个参数word表示请求名为word这个DRPC方法，第二个参数how是请求参数，即args字段的值。
+
+通过`newDRPCStream`方法得到`Stream`对象后，后续的处理与普通的Trident完全一样，这也使得我们可以使用一套通用的API来管理数据的加工处理和访问。`stateQuery`方法的作用是查询之前保存在`MemoryMapState`中的结果的，他接受一个`TridentState`对象，通过`MapGet`方法对每个tuple（在本例中只有一个tuple）进行查询，并将结果输出到count字段中，最后Trident会将count字段的值返回给客户端。
+
+第一次接触Trident，或流式风格的编程，你可能会非常不习惯。但其实它真的不难，你熟悉会发现它有很多的优点：开发效率的提升，代码可读性方面的提高等等。关于Trident的API，在[Storm官网](http://storm.apache.org/releases/1.1.1/Trident-API-Overview.html)上已经有很好的文档了，这里我们不再介绍。使用Trident的另一个重要的原因是它支持**Exactly Once**的语义保证级别，这也是本文的重点，后面我会详细的进行讲解。
+
+### Exactly Once语义
+---
+状态（State）是Trident引入的一个新概念，通俗一点可以把State理解为一切可持久化设备的抽象，比如内存、数据库、Redis或者HDFS，Trident提供了对状态化数据源进行读取和写入操作的一级抽象封装工具。
+
+要实现Exactly Once总是困难的，数据在处理过程中总是可能出错、或者超时，所以重试机制是无法避免的。问题在于重试过程中如何避免重复处理。例如前面单词计数的例子，失败重试的时候，我们没有办法知道之前的错误发生在什么位置，可能在State更新前，也可能在State更新后，所以在重试过程中我们无法确定是否需要继续更新State。仅仅在State中保留业务信息（次数）是不够的。
+
+Trident使用乐观锁的原理，以一种容错性的方式实现对State的管理，即使在发生操作失败或者重试的情况下状态的更新操作仍然是幂等的。为了实现Exactly Once，Trident制定了一系列的约定：
+
+1. 引入了批次（Batch），一个Batch包含若干个tuple。
+2. 为每个Batch提供一个唯一的txid。失败重试是基于Batch而不是tuple的，如果需要对Batch重新处理，这个Batch仍然会有相同的txid。
+3. State的更新操作是按照Batch的顺序进行的。也就是说在Batch 2完成处理之前，Batch 3的状态更新操作不会进行。
+
+这些约定是实现Exactly Once的基础，此外，Trident定义了三种类型的Spout与State，分别是Transactional、Opaque Transactional与Non-Transactional。我们先来看看Transactional。
+
+**Transactional Spout**
+
+Transactional类型的Spout具有以下的约定：
+
+1. 每个Batch的txid永远不会改变。对于某个特定的txid，Batch在失败重试时的tuple集合和前一次完全相同。
+2. 不同Batch中的tuple不会出现重复的情况（某个tuple只会出现在一个Batch中，而不会同时出现在多个Batch中）。
+3. 每个tuple都会放入一个Batch中（不会遗漏任何的tuple）。
+
+我们继续单次计数的例子，前面我们已经讲过了，仅仅在State中保留次数是不够的。我们应该将txid作为一种原子化的值与次数一起保存。随后，在更新次数的时候，就可以将State中的txid与当前Batch的txid进行比对。如果两者相同，说明当前的更新已经处理过，可以直接跳过——由于 Trident的强有序性处理机制，可以确定State中的值是对应于当前的Batch的。如果两者不同，可以放心地更新次数值。由于一个Batch的txid永远不会改变，而且Trident能够保证State的更新完全是按照Batch的顺序进行的，所以这样的处理逻辑是完全可行的。这种将txid与业务信息一起保存的State就是Transactional类型的State。
+
+下面来看一个例子。假如你正在处理txid 3，其中包含有以下几个 tuple：
+
+    ["man"]
+    ["man"]
+    ["dog"]
+
+假如State中有数据如下：
+
+    man => [count=3, txid=1]
+    dog => [count=4, txid=3]
+    apple => [count=6, txid=2]
+
+其中与man相关联的txid为1，由于当前处理的txid为3，可以确定当前处理的Batch与State中的值无关，可以放心地将man的次数值加上2并更新txid为3；另一方面，由于dog的txid与当前的txid相同，所以dog的次数是之前已经处理过的，现在不能再进行更新操作。这样，在结束txid3的更新操作之后，State中的结果就会变成这样：
+
+    man => [count=5, txid=3]
+    dog => [count=4, txid=3]
+    apple => [count=6, txid=2]
+
+非常简单吧，你可能会问，Transactional类型的Spout与State够简单啊，已经实现了Exactly Once了，为什么还会有其它类型的Spout呢？
