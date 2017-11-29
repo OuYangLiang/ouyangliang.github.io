@@ -8,7 +8,7 @@ permalink: /profile
       <br>
       <img src="./icon.jpg" alt="..." class="img-circle" height="150px" width="150px">
       <h4>欧阳亮 35岁</h4>
-      <a href="https://ouyblog.com">技术博客: https://ouyblog.com</a>
+      <a href="https://ouyblog.com">技术博客: https://ouyblog.com</a><br/>
     </div>
 
     <div class="col-xs-9">
@@ -93,7 +93,11 @@ permalink: /profile
             <b>工作描述</b>
           </div>
           <div class="col-xs-9 col-sm-10 col-md-10 text-info">
-            负责途牛CRM系统 的架构工作，现阶段系统问题比较多，我目前主要是分析现有系统问题所在，给出解决方案并组织大家排期逐个击破。
+            负责CRM的总体架构，规划CRM架构演进方向以满足未来业务和团队发展的需要。<br/>
+            根据团队的现实情况，采用微服务的理念把CRM拆分为四个业务领域，并负责各个领域后端系统的设计和框架代码的实现。<br/>
+            负责部门内部日常工作中重点、难点问题的指导和把关工作，并不断技术革新引领团队共同进步。<br/>
+            负责部门各系统的日常监控，故障定位与分析工作。<br/>
+            负责部门各种规范的制定。
           </div>
         </div>
       </div>
