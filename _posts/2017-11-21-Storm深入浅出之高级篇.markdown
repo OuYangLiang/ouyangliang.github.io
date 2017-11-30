@@ -10,6 +10,8 @@ description: storm入门教程，由浅入深的介绍Storm Trident高级特性�
 
 Trident是Storm的一种高度抽象的实时计算模型，它可以将高吞吐量数据输入、状态化的流式处理与低延时的分布式查询无缝的结合起来。如果你了解Pig或者Cascading这样的高级批处理工具，你就会发现Trident和他们的概念非常相似。Trident同样也提供了像联结（join）、聚合（aggregation）、分组（grouping）、函数（function）以及过滤器（filter）这些流式风格的功能。此外，Trident在持久化存储之上抽象了状态（State）的概念，并提供了增量式处理的基础原语。
 
+<br/>
+
 ### 初识Trident
 ---
 最直接的方式不外乎代码了，我们用Trident重新实现单词计数的例子：
@@ -105,6 +107,8 @@ topology.newDRPCStream("word", drpc).groupBy(new Fields("args"))
 
 第一次接触Trident，或流式风格的编程，你可能会非常不习惯。但其实它真的不难，你熟悉会发现它有很多的优点：开发效率的提升，代码可读性方面的提高等等。关于Trident的API，在[Storm官网](http://storm.apache.org/releases/1.1.1/Trident-API-Overview.html)上已经有很好的文档了，这里我们不再介绍。使用Trident的另一个重要的原因是它支持**Exactly Once**的语义保证级别，这也是本文的重点，后面我会详细的进行讲解。
 
+<br/>
+
 ### Exactly Once语义
 ---
 状态（State）是Trident引入的一个新概念，通俗一点可以把State理解为一切可持久化设备的抽象，比如内存、数据库、Redis或者HDFS，Trident提供了对状态化数据源进行读取和写入操作的一级抽象封装工具。
@@ -195,10 +199,381 @@ Opaque Transactional类型的State具有最好的容错性特征，不过这是�
 
 本文开篇那个单词计数的例子能提供Exactly Once的保证吗？答案是否定的。虽然`MemoryMapState`是Opaque Transactional类型的State，但是`FixedBatchSpout`是Non-Transactional类型的Spout，他们搭配起来并不能提供Exactly Once的语义保证。下面我们自己来实现Spout与State，深入Trident内部看看如何实现Exactly Once。
 
+<br/>
+
 ### State的实现
 ---
-未完待续...
+Trident要求所有的State必须实现`State`接口：
 
+```java
+public interface State {
+    void beginCommit(Long txid);
+    void commit(Long txid);
+}
+```
+
+<br/>
+
+从接口的定义就能看出Trident对State怎么工作，使用什么样的方法执行更新操作，或者怎样从State中读取数据都没有做任何的约束，它只是通过两个方法告诉我们State的更新什么时候开始和结束。好吧，现在我们要自己实现一个State来保存我们单词的次数，这个State看上去应该是这样的：
+
+```java
+public class WordCountDB implements State {
+    private Map<String, Long> inner = new HashMap<>();
+
+    @Override
+    public void beginCommit(Long txid) {
+        System.out.println("State update begin, for batch: " + txid);
+    }
+
+    @Override
+    public void commit(Long txid) {
+        System.out.println("State update committed, for batch: " + txid);
+    }
+
+    public void incrCount(String word, Long count) {
+        Long prev = inner.get(word);
+        if (null == prev) {
+            inner.put(word, 1l);
+        } else {
+            inner.put(word, prev + count);
+        }
+    }
+
+    public long getCount(String word) {
+        return null == inner.get(word) ? 0 : inner.get(word);
+    }
+}
+```
+
+<br/>
+
+作为一个示例，我们简单的把信息保存到一个map对象中，在实际场景中你可以把在这里把信息持久化到数据库或Redis缓存中去。另外，你可能还需要考虑Storm的并行性，State的实现最好不要是有状态化的。
+
+接着，我们还需要一个工厂类来创建我们的`WordCountDB`：
+
+```java
+public class WordCountDBFactory implements StateFactory {
+    @Override
+    public State makeState(@SuppressWarnings("rawtypes") Map conf, IMetricsContext metrics, int partitionIndex,
+            int numPartitions) {
+        return new WordCountDB();
+    }
+}
+```
+
+<br/>
+
+partitionIndex是当前Task实例的标识，numPartitions是当前组件的Task实例总数。对于一些复杂的场景来说，在创建State时这两个参数可能会有用。
+
+因为Trident对State怎么工作没有做任何的约束，所以它并不知道如何使用我们的`WordCountDB`，哪个方法负责更新，哪个方法负责查询，参数怎么传等等，所以我们还需要告诉Trident怎么查询和更新我们的State。
+
+对于查询来说，Trident提供了`QueryFunction`，它是一个模板接口，声明了两个方法：
+
+```java
+public interface QueryFunction<S extends State, T> extends EachOperation {
+    List<T> batchRetrieve(S state, List<TridentTuple> args);
+    void execute(TridentTuple tuple, T result, TridentCollector collector);
+}
+```
+
+<br/>
+
+其中参数S是State的实现类，即`WordCountDB`，而T表示我们从State查询出来的结果类，这里我们使用Long类型。在查询State的时候，对于流中的一批tuple，Trident会调用`batchRetrieve`方法查询得到这一批tuple对应的结果；然后为每个结果调用一次`execute`方法。
+
+我们的`WordCountDB`的查询类看上去是这样的：
+
+```java
+public class QueryWordCountDB extends BaseQueryFunction<WordCountDB, Long> {
+    @Override
+    public List<Long> batchRetrieve(WordCountDB state, List<TridentTuple> args) {
+        List<Long> list = new LinkedList<>();
+        for (TridentTuple tuple : args) {
+            list.add(state.getCount(tuple.getString(0)));
+        }
+        return list;
+    }
+
+    @Override
+    public void execute(TridentTuple tuple, Long result, TridentCollector collector) {
+        collector.emit(new Values(result));
+    }
+}
+```
+
+<br/>
+
+你也许会对`batchRetrieve`方法的签名有些疑问，为什么入参args和返回结果都是集合？这么设计API的原因是为了追求更高的吞吐，在查询或更新State时，不论一个Batch包含多少个tuple，我们可以只访问State一次。
+
+比如我们可以把`WordCountDB`中的`incrCount`方法与`getCount`方法稍作修改，使之支持批量操作：
+
+```java
+public void incrCount(List<String> words, List<Long> counts) {
+    int size = words.size();
+    for (int i = 0; i < size; i++) {
+        String word = words.get(i);
+        Long count = counts.get(i);
+        Long prev = inner.get(word);
+        if (null == prev) {
+            inner.put(word, 1l);
+        } else {
+            inner.put(word, prev + count);
+        }
+    }
+}
+
+public List<Long> getCount(List<String> words) {
+    List<Long> list = new LinkedList<>();
+    for (String word : words) {
+        list.add(null == inner.get(word) ? 0 : inner.get(word));
+    }
+    return list;
+}
+```
+
+<br/>
+
+现在我们可以优化`QueryWordCountDB.batchRetrieve`方法，只访问State一次了：
+
+```java
+public List<Long> batchRetrieve(WordCountDB state, List<TridentTuple> args) {
+    List<String> words = new LinkedList<>();
+    for (TridentTuple tuple : args) {
+        words.add(tuple.getString(0));
+    }
+    return state.getCount(words);
+}
+```
+
+<br/>
+
+对于State的更新来说，Trident提供了`StateUpdater`接口，该接口比较简单，不就做过多介绍了。
+
+```java
+public interface StateUpdater<S extends State> extends Operation {
+    void updateState(S state, List<TridentTuple> tuples, TridentCollector collector);
+}
+
+public class WordCountDBUpdater extends BaseStateUpdater<WordCountDB> {
+    @Override
+    public void updateState(WordCountDB state, List<TridentTuple> tuples, TridentCollector collector) {
+        List<String> words = new LinkedList<>();
+        List<Long> counts  = new LinkedList<>();
+        for (TridentTuple tuple : tuples) {
+            words.add(tuple.getString(0));
+            counts.add(tuple.getLong(1));
+        }
+        state.incrCount(words, counts);
+    }
+}
+```
+
+<br/>
+
+可以看到`updateState`方法的签名设计也同样是为了支持批量操作的，这里对State的更新也是仅仅访问了一次。
+
+现在我们可以使用WordCountDB来重写单词计数的示例了：
+
+```java
+public static void main(String[] args) {
+    FixedBatchSpout spout = new FixedBatchSpout(new Fields("sentence"), 1, new Values("how are you"),
+            new Values("nice to meet you"), new Values("what a good day"));
+    spout.setCycle(false);
+
+    TridentTopology topology = new TridentTopology();
+    TridentState wordCounts = topology.newStream("spout1", spout)
+            .each(new Fields("sentence"), new Split(), new Fields("word"))
+            .groupBy(new Fields("word"))
+            .aggregate(new Count(), new Fields("count"))
+            .toStream()
+            .partitionPersist(new WordCountDBFactory(), new Fields("word", "count"), new WordCountDBUpdater())
+            .parallelismHint(1);
+
+    LocalDRPC drpc = new LocalDRPC();
+    topology.newDRPCStream("word", drpc)
+            .stateQuery(wordCounts, new Fields("args"), new QueryWordCountDB(), new Fields("count"));
+
+    Config conf = new Config();
+    LocalCluster cluster = new LocalCluster();
+    cluster.submitTopology("drpc-demo", conf, topology.build());
+
+    Utils.sleep(10000);
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "how"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "are"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "nice"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "to"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "meet"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "what"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "a"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "good"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "day"));
+
+    cluster.shutdown();
+    drpc.shutdown();
+}
+```
+
+我们已经完全实现了一个自定义的State，只不过它是Non-Transaction类型的，下面我们看看如何修改它，让他成为Transactional类型和Opaque Transactional类型的State。
+
+<br/>
+
+**Transaction State**
+
+前面我们已经了解到，Transactional类型的State需要将txid与业务信息一起保存，同时在更新的时候需要用当前Batch的txid与State中的txid作对比。为了方便我们实现Transactional类型的State，Trident提供了一个`TransactionalValue`类：
+
+```java
+public class TransactionalValue<T> {
+    T val;
+    Long txid;
+
+    public TransactionalValue(Long txid, T val) {
+        this.val = val;
+        this.txid = txid;
+    }
+
+    public T getVal() {
+        return val;
+    }
+
+    public Long getTxid() {
+        return txid;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+}
+```
+
+<br/>
+
+借助于`TransactionalValue`类，实现Transactional版本的WordCountDB将变得非常容易：
+
+```java
+public class TransactionalWordCountDB extends WordCountDB implements State {
+    private Long currTxid;
+
+    @Override
+    public void beginCommit(Long txid) {
+        currTxid = txid;
+        System.out.println("State update begin, for batch: " + txid);
+    }
+
+    @Override
+    public void commit(Long txid) {
+        currTxid = null;
+        System.out.println("State update committed, for batch: " + txid);
+    }
+
+    private Map<String, TransactionalValue<Long>> inner = new HashMap<>();
+    public void incrCount(List<String> words, List<Long> counts) {
+        int size = words.size();
+        for (int i = 0; i < size; i++) {
+            String word = words.get(i);
+            Long count = counts.get(i);
+            TransactionalValue<Long> transVal = inner.get(word);
+            if (null == transVal) {
+                inner.put(word, new TransactionalValue<>(currTxid.longValue(), count));
+            } else if (currTxid > transVal.getTxid()) {
+                Long prev = transVal.getVal();
+                Long curr = prev + count;
+                inner.put(word, new TransactionalValue<>(currTxid.longValue(), curr));
+            } else if (currTxid == transVal.getTxid()) {
+                System.out.println("Iginre...");
+            } else if (currTxid < transVal.getTxid()) {
+                throw new RuntimeException("impossible case: currTxid < transVal.getTxid()...");
+            }
+        }
+    }
+
+    public List<Long> getCount(List<String> words) {
+        List<Long> list = new LinkedList<>();
+        for (String word : words) {
+            TransactionalValue<Long> transVal = inner.get(word);
+            if (null == transVal) {
+                list.add(Long.valueOf(0l));
+            }
+            list.add(transVal.getVal());
+        }
+        return list;
+    }
+}
+```
+
+<br/>
+
+首先，`beginCommit`方法中我们需要记下当前Banch的txid；其次，inner的value类型也从`Long`改为了`TransactinoalValue<Long>`；最后是`incrCount`方法中增加了Transational State的处理逻辑，比较简单，我想你一定能看明白！！！
+
+另外你可能会注意到`TransactionalWordCountDB`类继承了`WordCountDB`，原因是这样可以复用之前的`QueryWordCountDB`与`WordCountDBUpdater`。
+
+<br/>
+
+**Opaque Transactional State**
+
+Opaque Transactional类型的State需要将txid与业务信息的当前值和前一次的历史值一起保存。Trident同样提供了`OpaqueValue`类方便我们实现Opaque Transactional类型的State。
+
+```java
+public class OpaqueWordCountDB extends WordCountDB implements State {
+
+    private Long currTxid;
+
+    @Override
+    public void beginCommit(Long txid) {
+        currTxid = txid;
+        System.out.println("State update begin, for batch: " + txid);
+    }
+
+    @Override
+    public void commit(Long txid) {
+        currTxid = null;
+        System.out.println("State update committed, for batch: " + txid);
+    }
+
+    private Map<String, OpaqueValue<Long>> inner = new HashMap<>();
+    public void incrCount(List<String> words, List<Long> counts) {
+        int size = words.size();
+        for (int i = 0; i < size; i++) {
+            String word = words.get(i);
+            Long count = counts.get(i);
+            OpaqueValue<Long> transVal = inner.get(word);
+            if (null == transVal) {
+                inner.put(word, new OpaqueValue<>(currTxid.longValue(), count));
+            } else if (currTxid > transVal.getCurrTxid()) {
+                Long prev = transVal.getCurr();
+                Long curr = prev + count;
+                inner.put(word, new OpaqueValue<>(currTxid.longValue(), curr, prev));
+            } else if (currTxid == transVal.getCurrTxid()) {
+                Long prev = transVal.getPrev();
+                Long curr = prev + count;
+                inner.put(word, new OpaqueValue<>(currTxid.longValue(), curr, prev));
+            } else if (currTxid < transVal.getCurrTxid()) {
+                throw new RuntimeException("impossible case: currTxid < transVal.getCurrTxid()...");
+            }
+        }
+    }
+
+    public List<Long> getCount(List<String> words) {
+        List<Long> list = new LinkedList<>();
+        for (String word : words) {
+            OpaqueValue<Long> transVal = inner.get(word);
+            if (null == transVal) {
+                list.add(Long.valueOf(0l));
+            }
+            list.add(transVal.getCurr());
+        }
+        return list;
+    }
+}
+```
+
+<br/>
+
+`OpaqueWordCountDB`与`TransactionalWordCountDB`的不同点主要体现在`incrCount`方法的实现逻辑不同，前面已经讨论过Opaque Transaction的实现原理，这里就不重复介绍了。
+
+至此，关于单词计数的各个类型的State我们都有了，但是要实现Exactly Once，我们还需要Transactional或Opaque Transactional类型的Spout。
+
+<br/>
 
 ### Spout的实现
 ---
