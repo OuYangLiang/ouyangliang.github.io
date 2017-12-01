@@ -14,18 +14,19 @@ Trident是Storm的一种高度抽象的实时计算模型，它可以将高吞�
 
 ### 初识Trident
 ---
-最直接的方式不外乎代码了，我们用Trident重新实现单词计数的例子：
+最直接的方式不外乎代码了，下面是用Trident重新实现单词计数的例子：
 
 ```java
 public static void main(String[] args) {
     @SuppressWarnings("unchecked")
-    FixedBatchSpout spout = new FixedBatchSpout(new Fields("sentence"), 3, new Values("how are you"),
+    FixedBatchSpout spout = new FixedBatchSpout(new Fields("sentence"), 1, new Values("how are you"),
             new Values("nice to meet you"), new Values("what a good day"));
 
     TridentTopology topology = new TridentTopology();
     TridentState wordCounts = topology.newStream("spout1", spout)
             .each(new Fields("sentence"), new Split(), new Fields("word")).groupBy(new Fields("word"))
-            .persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count")).parallelismHint(6);
+            .persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count"))
+            .parallelismHint(1);
 
     LocalDRPC drpc = new LocalDRPC();
     topology.newDRPCStream("word", drpc).groupBy(new Fields("args"))
@@ -54,8 +55,8 @@ public static void main(String[] args) {
 
 <br/>
 
-惊呀吗，这一小段代码实现的功能与之前的例子完全相同，包括`SentenceSpout`、`SplitBolt`、`CountBolt`与`ReportBolt`。
-首先，我们创建了一个Spout，与Storm一样，Trident也需要一个Spout作为数据流的产生源。不同的是这里的`FixedBatchSpout`实现的是`IBatchSpout`而不是`ISpout`接口，Trident对Spout的要求与传统的Spout有很大的不同，Trident Spout引入了批次（Batch）的概念，每个Batch包含若干个tuple，同时Trident会为每个Batch赋于一个id标识。Batch引入的原因是为了配合State的更新，实现**Exactly Once**的语义保证的，后面会详细介绍。有了Spout对象，就可以通过`TridentTopology.newStream`方法创建一个流对象`Stream`，它是我们可以使用流式风格开发的关键所在。
+惊呀吗，这一小段代码实现的功能与前文的例子完全相同，包括`SentenceSpout`、`SplitBolt`、`CountBolt`与`ReportBolt`。
+首先，我们创建了一个Spout，与Storm一样，Trident也需要一个Spout作为数据流的产生源。不同的是这里的`FixedBatchSpout`实现的是`IBatchSpout`而不是`ISpout`接口，Trident对Spout的要求与传统的Spout有很大的不同，Trident Spout引入了批次（Batch）的概念，每个Batch包含若干个tuple，同时Trident会为每个Batch赋于一个标识txid。Batch引入的原因是为了配合State的更新，实现**Exactly Once**的语义保证的，后面会详细介绍。有了Spout对象，就可以通过`TridentTopology.newStream`方法创建一个流对象`Stream`，它是我们可以使用流式风格开发的关键所在。
 
 <br/>
 
@@ -86,7 +87,7 @@ public class Split extends BaseFunction {
 
 <br/>
 
-`groupBy(new Fields("word"))`的作用是根据字段"word"的值对tuple进行分组，这意味着字段"word"相同的tuple都会被路由到相同的分区Partition。`groupBy`方法的返回的结果是一个`GroupedStream`对象，与`Stream`对象类似，但多出一个分组字段的概念。另外，将`GroupedStream`持久到State时，Storm要求我们提供一个`MapState`的实现，而`Stream`只需要提供一个`State`的实现。
+`groupBy(new Fields("word"))`的作用是根据字段word的值对tuple进行分组，这意味着字段word相同的tuple都会被路由到相同的分区Partition。`groupBy`方法的返回的结果是一个`GroupedStream`对象，与`Stream`对象类似，但多出一个分组字段的概念。另外，将`GroupedStream`持久到State时，Storm要求我们提供一个`MapState`的实现，而`Stream`只需要提供一个`State`的实现。
 
 `persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count")`的作用是将每个单词的次数进行统计，然后持久化到`MemoryMapState`对象中。`MemoryMapState`是`MapState`的一个实现，它将数据保存到内存中。`persistentAggregate`方法的返回结果是一个`TridentState`对象，后面我们需要借助它来查询`MemoryMapState`中的内容。
 
@@ -101,11 +102,11 @@ topology.newDRPCStream("word", drpc).groupBy(new Fields("args"))
 
 <br/>
 
-`TridentTopology.newDRPCStream`方法定义了一个DRPC方法：word，并且返回一个`Stream`对象，这个Stream中的tuple只包含一个字段args，字段的值是客户端的请求参数。例如：`drpc.execute("word", "how")`，第一个参数word表示请求名为word这个DRPC方法，第二个参数how是请求参数，即args字段的值。
+`TridentTopology.newDRPCStream`方法定义了一个DRPC方法：word，并且返回一个`Stream`对象，这个Stream中的tuple只包含一个字段args，字段的值是客户端的请求参数。例如：`drpc.execute("word", "how")`，表示客户端请求word这个DRPC方法，并传入参数值how，即args字段的值。
 
 通过`newDRPCStream`方法得到`Stream`对象后，后续的处理与普通的Trident完全一样，这也使得我们可以使用一套通用的API来管理数据的加工处理和访问。`stateQuery`方法的作用是查询之前保存在`MemoryMapState`中的结果的，他接受一个`TridentState`对象，通过`MapGet`方法对每个tuple（在本例中只有一个tuple）进行查询，并将结果输出到count字段中，最后Trident会将count字段的值返回给客户端。
 
-第一次接触Trident，或流式风格的编程，你可能会非常不习惯。但其实它真的不难，你熟悉会发现它有很多的优点：开发效率的提升，代码可读性方面的提高等等。关于Trident的API，在[Storm官网](http://storm.apache.org/releases/1.1.1/Trident-API-Overview.html)上已经有很好的文档了，这里我们不再介绍。使用Trident的另一个重要的原因是它支持**Exactly Once**的语义保证级别，这也是本文的重点，后面我会详细的进行讲解。
+第一次接触Trident，或流式风格的编程，你可能会非常不习惯。但其实它真的不难，你熟悉后会发现它有很多的优点：开发效率的提升，代码可读性方面的提高等等。关于Trident的API，在[Storm官网](http://storm.apache.org/releases/1.1.1/Trident-API-Overview.html)上已经有很好的文档了，这里我们不再介绍。使用Trident的另一个重要的原因是它支持**Exactly Once**的语义保证级别，这也是本文的重点，后面我会详细的进行讲解。
 
 <br/>
 
@@ -117,7 +118,7 @@ topology.newDRPCStream("word", drpc).groupBy(new Fields("args"))
 
 <br/>
 
-Trident使用乐观锁的原理，以一种容错性的方式实现对State的管理，即使在发生操作失败或者重试的情况下状态的更新操作仍然是幂等的。为了实现Exactly Once，Trident制定了一系列的约定：
+Trident使用乐观锁的原理，以一种容错的方式实现对State的管理，即使在发生操作失败或者重试的情况下状态的更新操作仍然是幂等的。为了实现Exactly Once，Trident制定了一系列的约定：
 
 1. 引入了批次（Batch），一个Batch包含若干个tuple。
 2. 为每个Batch提供一个唯一的txid。失败重试是基于Batch而不是tuple的，如果需要对Batch重新处理，这个Batch仍然会有相同的txid。
@@ -247,7 +248,7 @@ public class WordCountDB implements State {
 
 <br/>
 
-作为一个示例，我们简单的把信息保存到一个map对象中，在实际场景中你可以把在这里把信息持久化到数据库或Redis缓存中去。另外，你可能还需要考虑Storm的并行性，State的实现最好不要是有状态化的。
+作为一个示例，我们简单的把信息保存到一个map对象中，在实际场景中你可以把在这里把信息持久化到数据库或Redis缓存中去。另外，你可能还需要考虑Storm的并行性，State的实现最好是非状态化的。
 
 接着，我们还需要一个工厂类来创建我们的`WordCountDB`：
 
@@ -278,7 +279,7 @@ public interface QueryFunction<S extends State, T> extends EachOperation {
 
 <br/>
 
-其中参数S是State的实现类，即`WordCountDB`，而T表示我们从State查询出来的结果类，这里我们使用Long类型。在查询State的时候，对于流中的一批tuple，Trident会调用`batchRetrieve`方法查询得到这一批tuple对应的结果；然后为每个结果调用一次`execute`方法。
+其中参数S是State的实现类，即`WordCountDB`，而T表示我们从State查询出来的结果类，这里我们的结果是单词的出现次数，所以我们使用Long类型。在查询State的时候，对于流中的一批tuple，Trident会调用`batchRetrieve`方法查询得到这一批tuple对应的结果；然后为每个结果调用一次`execute`方法。
 
 我们的`WordCountDB`的查询类看上去是这样的：
 
@@ -346,7 +347,7 @@ public List<Long> batchRetrieve(WordCountDB state, List<TridentTuple> args) {
 
 <br/>
 
-对于State的更新来说，Trident提供了`StateUpdater`接口，该接口比较简单，不就做过多介绍了。
+对于State的更新来说，Trident提供了`StateUpdater`接口，该接口比较简单，不就做过多介绍了，这里直接给出实现：
 
 ```java
 public interface StateUpdater<S extends State> extends Operation {
@@ -577,4 +578,193 @@ public class OpaqueWordCountDB extends WordCountDB implements State {
 
 ### Spout的实现
 ---
-未完待续...
+与Storm API一样，Spout也是Trident的数据来源。不过，为了实现更复杂的功能服务，Trident Spout在普通的Storm Spout之上另外提供了一些API接口。Trident中所有的Spout都必须有一个标识，并且这个标识必须在整个Storm集群中都是唯一的，因为Trident需要使用这个标识来将Spout中的元数据（metadata）保存在ZooKeeper中。
+
+<br/>
+
+在Trident中可以使用普通的`IRichSpout`接口来创建数据流，但这是Non-Transactional类型的Spout。Trident专门提供了一套API来支持Trident Spout的开发：
+
+![trident spout]({{site.baseurl}}/pic/storm/10.svg)
+
+所有的Trident Spout都继承了`ITridentDataSource`接口：
+
+1. ITridentSpout：这是最通用的API，支持Transactional和Opaque Transactional的语义实现。不过一般会根据需要使用它的某个已有的实现，而不是直接实现该接口。
+2. IBatchSpout：Non-Transactinoal类型的Spout，每次会输出一个Batch的tuple。
+3. IPartitionedTridentSpout：可以从分布式数据源（比如一个集群或者Kafka服务器）读取数据的Transactional类型的Spout。
+4. OpaquePartitionedTridentSpout：可以从分布式数据源读取数据的Opaque Transactional类型的Spout。
+
+<br/>
+
+我们之前在示例中使用的`FixedBatchSpout`实现了`IBatchSpout`接口，所以它是Non-Transactinoal类型的。接下来我们重点介绍一下`ITridentSpout`这个接口。我们先看看相关的类图：
+
+![ITridentSpout]({{site.baseurl}}/pic/storm/11.svg)
+
+`ITridentSpout`接口声明了4个方法，其中`getComponentConfiguration`与`getOutputFields`在[《Storm深入浅出之入门篇》]({{site.baseurl}}/2017/10/Storm深入浅出之入门篇.html)中已经介绍过。这里我们重点介绍一下另外两个方法。
+
+从类图可以看到`ITridentSpout`接口中并没有声明任何发送tuple的方法，而是把这项工作委托给了`Emitter`接口。当有新的Batch需要发送的时候，Trident会调用`Emitter.emitBatch`方法。
+
+1. 参数tx中提供了两个信息：一个是当前Batch的txid，另一个信息是attemptId。每个Batch第一次处理时attemptId的初始值是0，如果Batch处理过程中出错，重试时attemptId的值会递增。
+2. coordinatorMeta是最重要的一个参数，它不是Batch，也不是tuple，但是它包含了获取这些tuple所需要的元信息。
+3. collector没什么好说的，我们使用它来发送tuple。
+
+在`emitBatch`方法中最重要的逻辑就是根据coordinatorMeta参数中提供了元信息得到tuple，再通过collector把它们发送出去。现在我们明白了`Emitter`发送的原理，但是这个coordinatorMeta参数Trident是从哪里得到的呢？
+
+<br/>
+
+这个要看`BatchCoordinator`接口了，Trident每次开始一个新的Batch时，会调用`BatchCoordinator.initializeTransaction`方法。这个方法第一个参数是当前Batch的txid，由Trident负责生成和维护。prevMetadata与currMetadata分别是生成前一个Batch的元信息和当前Batch对应的元信息。
+
+这里有一点点绕，我们来看一个例子。在一个Spout发送第一个Batch的时候，Trident会调用`initializeTransaction`方法，这时候txid应该是1（第一个Batch嘛）；prevMetadata是null（发送第一次Batch，所以不存在前一个Batch）；currMetadata也是null（为什么是null后面会讲）。这时候`initializeTransaction`方法要做的事情就是为txid = 1这个Batch生成一个元信息对象，并且返回这个对象。
+
+* 如果这个txid = 1的Batch在随后的处理过程中失败了，Trident会要求Spout重新生成这个Batch。这时Trident会再次调用`initializeTransaction`方法，这时候txid还是1；prevMetadata还是null；但是currMetadata的值是前一次`initializeTransaction`方法的返回结果，所以通过判断currMetadata是否为空我们可以知道这个元信息对应的Batch是不是发生过异常，通常情况下我们可以直接返回它。
+
+* 如果这个txid = 1的Batch最终被成功的处理了，Trident会要求Spout开始生成新的Batch。这时Trident会调用`initializeTransaction`方法，这时候txid应该是2；prevMetadata的值就是前一个Batch的元信息（txid = 2的Batch的元信息）；而currMetadata的值又重新变成了null。
+
+明白了吗？Trident Spout的原理是通过`BatchCoordinator`获取和跟踪元信息，并把元信息交给`Emitter`；再由`Emitter`根据元信息得到最终的tuple，最后把这些tuple发送出去。在失败的时候，通过元信息的跟踪来保证Batch的不变性，很容易可以实现Transactional Spout和Opaque Transactional Spout的约定。
+
+<br/>
+
+最后，我们来实战一下，用`ITridentSpout`来实现我们开篇示例中的Spout。开篇中我们的Spout是这样的：
+
+```java
+FixedBatchSpout spout = new FixedBatchSpout(new Fields("sentence"), 1, new Values("how are you"),
+        new Values("nice to meet you"), new Values("what a good day"));
+```
+
+<br/>
+
+可以看到它的数据是一个String列表，每个Batch对应一个String。要实现这样一个Spout，我们需要一个String类型的集合来存放我们的数据。另外，每个Batch只包含一个tuple，就简化了我们元信息对象的设计，我们可以使用一个Integer类型来作为我们的元信息对象，记录下集合的位置下标即可。BatchCoordinator的实现：
+
+```java
+public class TheBatchCoordinator implements ITridentSpout.BatchCoordinator<Integer> {
+    @Override
+    public Integer initializeTransaction(long txid, Integer prevMetadata, Integer currMetadata) {
+        System.out.println("Init transaction: " + txid);
+        if (txid == 1l) {
+            return 0;
+        }
+        return prevMetadata + 1;
+    }
+
+    @Override
+    public void success(long txid) {
+
+    }
+
+    @Override
+    public boolean isReady(long txid) {
+        if (txid <= TransactionalSpout.list.size()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void close() {
+
+    }
+}
+```
+
+<br/>
+
+如果txid = 1，第一个Batch的话，直接返回0，对应集合的第一个下标位置。再看看Emitter的实现：
+
+```java
+public class TheEmitter implements ITridentSpout.Emitter<Integer> {
+    @Override
+    public void emitBatch(TransactionAttempt tx, Integer coordinatorMeta, TridentCollector collector) {
+        String sentence = TransactionalSpout.list.get(coordinatorMeta);
+        collector.emit(new Values(sentence));
+    }
+
+    @Override
+    public void success(TransactionAttempt tx) {
+
+    }
+
+    @Override
+    public void close() {
+
+    }
+}
+```
+
+<br/>
+
+coordinatorMeta是我们的元信息对象，在本例中对应集合的下标位置，`emitBatch`方法中根据它直接从集合中获取tuple并发送。最后看看Spout的实现：
+
+```java
+public class TransactionalSpout implements ITridentSpout<Integer> {
+    static List<String> list = new ArrayList<>();
+    static {
+        list.add("how are you");
+        list.add("nice to meet you");
+        list.add("what a good day");
+    }
+
+    @Override
+    public BatchCoordinator<Integer> getCoordinator(String txStateId, Map conf, TopologyContext context) {
+        return new TheBatchCoordinator();
+    }
+
+    @Override
+    public Emitter<Integer> getEmitter(String txStateId, Map conf, TopologyContext context) {
+        return new TheEmitter();
+    }
+
+    @Override
+    public Map<String, Object> getComponentConfiguration() {
+        return null;
+    }
+
+    @Override
+    public Fields getOutputFields() {
+        return new Fields("sentence");
+    }
+}
+```
+
+<br/>
+
+注意我们在Spout内部维护了一个String集合。最后我们把开篇的示例换成我们自己的Spout看看：
+
+```java
+public static void main(String[] args) {
+    TransactionalSpout spout = new TransactionalSpout();
+
+    TridentTopology topology = new TridentTopology();
+    TridentState wordCounts = topology.newStream("spout1", spout)
+            .each(new Fields("sentence"), new Split(), new Fields("word"))
+            .groupBy(new Fields("word"))
+            .aggregate(new Count(), new Fields("count"))
+            .toStream()
+            .partitionPersist(WordCountDBFactory.opaque_transactional, new Fields("word", "count"), new WordCountDBUpdater()).parallelismHint(1);
+
+    LocalDRPC drpc = new LocalDRPC();
+    topology.newDRPCStream("word", drpc)
+            .stateQuery(wordCounts, new Fields("args"), new QueryWordCountDB(), new Fields("count"));
+
+    Config conf = new Config();
+    LocalCluster cluster = new LocalCluster();
+    cluster.submitTopology("drpc-demo", conf, topology.build());
+
+    Utils.sleep(15000);
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "how"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "are"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "nice"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "to"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "meet"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "what"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "a"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "good"));
+    System.out.println("DRPC RESULT: " + drpc.execute("word", "day"));
+
+    cluster.shutdown();
+    drpc.shutdown();
+}
+```
+
+<br/>
+
+现在，Transactional类型的Spout，配合Opaque Transactional的State，我们终于实现了Exactly Once的语义。
