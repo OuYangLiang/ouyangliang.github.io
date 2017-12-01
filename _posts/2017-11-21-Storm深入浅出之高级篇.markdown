@@ -768,3 +768,5 @@ public static void main(String[] args) {
 <br/>
 
 现在，Transactional类型的Spout，配合Opaque Transactional的State，我们终于实现了Exactly Once的语义。
+
+*最后附上源码地址*：[https://github.com/OuYangLiang/code-example/tree/master/storm](https://github.com/OuYangLiang/code-example/tree/master/storm)
