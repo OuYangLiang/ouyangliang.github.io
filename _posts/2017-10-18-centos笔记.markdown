@@ -1,0 +1,108 @@
+---
+layout: post
+title:  "centos笔记"
+date:   2017-10-18 08:19:16 +0800
+categories: linux
+keywords: centos,linux
+description: 记录centos上各种操作
+---
+
+### yum
+
+一、仓库类
+
+1. 显示所有仓库
+
+        yum repolist all
+
+2. 显示可用的仓库
+
+        yum repolist enabled
+
+二、查找软件包
+
+1. 查看所有软件包（支持通配符）
+
+        yum list 'package*'
+
+2. 查看已安装软件包（支持通配符）
+
+        yum list installed 'package*'
+
+3. 查看可用软件包（支持通配符）
+
+        yum list available 'package*'
+
+4. 安装软件包
+
+        sudo yum install 'package'
+
+5. 更新软件包
+
+        sudo yum update 'package'
+
+6. 删除软件包
+
+        sudo yum remove 'package'
+
+7. 查看软件包
+
+        yum info 'package'
+
+8. 查看文件来源于哪个软件包
+
+        yum provides 'file'
+
+<br/>
+
+### 修改主机名
+
+修改/etc/hostname文件，之后重启系统。
+
+<br/>
+
+### 静态IP地址设置
+
+修改/etc/sysconfig/network-scripts/ifcfg-ens33文件
+
+```shell
+BOOTPROTO="static" #dhcp改为static   
+ONBOOT="yes" #开机启用本配置  
+IPADDR=192.168.0.161 #静态IP  
+GATEWAY=192.168.0.1 #默认网关  
+NETMASK=255.255.255.0 #子网掩码  
+DNS1=192.168.0.1 #DNS 配置  
+```
+
+之后重启network服务
+
+```shell
+sudo service network restart
+```
+
+<br/>
+
+### 没有ifconfig命令，安排net-tools
+
+centos 7使用ip命令代替了`ifconfig`，使用`ip addr`可以查看ip地址信息。也可以安装net-tools软件包，继续使用`ifconfig`命令
+
+```shell
+sudo yum install net-tools
+```
+
+<br/>
+
+### 安装openjdk
+
+```shell
+sudo yum install java-1.8.0-openjdk.x86_64
+sudo yum install java-1.8.0-openjdk-devel.x86_64
+```
+
+修改.bash_profile文件设置java_home与classpath
+
+```shell
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-5.b12.el7_4.x86_64
+export CLASSPATH=.:$JAVA_HOME/lib
+PATH=$PATH:$JAVA_HOME/bin
+```
