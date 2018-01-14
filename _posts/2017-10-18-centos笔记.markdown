@@ -7,19 +7,55 @@ keywords: centos,linux
 description: 记录centos上各种操作
 ---
 
-### yum
+该文用于记录本人日常维护和操作Cent OS时的点点滴滴。
 
-一、仓库类
+### 修改主机名
 
-1. 显示所有仓库
+修改/etc/hostname文件，之后重启系统。
 
-        yum repolist all
+<br/>
 
-2. 显示可用的仓库
+### systemctl命令管理服务
 
-        yum repolist enabled
+systemctl是管制服务的主要工具，它整合了chkconfig与service功能于一体。
 
-二、查找软件包
+```shell
+systemctl is-enabled firewalld.service #查询firewalld服务是否开机启动
+systemctl enable *.service #开机运行服务
+systemctl disable *.service #取消开机运行
+systemctl start *.service #启动服务
+systemctl stop *.service #停止服务
+systemctl restart *.service #重启服务
+systemctl reload *.service #重新加载服务配置文件
+systemctl status *.service #查询服务运行状态
+systemctl list-unit-files | grep enabled #列出所有开机自启的服务
+systemctl --failed #显示启动失败的服务
+```
+
+<br/>
+
+### 静态IP地址设置
+
+修改/etc/sysconfig/network-scripts/ifcfg-ens33文件
+
+```shell
+BOOTPROTO="static" #dhcp改为static   
+ONBOOT="yes" #开机启用本配置  
+IPADDR=192.168.0.161 #静态IP  
+GATEWAY=192.168.0.1 #默认网关  
+NETMASK=255.255.255.0 #子网掩码  
+DNS1=192.168.0.1 #DNS 配置  
+```
+
+之后重启network服务
+
+```shell
+sudo systemctl restart network.service
+```
+
+<br/>
+
+### yum管理软件包
 
 1. 查看所有软件包（支持通配符）
 
@@ -55,34 +91,7 @@ description: 记录centos上各种操作
 
 <br/>
 
-### 修改主机名
-
-修改/etc/hostname文件，之后重启系统。
-
-<br/>
-
-### 静态IP地址设置
-
-修改/etc/sysconfig/network-scripts/ifcfg-ens33文件
-
-```shell
-BOOTPROTO="static" #dhcp改为static   
-ONBOOT="yes" #开机启用本配置  
-IPADDR=192.168.0.161 #静态IP  
-GATEWAY=192.168.0.1 #默认网关  
-NETMASK=255.255.255.0 #子网掩码  
-DNS1=192.168.0.1 #DNS 配置  
-```
-
-之后重启network服务
-
-```shell
-sudo service network restart
-```
-
-<br/>
-
-### 没有ifconfig命令，安排net-tools
+### 没有ifconfig命令，安装net-tools
 
 centos 7使用ip命令代替了`ifconfig`，使用`ip addr`可以查看ip地址信息。也可以安装net-tools软件包，继续使用`ifconfig`命令
 
@@ -92,7 +101,26 @@ sudo yum install net-tools
 
 <br/>
 
+### 没有nc命令，安装nmap-ncat
+
+```shell
+sudo yum install nmap-ncat
+```
+
+<br/>
+
+### 关闭防火墙
+
+```shell
+sudo systemctl stop firewalld.service
+sudo systemctl disable firewalld.service
+```
+
+<br/>
+
 ### 安装openjdk
+
+使用yum安装java-1.8.0-openjdk与java-1.8.0-openjdk-devel:
 
 ```shell
 sudo yum install java-1.8.0-openjdk.x86_64
@@ -105,4 +133,133 @@ sudo yum install java-1.8.0-openjdk-devel.x86_64
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-5.b12.el7_4.x86_64
 export CLASSPATH=.:$JAVA_HOME/lib
 PATH=$PATH:$JAVA_HOME/bin
+```
+
+<br/>
+
+### 安装java
+
+将java安装文件解压到/opt/local目录下面:
+
+```shell
+sudo tar -zxvf jdk-8u151-linux-x64.tar.gz -C /opt/local
+```
+
+centos使用`alternatives`来管理不同版本的java，这里需要把安装的java添加到`alternatives`中:
+
+```shell
+sudo alternatives --install /usr/bin/java java /opt/local/jdk1.8.0_151/bin/java 500
+```
+
+修改/etc/profile文件，设置java_home与classpath:
+
+```shell
+export JAVA_HOME=/opt/local/jdk1.8.0_151
+export CLASSPATH=.:$JAVA_HOME/lib
+PATH=$PATH:$JAVA_HOME/bin
+```
+
+<br/>
+
+### 安装zookeeper集群
+
+将zookeeper安装文件解压到/opt/local目录下面:
+
+```
+sudo tar -zxvf zookeeper-3.4.10.tar.gz -C /opt/local
+```
+
+在zookeeper目录下面创建data目录，用于存放zookeeper日志文件和snapshot文件:
+
+```shell
+cd /opt/local/zookeeper-3.4.10
+sudo mkdir data
+sudo mkdir data/snapshot
+sudo mkdir data/logs
+```
+
+修改zookeeper配置文件conf/zoo.cfg:
+
+```shell
+# The number of milliseconds of each tick
+tickTime=2000
+# The number of ticks that the initial
+# synchronization phase can take
+initLimit=10
+# The number of ticks that can pass between
+# sending a request and getting an acknowledgement
+syncLimit=5
+# the directory where the snapshot is stored.
+# do not use /tmp for storage, /tmp here is just
+# example sakes.
+dataDir=/opt/local/zookeeper-3.4.10/data/snapshot
+dataLogDir=/opt/local/zookeeper-3.4.10/data/logs
+# the port at which the clients will connect
+clientPort=2181
+# the maximum number of client connections.
+# increase this if you need to handle more clients
+#maxClientCnxns=60
+#
+# Be sure to read the maintenance section of the
+# administrator guide before turning on autopurge.
+#
+# http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_maintenance
+#
+# The number of snapshots to retain in dataDir
+#autopurge.snapRetainCount=3
+# Purge task interval in hours
+# Set to "0" to disable auto purge feature
+#autopurge.purgeInterval=1
+
+server.0=192.168.0.161:2888:3888
+server.1=192.168.0.162:2888:3888
+server.2=192.168.0.163:2888:3888
+```
+
+从配置文件可以看出，我们使用三台服务器来搭建zookeeper集群，3888端口用于领导者选举，2888端口用于leader向follower和observer同步数据。
+
+接下来，需要在各个服务器中dataDir目录（也就是/opt/local/zookeeper-3.4.10/data/snapshot）下创建一个myid文件，文件内容是该服务器的标识:
+
+* 192.168.0.161中myid的值为0
+* 192.168.0.162中myid的值为1
+* 192.168.0.163中myid的值为2
+
+修改/etc/profile文件，设置zookeeper path:
+
+```shell
+export ZOOKEEPER_HOME=/opt/local/zookeeper-3.4.10
+export PATH=$PATH:$ZOOKEEPER_HOME/bin
+```
+
+启动zookeeper
+
+```shell
+sudo zkServer.sh start
+```
+
+查看zookeeper状态
+
+```shell
+zkServer.sh status
+```
+
+现在可以通过下面命令登录zookeeper集群:
+
+```shell
+zkCli.sh -server 192.168.0.161:2181,192.168.0.162:2181,192.168.0.163:2181
+```
+
+使用四字母命令访问服务器，`nc`命令用于发送信息至指定IP的端口号:
+
+```shell
+echo stat | nc 192.168.0.161 2181 #查询zookeeper状态
+echo conf | nc 192.168.0.161 2181 #查询zookeeper配置信息
+echo ruok | nc 192.168.0.161 2181 #检查zookeeper是否运行正常
+echo envi | nc 192.168.0.161 2181 #查询zookeeper详细信息，比stat命令返回更多信息
+```
+
+关闭zookeeper
+
+```shell
+sudo zkServer.sh stop
 ```
