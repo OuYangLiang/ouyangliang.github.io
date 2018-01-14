@@ -263,3 +263,40 @@ echo envi | nc 192.168.0.161 2181 #查询zookeeper详细信息，比stat命令�
 ```shell
 sudo zkServer.sh stop
 ```
+
+### ssh免密登录
+
+一、在客户端机器生成密钥（密钥放在.ssh目录）
+
+```shell
+cd ~/.ssh
+ssh-keygen -t rsa -b 2048 -f keyfile
+```
+
+二、登录目标服务器，修改sshd_config文件，确保下面两行没有注释:
+
+```shell
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+```
+
+三、在目标机器上重启sshd服务:
+
+```shell
+sudo systemctl restart sshd.service
+```
+
+四、将公钥复制到目标机器.ssh目录下命名为authorized_keys
+
+```shell
+scp ~/.ssh/keyfile.pub john@192.168.0.161:~/.ssh/authorized_keys
+```
+
+五、登录目标机器，确保.ssh目录与authorized_keys文件的权限
+
+```shell
+cd
+chmod 700 .ssh
+cd ~/.ssh
+chmod 600 authorized_keys
+```
