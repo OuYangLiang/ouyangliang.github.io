@@ -6,7 +6,7 @@ categories: JVM
 keywords: 线程转储,thread, thread dump,java
 description: 如何根据thread dump分析和定位问题
 ---
-通过`jcmd -l`或`jps -l`命令得到进程的pid，再通过`jstack ${pid} > threaddump.txt`得到线程转储。
+通过<kbd>jcmd -l</kbd>或<kbd>jps -l</kbd>命令得到进程的pid，再通过<kbd>jstack ${pid} > threaddump.txt</kbd>得到线程转储。
 
 ```
 2017-10-20 23:57:49
