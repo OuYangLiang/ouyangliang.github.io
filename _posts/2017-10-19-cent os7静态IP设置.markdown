@@ -1,0 +1,24 @@
+---
+layout: post
+title:  "cent os7静态IP设置"
+date:   2017-10-19 08:19:16 +0800
+categories: linux
+keywords: centos,linux
+description: cent os7静态IP设置
+---
+修改/etc/sysconfig/network-scripts/ifcfg-ens33文件:
+
+```shell
+BOOTPROTO="static" #dhcp改为static   
+ONBOOT="yes" #开机启用本配置  
+IPADDR=192.168.0.161 #静态IP  
+GATEWAY=192.168.0.1 #默认网关  
+NETMASK=255.255.255.0 #子网掩码  
+DNS1=192.168.0.1 #DNS 配置  
+```
+
+然后重启network服务:
+
+```shell
+sudo systemctl restart network.service
+```

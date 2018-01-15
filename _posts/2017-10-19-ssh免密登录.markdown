@@ -1,0 +1,50 @@
+---
+layout: post
+title:  "ssh免密登录"
+date:   2017-10-19 08:19:16 +0800
+categories: linux
+keywords: ssh,linux
+description: ssh免密登录
+---
+一、在客户端机器生成密钥（密钥放在.ssh目录）
+
+```shell
+cd ~/.ssh
+ssh-keygen -t rsa -b 2048 -f keyfile
+```
+
+<br/>
+
+二、登录目标服务器，修改sshd_config文件，确保下面两行没有注释:
+
+```shell
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+```
+
+<br/>
+
+三、在目标机器上重启sshd服务:
+
+```shell
+sudo systemctl restart sshd.service
+```
+
+<br/>
+
+四、将公钥复制到目标机器.ssh目录下命名为authorized_keys
+
+```shell
+scp ~/.ssh/keyfile.pub john@192.168.0.161:~/.ssh/authorized_keys
+```
+
+<br/>
+
+五、登录目标机器，确保.ssh目录与authorized_keys文件的权限
+
+```shell
+cd
+chmod 700 .ssh
+cd ~/.ssh
+chmod 600 authorized_keys
+```
