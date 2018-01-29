@@ -14,24 +14,46 @@ Thrift是一个RPC框架，由facebook开发，07年四月开放源码，08年5�
 
 ![thrift network structure]({{site.baseurl}}/pic/thrift/1.svg)
 
-所图所示，thrift在设计上分了四层。
+所图所示，thrift在设计上分了四个层次，从下到上分别是：
 
-* Transport层抽象了数据在网络中的传输。
+* Transport层：抽象了数据在网络中的传输。
 
-* Protocol层定义了数据的序列化、反序列化方式：常用的是二进制格式、压缩格式和json格式。
+* Protocol层：定义了数据的序列化、反序列化方式。常用的格式有：二进制、压缩格式和json格式。
 
-* Processor是Thrift中最关键的一层，它包括thrift文件生成的接口，以及这些接口应对的实现。
+* Processor层：Thrift中最关键的一层，它包括thrift文件生成的接口，以及这些接口应对的实现。
 
-* Server层将所有这些（Transport、Protocol与Processor）封装在一起，对外提供服务。
+* Server层：将所有这些（Transport、Protocol与Processor）封装在一起，对外提供服务。
 
 <br/>
 
 ### 二、在Mac OS上安装Thrift
 
-使用homebrew在mac上安装thrift非常简单：
+使用thrift最关键的一环就是使用[IDL语言](http://thrift.apache.org/docs/idl)来编写thrift文件，在thrift文件中我们可以定义如javabean、enum、interface等常用语言的无素。最后通过thrift-compiler编译thrift文件生成目标语言。在mac上使用homebrew安装thrift非常简单：
 
 ```shell
 brew install thrift
+```
+
+之后就可以使用<kbd>thrift</kbd>命令编译thrift文件了，如：
+
+```shell
+$ thrift --gen java hello.thrift
+```
+
+上述命令执行后，会在当前目前下多一个`gen-java`目录，生成的文件就在里面：
+
+```shell
+$ find .
+.
+./gen-java
+./gen-java/com
+./gen-java/com/personal
+./gen-java/com/personal/oyl
+./gen-java/com/personal/oyl/code
+./gen-java/com/personal/oyl/code/example
+./gen-java/com/personal/oyl/code/example/thrift
+./gen-java/com/personal/oyl/code/example/thrift/HelloService.java
+./hello.thrift
 ```
 
 <br/>
@@ -114,7 +136,7 @@ public class HelloService {
 
 <br/>
 
-首先需要引入thrift的类库，如果使用maven的话，可以在pom.xml文件中增加libthrift的依赖：
+接下来需要引入thrift的类库，如果使用maven的话，可以在pom.xml文件中增加libthrift的依赖：
 
 ```xml
 <dependency>
@@ -139,7 +161,9 @@ public class HelloServiceImpl implements HelloService.Iface{
 }
 ```
 
-最后通过Thrift提供的类库，将我们的服务爆露出去：
+<br/>
+
+最后通过libthrift提供的类库，将我们的服务爆露出去：
 
 ```java
 public class HelloServer {
@@ -192,4 +216,4 @@ public class HelloClient {
 
 <br/>
 
-Thrift提供了不同类型的Server、Protocol及Transport，后面一篇博客我们会介绍它们之间的优略!!!
+至此，Thrift的入门介绍算是结束了，但是Thrift提供了不同类型的Server、Protocol及Transport，针对不同的场景、要求，他们表现有很大的不同，后面一篇博客我们会介绍它们之间的优略!!!

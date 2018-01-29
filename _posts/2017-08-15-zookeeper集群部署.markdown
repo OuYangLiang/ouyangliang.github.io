@@ -9,7 +9,7 @@ description: 在centos上部署zookeeper集群
 
 **一、将zookeeper安装文件解压到/opt/local目录下面:**
 
-```
+```shell
 sudo tar -zxvf zookeeper-3.4.10.tar.gz -C /opt/local
 ```
 
