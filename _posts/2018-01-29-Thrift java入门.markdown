@@ -216,4 +216,91 @@ public class HelloClient {
 
 <br/>
 
-至此，Thrift的入门介绍算是结束了，但是Thrift提供了不同类型的Server、Protocol及Transport，针对不同的场景、要求，他们表现有很大的不同，后面一篇博客我们会介绍它们之间的优略!!!
+### 五、Thrift支持哪些数据传输协议
+
+Thrift可以让你选择客户端与服务端之间数据的传输通信协议，但要保证客户端和服务端的协议一致。在传输协议上总体上划分为文本和二进制传输协议，为节约带宽和提高传输效率，一般情况下使用二进制类型的传输协议较多，但有时会还是会使用基于文本类型的协议，这需要根据实际需求来看。
+
+* TBinaryProtocol
+
+    二进制编码格式进行数据传输。
+
+* TCompactProtocol
+
+    这种协议非常有效的，使用Variable-Length Quantity (VLQ) 编码对数据进行压缩。
+
+* TJSONProtocol
+
+    使用JSON的数据编码协议进行数据传输。
+
+* TSimpleJSONProtocol
+
+    这种节约只提供JSON只写的协议，适用于通过脚本语言解析
+* TDebugProtocol
+
+    在开发的过程中帮助开发人员调试用的，以文本的形式展现方便阅读。
+
+<br/>
+
+### 六、Thrift在服务端提供了哪些选择
+
+前面的示例中我们使用了`TSimpleServer`这个类，这是一个单线程阻塞式IO的服务实现，这点，通过`TSimpleServer`的源码也可以看出来
+
+```java
+public void serve() {
+  //此处省略部分无关代码...
+  while (!stopped_) {
+    try {
+      client = serverTransport_.accept();
+      if (client != null) {
+        processor = processorFactory_.getProcessor(client);
+        inputTransport = inputTransportFactory_.getTransport(client);
+        outputTransport = outputTransportFactory_.getTransport(client);
+        inputProtocol = inputProtocolFactory_.getProtocol(inputTransport);
+        outputProtocol = outputProtocolFactory_.getProtocol(outputTransport);
+        if (eventHandler_ != null) {
+          connectionContext = eventHandler_.createContext(inputProtocol, outputProtocol);
+        }
+        while (true) {
+          if (eventHandler_ != null) {
+            eventHandler_.processContext(connectionContext, inputTransport, outputTransport);
+          }
+          if(!processor.process(inputProtocol, outputProtocol)) {
+            break;
+          }
+        }
+      }
+    }
+    //此处省略部分无关代码...
+  }
+}
+```
+
+<br/>
+
+Thrift在服务端提供了很多不同类型的选择：
+
+* TSimpleServer
+
+    TSimpleServer是单线程阻塞IO的实现，仅适用于demo。
+
+* TThreadPoolServer
+
+    顾名思义，TThreadPoolServer内部使用一个线程池来处理客户端的请求。它使用一个专门的线程来接收请求，一旦接收到请求就会放入ThreadPoolExecutor中的一个线程池处理，性能表现优异。
+
+* TNonblockingServer
+
+    单线程非阻塞IO的实现，通过java.nio.channels.Selector的select()接收连接请求，但是处理消息仍然是单线程，不可用于生产。
+
+* THsHaServer
+
+    THsHaServer继承了TNonblockingServer，不同之处在于THsHaServer内部使用了一个线程池来处理请求。THsHaServer相比较于TNonblockingServer类似TThreadPoolServer相比较于TSimpleServer。
+
+    另外，当使用TNonblockingServer或者THsHaServer时，必须使用TFramedTransport来封装一下原始的transport。
+
+* TThreadedSelectorServer
+
+    是thrift 0.8引入的实现，处理请求也使用了线程池，比THsHaServer有更高的吞吐量和更低的时延。
+
+<br/>
+
+*最后附上示例源码地址*：[https://github.com/OuYangLiang/code-example/tree/master/thrift](https://github.com/OuYangLiang/code-example/tree/master/thrift)
