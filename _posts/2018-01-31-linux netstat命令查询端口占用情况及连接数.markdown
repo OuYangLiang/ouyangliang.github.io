@@ -69,11 +69,11 @@ netstat -nl | grep -iw 端口号
 ### 查询端口连接数
 
 ```shell
-netstat -ntu | grep -iw 2181 | grep ESTABLISHED | wc -l
+netstat -ntu | grep -iw 端口号 | grep ESTABLISHED | wc -l
 ```
 
 或
 
 ```shell
-netstat -na | grep -iw 2181 | grep ESTABLISHED | wc -l
+netstat -na | grep -iw 端口号 | grep ESTABLISHED | wc -l
 ```
