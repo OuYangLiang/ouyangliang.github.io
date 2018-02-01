@@ -6,11 +6,60 @@ categories: 中间件
 keywords: storm集群,流式架构,流式处理
 description: 介绍Storm集群原理，及如何在Cent OS上安装Storm集群。
 ---
-**一、将storm安装文件解压到/opt/local目录下面:**
+
+在[《Storm深入浅出之入门篇》]({{site.baseurl}}/2017/10/Storm深入浅出之入门篇.html)文章中我介绍过Storm的并发机制，本文我们来学习下Storm集群环境由哪些部分组成，各个部分所承担的角色。最后我们再实际操作搭建一个Storm集群。
+
+<br/>
+
+在Storm的集群中存在两类节点：控制节点(master node)和工作节点(worker node)。另外，Storm还依赖zookeeper服务，其架构如下所示：
+
+![storm cluster]({{site.baseurl}}/pic/storm/12.svg)
+
+**Nimbus(master node)**
+
+master node上面运行着一个后台进程：Nimbus，它的作用类似于Hadoop中的JobTracker。Nimbus主要职责是管理、协调和监控集群上运行的topology（包括topology的发布、任务指派、时间处理时重新指派任务等）。topology的发布，需要将topology jar包和配置信息提交到Nimbus，当Nimbus会将jar包分发到足够数量的Supervisor节点上。当Supervisor节点接收到topology压缩文件，Nimbus就会指派task（bolt、spout实例）到每个Supervisor并且发送信号指示Supervisor生成足够的worker来执行指定task。
+
+Nimbus通过Zookeeper记录所有Supervisor节点的状态和分配给它们的task。如果Nimbus发现某个Supervisor没有上报心跳或已经不可达，它将会把分配给故障Supervisor的task重新分配给其他Supervisor节点。
+
+<br/>
+
+**Supervisor(worker node)**
+
+worker node是工作节点，上面运行着一个叫做Supervisor的后台进程，类似于Hadoop中的TaskTracker。Supervisor会监听Nimbus分配给它的任务，根据需要启动或关闭工作进程（worker进程）。Supervisor与worker运行在不同的jvm上，如果某个worker因为错误异常退出，Supervisor会尝试重新生成新的worker进程。
+
+每个worker进程会执行topology的一个子集，一个topology是由分布在不同机器上的多个worker进程组成，这点我们在[《Storm深入浅出之入门篇》]({{site.baseurl}}/2017/10/Storm深入浅出之入门篇.html)文章中已经介绍过。
+
+<br/>
+
+**ui**
+
+Stom集群提供一个web的监控界面，需要我们在leader Nimbus所在的服务器启动ui进程。监控界面对正在运行的Nimbus、Supervisor、topology进行展示，对正在运行的topology有一定管理功能，提供其统计信息，对监控Storm集群和topology的功能有很大的帮助。ui进程属于Storm的可选服务，可以自由选择启动或不启动。
+
+<br/>
+
+**logviewer**
+
+通过Storm UI我们可以在线查询Nimbus、Supervisor及worker的日志文件，但这需要我们在对应的服务器上把logviewer进程启起来。
+
+<br/>
+
+### 部署Storm集群
+
+---
+
+我们使用三台服务器（192.168.0.161, 192.168.0.162, 192.168.0.163）来构建一个Storm集群，其中192.168.0.161与192.168.0.162作为Nimbus服务器，三台服务器都作为Supervisor服务器。
+
+Storm集群依赖Zookeeper服务，关于Zookeeper的集群搭建，请参考[《zookeeper集群部署》]({{site.baseurl}}/2017/08/zookeeper集群部署.html)。
+
+<br/>
+
+**一、将storm安装文件分别解压到各个服务器的/opt/local目录下面:**
 
 ```shell
 sudo tar -zxvf apache-storm-1.1.1.tar.gz -C /opt/local
 ```
+
+<br/>
 
 **二、修改storm配置文件conf/storm.yaml:**
 
@@ -24,20 +73,55 @@ storm.zookeeper.root: "/storm"
 
 storm.local.dir: "/opt/local/apache-storm-1.1.1/storm-local"
 
+# 192.168.0.161与192.168.0.162作为Nimbus服务器
+# Storm 1.0以后的版本已经支持Nimbus HA
 nimbus.seeds: ["192.168.0.161", "192.168.0.162"]
-storm.local.hostname: "192.168.0.162" #server 1 2 3各自配置自己的ip
 
-# Define the amount of workers that can be run on this machine.
-# Each worker is assigned a port to use for communication
+# storm.local.hostname配置为当前服务器的ip地址，否则Storm UI上会显示重复的服务器
+storm.local.hostname: "192.168.0.161"
+
+# 指定每个Supervisor节点上最后可以启两个worker进程
 supervisor.slots.ports:
     - 6700
     - 6701
+
+# Minimum number of nimbus hosts where the code must be replicated before leader nimbus can mark the topology as active and create assignments.
 topology.min.replication.count: 2
 ```
+
+<br/>
 
 **三、修改/etc/profile文件，设置storm path:**
 
 ```shell
 export STORM_HOME=/opt/local/apache-storm-1.1.1
 export PATH=$PATH:$STORM_HOME/bin
+```
+
+<br/>
+
+**四、常用命令**
+
+启动Nimbus
+
+```shell
+sudo storm nimbus > /dev/null 2>&1 &
+```
+
+启动Supervisor
+
+```shell
+sudo storm supervisor > /dev/null 2>&1 &
+```
+
+启动Storm UI
+
+```shell
+sudo storm ui > /dev/null 2>&1 &
+```
+
+启动logviewer
+
+```shell
+sudo storm logviewer > /dev/null 2>&1 &
 ```
