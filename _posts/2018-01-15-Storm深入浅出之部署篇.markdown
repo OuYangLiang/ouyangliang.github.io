@@ -89,6 +89,8 @@ supervisor.slots.ports:
 topology.min.replication.count: 2
 ```
 
+在三台服务器上**storm.yaml**文件的内容基本上是一样的，除了`storm.local.hostname`需要配置为服务器对应的ip地址。另外，Storm 1.0之后的版本已经支持Nimbus HA，但是topology jar文件是保存在Nimbus本地的，需要将`topology.min.replication.count`配置为2以上的值，这样在提交topology的时候Leader Nimbus才会将topology jar复制到其它Follower Nimbus服务器，在Leader Nimbus发生故障时，Follower Nimbus有可能成为新的Leader Nimbus。
+
 <br/>
 
 **三、修改/etc/profile文件，设置storm path:**
