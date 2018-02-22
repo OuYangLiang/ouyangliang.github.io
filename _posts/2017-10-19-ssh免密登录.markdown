@@ -48,3 +48,22 @@ chmod 700 .ssh
 cd ~/.ssh
 chmod 600 authorized_keys
 ```
+
+<br/>
+
+六、在客户端机器.ssh目录中创建config文件，内容如下：
+
+```
+Host 192.168.0.161
+HostName 192.168.0.161
+IdentityFile ~/.ssh/keyfile
+```
+
+<br/>
+
+七、确保config文件的权限
+
+```shell
+cd ~/.ssh
+chmod 600 config
+```
