@@ -8,7 +8,9 @@ description: MapReduce简介
 ---
 Hadoop的框架最核心的设计就是HDFS和MapReduce。前面我们已经介绍过HDFS是一个分布式的文件系统，为海量的数据提供了存储能力；MapReduce建立在HDFS基础上，为海量的数据提供了一个计算框架。MapReduce是一种分布式计算模型，是Google提出的，主要用于搜索领域，解决海量数据的计算问题。MR由两个阶段组成：Map和Reduce，用户只需实现map()和reduce()两个函数，即可实现分布式计算。
 
-### MapReduce基本概念
+<br/>
+
+### MapReduce编程模型
 
 MapReduce背后的思想很简单，就是把一些数据通过map来归类，通过reducer来把同一类的数据进行处理，其原理如下所示：
 
@@ -29,7 +31,9 @@ hello php language
 hello javascript language
 ```
 
-一、Split阶段：得益于HDFS的特性，文件在HDFS中是分块存储的。假设每个文件块包括2行内容的话，一共四个文件块：
+<br/>
+
+一、Split阶段：得益于HDFS的特性，文件在HDFS中是分块存储的。假设每个文件块包括2行内容的话，一共四个文件块:
 
 <div class="row">
 <div class="col-sm-6">
@@ -43,7 +47,9 @@ hello javascript language
 </div>
 </div>
 
-二、Map阶段：将各个文件块的内容转换成新的key-value对：
+<br/>
+
+二、Map阶段：每个块由一个map任务来处理，map函数将各个文件块的内容转换成新的key-value对：
 
 <div class="row">
 <div class="col-sm-8">
@@ -81,6 +87,8 @@ hello javascript language
 </table>
 </div>
 </div>
+
+<br/>
 
 三、Shuffle阶段：这个阶段比较复杂，每个Mapper任务首先会根据Reducer的任务数量对key-value对进行分区，然后对每个分区的key进行排序和分组，执行Combiner，最后发送给Reducer任务。
 
@@ -131,6 +139,8 @@ hello javascript language
 </div>
 </div>
 
+<br/>
+
 四、Reduce阶段：Shuffle结束后，同一分区的数据会传送给同一个Reducer任务。Reducer任务接收到key-value对后会先根据key进行排序和分组，最后执行Reducer函数输出结果。
 
 <div class="row">
@@ -161,9 +171,29 @@ hello javascript language
 </div>
 </div>
 
+<br/>
+
 ### Yarn简介
 
-(待续...)
+老的MapReduce架构（俗称MapReduce 1）主要包括Job Tracker和Task Tracker。客户端提交任务给Job Tracker，Job Tracker与集群所有机器通信(heartbeat)，管理所有job失败、重启等操作。Task Tracker是在每一台机器上都有的，主要用来监视自己所在机器的task运行情况及机器的资源情况，然后把这些信息通过heartbeat发送给Job Tracker。
+
+MapReduce 1存在的问题:
+
+1. Job Tracker 存在单点故障。
+2. Job Tracker 完成太多任务，当MR任务非常多时，造成很大的内存开销。
+3. Task Tracker端，如果两个大内存消耗的任务一起调度，容易出现OOM，如果只有Map任务或Reduce任务时会造成资源浪费。
+
+为了解决这些问题，YARN（俗称MapReduce 2）出现了，它主要分为三个组件：Resource Manager、Node Manager和Application Master。Resource Manager负责全局资源分配；每个应用程序包含一个ApplicationMaster，它可以运行在ResourceManager以外的机器上，负责当前应用程序的调度和协调；Node Manager是每台机器的代理，监控应用程序的资源使用情况，并汇报给Resource Manager。因此与老的MapReduce相比，YARN把资源管理与任务调度的工作分离开来，减少了MapReduce中Job Tracker的压力。其基本架构图如下：
+
+![yarn structure]({{site.baseurl}}/pic/hadoop/7.svg)
+
+相比于MapReduce 1，YARN主要优势如下:
+
+1. YARN大大减少了Job Tracker的资源消耗，并且让监测每个子任务状态的程序分布式化了。
+2. YARN中Application Master是一个可变更部分，用户可以对不同编程模型编写自己的Application Master，让更多类型的编程模型能跑在Hadoop集群中。
+3. 老的框架中，Job Tracker一个很大的负担就是监控Job下任务的运行状况，现在由Application Master去做，而Resource Manager是监测Application Master的运行状况，如果出问题，会将其在其他机器上重启。
+
+<br/>
 
 ### Yarn环境搭建
 
@@ -315,50 +345,18 @@ mkdir /opt/local/bigdata/nm-local-dir
 
 也可能像启动HDFS集群那样，使用<kbd>start-yarn.sh</kbd>命令启动Yarn集群。
 
+<br/>
+
 ### 测试
 
-首先，将测试的文件上传到HDFS中：
+首先，将测试的文件上传到HDFS中:
 
-```shell
-./bin/hdfs dfs -put ~/inputfile /hadoop/documents/
-./bin/hdfs dfs -cat /hadoop/input/inputfile
-hello java
-hello c
-hello php
-hello javascript
-hello java language
-hello c language
-hello php language
-hello javascript language
-```
+![upload file]({{site.baseurl}}/pic/hadoop/8.png)
 
-执行
+执行单词计数的程序，源码可以在[这里](https://github.com/OuYangLiang/code-example/tree/master/hadoop)查看:
 
-```shell
-./bin//hadoop jar ~/hadoop-0.0.1-SNAPSHOT.jar com.personal.oyl.code.example.hadoop.WordCount /hadoop/input /hadoop/output
-```
+![execute]({{site.baseurl}}/pic/hadoop/9.png)
 
-查看结果
+查看执行结果，与我们之前的分析是一致的:
 
-```shell
-[john@server-1 hadoop-2.6.5]$ ./bin/hdfs dfs -cat /hadoop/output/part-r-00000
-c	2
-hello	8
-java	2
-javascript	2
-language	4
-php	2
-```
-
-和预期一样!
-
-https://www.zhihu.com/question/23345991
-http://www.cnblogs.com/duguguiyu/archive/2009/02/28/1400278.html
-http://www.cnblogs.com/MitiskySean/p/3320451.html
-http://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html
-http://blog.sina.com.cn/s/blog_7581a4c30102veem.html
-http://blog.csdn.net/cnbird2008/article/details/23788233
-http://flyingdutchman.iteye.com/blog/1878775
-http://www.cnblogs.com/dandingyy/archive/2013/03/08/2950703.html
-http://blog.csdn.net/post_yuan/article/details/54631446
-http://www.cnblogs.com/ahu-lichang/p/6665242.html
+![check result]({{site.baseurl}}/pic/hadoop/10.png)
