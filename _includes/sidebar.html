@@ -2,7 +2,7 @@
     {% for cat in site.categories %}
     <li class="list-group-item">
         <span class="badge">{{ cat.last.size }}</span>
-        <a href="{{site.baseurl}}/category#{{ cat.first }}">{{ cat.first }}</a>
+        <a href="{{site.baseurl}}/category?{{ cat.first }}">{{ cat.first }}</a>
     </li>
     {% endfor %}
 </ul>

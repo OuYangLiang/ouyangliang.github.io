@@ -32,5 +32,18 @@
 
         <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
         <script src="{{site.baseurl}}/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+        <script>
+          $( document ).ready(function() {
+            var idx = location.href.indexOf("?");
+            if (-1 == idx) {
+              return;
+            }
+
+            var category = decodeURIComponent(location.href.substr(idx + 1));
+            if ($('#' + category + '_box')) {
+              $('#' + category + '_box').css('display', '');
+            }
+          });
+        </script>
     </body>
 </html>

@@ -4,7 +4,7 @@ permalink: /category
 ---
 <div id="categories">
     {% for cat in site.categories %}
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="{{cat.first}}_box" style="display: none">
         <div class="panel-heading">
             <h3 class="panel-title" id="{{cat.first}}">{{cat.first}}</h3>
         </div>
