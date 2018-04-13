@@ -1,0 +1,154 @@
+---
+layout: post
+title:  "Java常用命令行工具"
+date:   2018-04-13 08:19:16 +0800
+categories: java
+keywords: java,jcmd
+description: Java常用命令行工具
+---
+### 查看java进程
+
+```shell
+jcmd -l #限当前用户
+jps -l #限当前用户
+ps -ef | grep java
+```
+
+<br/>
+
+### 线程栈Thread Dump
+
+```shell
+jstack ${pid} | more
+jcmd ${pid} Thread.print | more
+```
+
+<br/>
+
+### 堆直方图
+
+```shell
+jmap -histo ${pid} | more #输出包括死对象
+jmap -histo:live ${pid} | more #输出前会先执行full GC
+jcmd ${pid} GC.class_histogram | more #输出前会先执行full GC
+```
+
+<br/>
+
+### 堆转储
+
+```shell
+jcmd ${pid} GC.heap_dump > ${file}.hprof
+jmap -dump:live,file=${file}.hprof ${pid}
+```
+
+<br/>
+
+### 查看GC情况
+
+```shell
+jstat -gcutil ${pid} [interval [count]]
+
+$ jstat -gcutil 13034
+S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT   
+50.05  50.05  0.00   0.80  54.78  56.93  39      0.038   0      0.000    0.038
+```
+
+字段说明:
+
+* S0: **Survivor space 0 utilization as a percentage of the space's current capacity.**
+
+* S1: **Survivor space 1 utilization as a percentage of the space's current capacity.**
+
+* E: **Eden space utilization as a percentage of the space's current capacity.**
+
+* O: **Old space utilization as a percentage of the space's current capacity.**
+
+* M: **Metaspace utilization as a percentage of the space's current capacity.**
+
+* CCS: **Compressed class space utilization as a percentage.**
+
+* YGC: **Number of young generation GC events.**
+
+* YGCT: **Young generation garbage collection time.**
+
+* FGC: **Number of full GC events.**
+
+* FGCT: **Full garbage collection time.**
+
+* GCT: **Total garbage collection time.**
+
+-gccause选项与-gcutil一样，但是会多显示两个字段。
+
+```shell
+$ jstat -gccause 13034 1s 100
+S0     S1     E      O      M      CCS     YGC     YGCT    FGC    FGCT     GCT    LGCC                 GCC
+50.05  0.00   39.49  0.86   54.79  56.93   2926    2.209     0    0.000    2.209  Allocation Failure   No GC
+0.00   50.05  12.51  0.86   54.79  56.93   2929    2.211     0    0.000    2.211  Allocation Failure   No GC
+```
+
+字段说明:
+
+* **LGCC: Cause of last garbage collection**
+
+* **GCC: Cause of current garbage collection**
+
+<br/>
+
+### 查到堆空间统计信息
+
+```shell
+jstat -gc ${pid} [interval [count]]
+
+$ jstat -gc 13034
+S0C    S1C    S0U    S1U  EC      EU  OC      OU    MC     MU     CCSC   CCSU  YGC  YGCT  FGC FGCT  GCT   
+2048.0 2048.0 1025.0 0.0  8192.0  0.0 38912.0 336.1 4864.0 2664.8 512.0  291.5 1054 0.814 0   0.000 0.814
+```
+
+字段说明:
+
+* S0C: **Current survivor space 0 capacity (kB).**
+
+* S1C: **Current survivor space 1 capacity (kB).**
+
+* S0U: **Survivor space 0 utilization (kB).**
+
+* S1U: **Survivor space 1 utilization (kB).**
+
+* EC: **Current eden space capacity (kB).**
+
+* EU: **Eden space utilization (kB).**
+
+* OC: **Current old space capacity (kB).**
+
+* OU: **Old space utilization (kB).**
+
+* MC: **Metaspace capacity (kB).**
+
+* MU: **Metacspace utilization (kB).**
+
+* CCSC: **Compressed class space capacity (kB).**
+
+* CCSU: **Compressed class space used (kB).**
+
+* YGC: **Number of young generation garbage collection events.**
+
+* YGCT: **Young generation garbage collection time.**
+
+* FGC: **Number of full GC events.**
+
+* FGCT: **Full garbage collection time.**
+
+* GCT: **Total garbage collection time.**
+
+<br/>
+
+### 其它
+
+```shell
+jcmd ${pid} VM.flags # 查看JVM启动参数
+jcmd ${pid} VM.version # 查看JVM版本
+jcmd ${pid} VM.uptime # 查看JVM启动时间
+jcmd ${pid} VM.system_properties # 查看JVM环境系统属性
+jcmd ${pid} help # 该JVM支持的命令
+```
