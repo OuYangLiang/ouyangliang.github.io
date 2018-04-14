@@ -143,10 +143,56 @@ S0C    S1C    S0U    S1U  EC      EU  OC      OU    MC     MU     CCSC   CCSU  Y
 
 <br/>
 
+### JVM参数
+
+```shell
+jcmd ${pid} VM.flags
+jinfo -flags ${pid} # 输出信息与jcmd ${pid} VM.flags一样，还包括jcmd ${pid} VM.command_line的信息
+jinfo -flag ${参数名} ${pid} # 指定VM参数值
+jinfo -flag [+|-]${参数名} ${pid} # 设置或取消指定M参数的布尔值
+jinfo -flag ${参数名}=${参数值} ${pid} # 设置指定java虚拟机的参数的值。
+
+### 示例 ###
+$ jinfo -flag HeapDumpAfterFullGC 392 # 查询392进程的HeapDumpAfterFullGC值，可以看到是关闭状态
+-XX:-HeapDumpAfterFullGC
+$ jinfo -flag +HeapDumpAfterFullGC 392 ＃设置HeapDumpAfterFullGC状态为开启
+$ jinfo -flag HeapDumpAfterFullGC 392 # 再次查看
+-XX:+HeapDumpAfterFullGC
+$ jinfo -flag -HeapDumpAfterFullGC 392 # 设置HeapDumpAfterFullGC状态为关闭
+$ jinfo -flag HeapDumpAfterFullGC 392 # 再次查看
+-XX:-HeapDumpAfterFullGC
+
+### java -XX:+PrintFlagsFinal -version | grep manageable
+### 查看哪些VM参数支持动态配置
+$ java -XX:+PrintFlagsFinal -version | grep manageable
+     intx CMSAbortablePrecleanWaitMillis            = 100                                 {manageable}
+     intx CMSTriggerInterval                        = -1                                  {manageable}
+     intx CMSWaitDuration                           = 2000                                {manageable}
+     bool HeapDumpAfterFullGC                       = false                               {manageable}
+     bool HeapDumpBeforeFullGC                      = false                               {manageable}
+     bool HeapDumpOnOutOfMemoryError                = false                               {manageable}
+    ccstr HeapDumpPath                              =                                     {manageable}
+    uintx MaxHeapFreeRatio                          = 100                                 {manageable}
+    uintx MinHeapFreeRatio                          = 0                                   {manageable}
+     bool PrintClassHistogram                       = false                               {manageable}
+     bool PrintClassHistogramAfterFullGC            = false                               {manageable}
+     bool PrintClassHistogramBeforeFullGC           = false                               {manageable}
+     bool PrintConcurrentLocks                      = false                               {manageable}
+     bool PrintGC                                   = false                               {manageable}
+     bool PrintGCDateStamps                         = false                               {manageable}
+     bool PrintGCDetails                            = false                               {manageable}
+     bool PrintGCID                                 = false                               {manageable}
+     bool PrintGCTimeStamps                         = false                               {manageable}
+java version "1.8.0_111"
+Java(TM) SE Runtime Environment (build 1.8.0_111-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
+```
+
+<br/>
+
 ### 其它
 
 ```shell
-jcmd ${pid} VM.flags # 查看JVM启动参数
 jcmd ${pid} VM.version # 查看JVM版本
 jcmd ${pid} VM.uptime # 查看JVM启动时间
 jcmd ${pid} VM.system_properties # 查看JVM环境系统属性
