@@ -176,7 +176,7 @@ description: 介绍mysql事务并发
 
 首先，我们创建一张employee员工表，如下：
 
-``` mysql
+```shell
 create table employee (
     `id`        int         not null,
     num         int         not null,
@@ -190,7 +190,7 @@ create table employee (
 
 其中，id表示记录主键；num表示员工工号，唯一索引；depart表示员工所在的部门编号，普通索引；name表示员工姓名。测试前插入一些测试数据。
 
-``` mysql
+```shell
 +----+------+--------+--------+
 | id | num  | depart | name   |
 +----+------+--------+--------+
@@ -203,7 +203,7 @@ create table employee (
 
 首先事务S1在`可重复读`级别下，以条件`id = 10`查询员工表，如下：
 
-```mysql
+```shell
 mysql> set autocommit = 0;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -221,7 +221,7 @@ mysql> select * from employee where id = 10;
 
 接着事务S2尝试更新`id = 10`的员工记录，如下：
 
-```mysql
+```shell
 mysql> set autocommit = false;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -235,7 +235,7 @@ Query OK, 0 rows affected (0.00 sec)
 
 可以看到事务S2成功的更新了`id = 10`的记录，现在回到事务S1中再次以条件`id = 10`查询员工表，
 
-```mysql
+```shell
 mysql> set autocommit = 0;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -269,7 +269,7 @@ MySQL InnoDB是特殊的，在可重复读级别下，还能避免`幻读`的发
 
 我们接着之前的示例看看幻读的情况。首先事务S3以条件`depart = 5100`查询员工表，
 
-```mysql
+```shell
 mysql> set autocommit = 0;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -288,7 +288,7 @@ mysql> select * from employee where depart = 5100;
 
 接着事务4尝试向`depart = 5100`这个部门添加一名新的员工，
 
-```mysql
+```shell
 mysql> set autocommit = false;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -301,7 +301,7 @@ Query OK, 0 rows affected (0.00 sec)
 
 回到事务S3中再次以条件`depart = 5100`查询员工表，
 
-```mysql
+```shell
 mysql> set autocommit = 0;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -350,7 +350,7 @@ mysql> select * from employee where depart = 5100;
 
 在`Serializable`级别下重试之前的示例，事务S3以条件`depart = 5100`查询员工表，
 
-```mysql
+```shell
 mysql> set autocommit = 0;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -369,7 +369,7 @@ mysql> select * from employee where depart = 5100;
 
 接着事务S4尝试向`depart = 5100`这个部门添加一名新的员工，
 
-```mysql
+```shell
 mysql> set autocommit = false;
 Query OK, 0 rows affected (0.00 sec)
 

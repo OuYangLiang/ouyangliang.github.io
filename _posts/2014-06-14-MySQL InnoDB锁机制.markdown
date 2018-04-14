@@ -55,7 +55,7 @@ MySQL官网上有个死锁的例子，但分析得过于概括，这里我们详
 
 首先，会话S1以SELECT * FROM t WHERE i = 1 LOCK IN SHARE MODE查询，该语句首先会对t表加IS锁，接着会对数据（i = 1）加S锁。
 
-```mysql
+```shell
 mysql> CREATE TABLE t (i INT) ENGINE = InnoDB;  
 Query OK, 0 rows affected (1.07 sec)  
 
@@ -76,7 +76,7 @@ mysql> SELECT * FROM t WHERE i = 1 LOCK IN SHARE MODE;
 
 接着，会话S2执行DELETE FROM t WHERE i = 1，该语句尝试对t表加IX锁，由于IX锁与IS锁是兼容的，所以成功对t表加IX锁。接着继续对数据（i = 1）加X锁，但数据已经被会话S1事务加了S锁了，所以会话S2等待。
 
-```mysql
+```shell
 mysql> START TRANSACTION;  
 Query OK, 0 rows affected (0.00 sec)  
 
@@ -85,7 +85,7 @@ mysql> DELETE FROM t WHERE i = 1;
 
 接着，会话S1也执行DELETE FROM t WHERE i = 1，该语句首先对t表加IX锁，虽然会话S2已经对t表加了IX锁，但IX锁与IX锁之间是兼容的，所以成功对t表加上IX锁。接着会话S1会对数据（i = 1）加X锁，此时发现会话S2占有的IX锁与X锁不兼容，所以会话S1也等待。就这样，会话S1等S2释放IX锁，而会话S2等S1释放S锁，从而死锁发生。
 
-```mysql
+```shell
 mysql> DELETE FROM t WHERE i = 1;  
 Query OK, 1 row affected (0.00 sec)  
 
@@ -94,7 +94,7 @@ mysql>
 
 上例中会话S1虽然执行成功了，但是下面会话S2发生了死锁。这是因为Mysql检测到死锁后，会自动强制其中一个事务退出。
 
-```mysql
+```shell
 mysql> DELETE FROM t WHERE i = 1;  
 ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction  
 mysql>  
@@ -127,7 +127,7 @@ MySQL InnoDB支持三种行锁定方式：
 
 还是用之前的员工表举例：
 
-``` mysql
+```shell
 +----+------+--------+--------+
 | id | num  | depart | name   |
 +----+------+--------+--------+
@@ -158,7 +158,7 @@ depart索引可以表示为下面一张二维表：
 
 现在我们在`可重复读`级别下，根据索引字段depart = 5100加锁查询的话，应该会锁定`(-∞, [5100|10])，([5100|10], [5100|40]), ([5100|40], [5200|20])`这三个间隙
 
-```mysql
+```shell
 mysql> set autocommit=0;
 Query OK, 0 rows affected (0.01 sec)
 
@@ -177,7 +177,7 @@ mysql> select * from employee where depart = 5100 lock in share mode;
 
 另起一个会话测试一下：
 
-```mysql
+```shell
 mysql> insert into employee values (1, 9999, 5000, 'xx');
 ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
 mysql> insert into employee values (15, 9999, 5100, 'xx');
