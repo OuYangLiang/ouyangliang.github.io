@@ -1,0 +1,62 @@
+---
+layout: post
+title:  "常用JVM参数"
+date:   2018-04-16 08:19:16 +0800
+categories: JVM
+keywords: JVM
+description: 常用JVM参数
+---
+
+### GC日志类
+
+```properties
+-XX:+PrintGCDetails # 打印GC详细日志
+-XX:+PrintGCDateStamps # 输出绝对时间
+-Xloggc:/Users/ouyang/gc.log # GC日志文件路径，目录/Users/ouyang必须存在
+```
+
+<br/>
+
+### 堆空间大小
+
+```properties
+-Xms50m #JVM最小可用内存为50m
+-Xmx50m #JVM最大可用内存为50m
+-Xmn10m #设置young区大小为10m
+-XX:SurvivorRatio=8 #指定Eden与Survivor的大小比例为8:1，即Eden为8m，每个Survivor为1m
+-XX:PermSize=32m #设置永久代初始内存为32m
+-XX:MaxPermSize=32m #指定永久代最大内存为32m
+-XX:MetaspaceSize=32m #设置元空间初始内存为32m
+-XX:MaxMetaspaceSize=32m #指定元空间最大内存为32m
+```
+
+<br/>
+
+### Concurrent Mark Sweep收集器
+
+```properties
+-XX:+UseConcMarkSweepGC #使用CMS收集器
+-XX:+UseParNewGC #轻年代使用ParNew收集器
+-XX:CMSInitiatingOccupancyFraction=60 #设置CMS老年代回收周期阀值为60%
+-XX:+UseCMSInitiatingOccupancyOnly #强制CMSInitiatingOccupancyFraction生效
+-XX:PretenureSizeThreshold=1m #设置大于1m的对象直接在老年代分配，只对Serial和ParNew两款收集器有效。
+```
+
+<br/>
+
+### Parallel Scavenge + Parallel Old收集器
+
+```properties
+-XX:+UseParallelGC #使用Parallel Scavenge + Parallel Old收集器
+-XX:+UseAdaptiveSizePolicy #开启自适应特性，默认开启
+-XX:+PrintAdaptiveSizePolicy #GC日志中输出自适应调节信息，仅对Parallel Scavenge + Parallel Old收集器有效
+```
+
+<br/>
+
+### 调优
+
+```properties
+-XX:MaxTenuringThreshold=15 #设置对象年龄阀值为15
+-XX:+PrintTenuringDistribution #GC日志中输出对象年龄分布信息
+```
