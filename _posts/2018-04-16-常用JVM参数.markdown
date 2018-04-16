@@ -10,9 +10,11 @@ description: 常用JVM参数
 ### GC日志类
 
 ```properties
--XX:+PrintGCDetails # 打印GC详细日志
--XX:+PrintGCDateStamps # 输出绝对时间
--Xloggc:/Users/ouyang/gc.log # GC日志文件路径，目录/Users/ouyang必须存在
+-XX:+PrintGCDetails #打印GC详细日志
+-XX:+PrintGCDateStamps #输出绝对时间
+-Xloggc:/Users/ouyang/gc.log #GC日志文件路径，目录/Users/ouyang必须存在
+-XX:+HeapDumpOnOutOfMemoryError #发生OOM时备份heapdump文件
+-XX:HeapDumpPath=/Users/ouyang #配置OOM时heapdump文件生成路径
 ```
 
 <br/>
@@ -42,15 +44,24 @@ description: 常用JVM参数
 -XX:PretenureSizeThreshold=1m #设置大于1m的对象直接在老年代分配，只对Serial和ParNew两款收集器有效。
 -XX:+UseCMSCompactAtFullCollection #开启对年老代的压缩
 -XX:CMSFullGCsBeforeCompaction=10 #上面配置开启的情况下，这里设置多少次Full GC后，对年老代进行压缩
+-XX:+CMSParallelRemarkEnabled #配置重新标记(CMS-remark)阶段并行执行，默认开启
+-XX:+CMSScavengeBeforeRemark #配置重新标记(CMS-remark)前强制一次Minor GC，默认关闭
+-XX:ConcGCThreads=8 #配置CMS周期并发线程数为8
 ```
 
-`CMSFullGCsBeforeCompaction`说的是在上一次CMS并发GC执行过后，到底还要再执行多少次Full GC才会做压缩。
+<kbd>CMSFullGCsBeforeCompaction</kbd>
 
-默认是0，也就是在默认配置下每次CMS GC顶不住了进而要转入Full GC的时候都会做压缩。把`CMSFullGCsBeforeCompaction`配置为10，就会变成每隔10次真正的Full GC才做一次压缩（而不是每10次CMS并发GC就做一次压缩）。
+说的是在上一次CMS并发GC执行过后，到底还要再执行多少次Full GC才会做压缩。默认是0，也就是在默认配置下每次CMS GC顶不住了进而要转入Full GC的时候都会做压缩。把`CMSFullGCsBeforeCompaction`配置为10，就会变成每隔10次真正的Full GC才做一次压缩（而不是每10次CMS并发GC就做一次压缩）。
 
 这会使Full GC更少做压缩，也就更容易受碎片化问题的困扰。本来这个参数就是用来配置降低Full GC压缩的频率，以期减少某些Full GC的暂停时间。
 
 CMS回退到Full GC时用的算法是mark-sweep-compact，但compaction是可选的，不做的话碎片化会严重些但这次Full GC的暂停时间会短些。
+
+<kbd>ConcGCThreads</kbd>
+
+如果还标志未设置，JVM会根据并行收集器中的`ParallelGCThreads`参数的值来计算出默认的并行CMS线程数：
+
+`ConcGCThreads` = (`ParallelGCThreads` + 3) / 4。
 
 <br/>
 
@@ -64,9 +75,13 @@ CMS回退到Full GC时用的算法是mark-sweep-compact，但compaction是可选
 -XX:GCTimeRatio=99 #配置垃圾收集时间占比为1%
 ```
 
-`MaxGCPauseMillis`参数允许的值是一个大于0的毫秒数，收集器将尽可能地保证内存回收花费的时间不超过设定值。不过不要认为如果把这个参数的值设置得稍小一点就能使得系统的垃圾收集速度变得更快，GC停顿时间缩短是以牺牲吞吐量和新生代空间为代价的：系统把新生代调小一些，收集300MB新生代肯定比收集500MB快，但也导致垃圾收集发生得更频繁了，原来10秒收集一次、每次停顿100毫秒，现在变成5秒收集一次、每次停顿70毫秒。停顿时间的确在下降，但吞吐量下来了。
+<kbd>MaxGCPauseMillis</kbd>
 
-`GCTimeRatio`参数的值应当是一个大于0且小于100的整数，也就是垃圾收集时间占总时间的比率。如果把此参数设置为19,那允许的最大GC时间就占总时间的 5%（即1 / (1 + 19)），默认值为99，就是允许最大1%（即1 / (1 + 99)）的垃圾收集时间。
+参数允许的值是一个大于0的毫秒数，收集器将尽可能地保证内存回收花费的时间不超过设定值。不过不要认为如果把这个参数的值设置得稍小一点就能使得系统的垃圾收集速度变得更快，GC停顿时间缩短是以牺牲吞吐量和新生代空间为代价的：系统把新生代调小一些，收集300MB新生代肯定比收集500MB快，但也导致垃圾收集发生得更频繁了，原来10秒收集一次、每次停顿100毫秒，现在变成5秒收集一次、每次停顿70毫秒。停顿时间的确在下降，但吞吐量下来了。
+
+<kbd>GCTimeRatio</kbd>
+
+参数的值应当是一个大于0且小于100的整数，也就是垃圾收集时间占总时间的比率。如果把此参数设置为19,那允许的最大GC时间就占总时间的 5%（即1 / (1 + 19)），默认值为99，就是允许最大1%（即1 / (1 + 99)）的垃圾收集时间。
 
 <br/>
 
@@ -75,4 +90,11 @@ CMS回退到Full GC时用的算法是mark-sweep-compact，但compaction是可选
 ```properties
 -XX:MaxTenuringThreshold=15 #设置对象年龄阀值为15
 -XX:+PrintTenuringDistribution #GC日志中输出对象年龄分布信息
+-XX:ParallelGCThreads=8 #配置GC线程数
 ```
+
+<kbd>ParallelGCThreads</kbd>
+
+如果物理CPU所能够支持线程数小于8，则`ParallelGCThreads`的值为CPU所支持的线程数；
+
+如果物理CPU所能够支持线程数大于8，则`ParallelGCThreads`的值为8加上一个调整值，调整值的计算方式为：物理CPU所支持的线程数减去8所得值的5/8。
