@@ -32,6 +32,12 @@ description: 常用JVM参数
 -XX:MaxMetaspaceSize=32m #指定元空间最大内存为32m
 ```
 
+<kbd>SurvivorRatio</kbd>
+
+指定Eden与Survivor的大小比例，比如`SurvivorRatio`等于8时，Eden区与两个Survivor区的比为8:2，当-Xmn为10m时，Eden区为8m，每个Survivor区为1m。
+
+如果希望Young区大小不变的情况下，将Survivor区改为2m，可以将`SurvivorRatio`值改为3。
+
 <br/>
 
 ### Concurrent Mark Sweep收集器
