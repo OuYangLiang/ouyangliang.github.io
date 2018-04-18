@@ -91,12 +91,29 @@ CMS回退到Full GC时用的算法是mark-sweep-compact，但compaction是可选
 
 <br/>
 
+### G1收集器
+
+```properties
+-XX:+UseG1GC #使用G1收集器
+-XX:G1HeapRegionSize=1m #设置Region块大小为1m，合法范围1m ~ 32m
+-XX:MaxGCPauseMillis=200 #设置预期停顿时间为200ms
+-XX:G1NewSizePercent=5 #设置轻年代最小空间占比为5%
+-XX:G1MaxNewSizePercent=60 #设置轻年代最大空间占比为60%
+-XX:InitiatingHeapOccupancyPercent=45 #配置触发标记周期的Java堆占用率阈值为45%
+-XX:G1MixedGCLiveThresholdPercent=65 #配置混合垃圾回收周期中要包括的旧区域设置占用率阈值为65%
+-XX:G1HeapWastePercent=10 #设置愿意浪费的堆百分比为10%
+-XX:G1ReservePercent=10 #设置作为空闲空间的预留内存百分比为10%
+-XX:ConcGCThreads=4 #设置并行标记的线程数为4。
+```
+
+<br/>
+
 ### 调优
 
 ```properties
 -XX:MaxTenuringThreshold=15 #设置对象年龄阀值为15
 -XX:+PrintTenuringDistribution #GC日志中输出对象年龄分布信息
--XX:ParallelGCThreads=8 #配置GC线程数
+-XX:ParallelGCThreads=8 #配置STW GC线程数
 ```
 
 <kbd>ParallelGCThreads</kbd>
