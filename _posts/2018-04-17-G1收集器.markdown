@@ -1,0 +1,321 @@
+---
+layout: post
+title:  "G1收集器"
+date:   2018-04-16 08:19:16 +0800
+categories: JVM
+keywords: JVM,G1,GC
+description: G1 收集器
+---
+G1 GC，全称Garbage-First Garbage Collector，通过`-XX:+UseG1GC`参数来启用。作为体验版随着JDK 6u14版本面世，在JDK 7u4版本发行时被正式推出，相信熟悉JVM的同学们都不会对它感到陌生。在JDK 9中，G1被提议设置为默认垃圾收集器（JEP 248）。在官网中，是这样描述G1的：
+
+> The Garbage-First (G1) collector is a server-style garbage collector, targeted for multi-processor machines with large memories. It meets garbage collection (GC) pause time goals with a high probability, while achieving high throughput. The G1 garbage collector is fully supported in Oracle JDK 7 update 4 and later releases. The G1 collector is designed for applications that:
+> * Can operate concurrently with applications threads like the CMS collector.
+> * Compact free space without lengthy GC induced pause times.
+> * Need more predictable GC pause durations.
+> * Do not want to sacrifice a lot of throughput performance.
+> * Do not require a much larger Java heap.
+
+<br/>
+
+从官网的描述中，我们知道G1是一种服务器端的垃圾收集器，应用在多处理器和大容量内存环境中，实现高吞吐量的同时，尽可能的满足垃圾收集暂停时间的要求。另外，它还具有以下特性：
+
+* 像CMS收集器一样， 能与应用程序线程并发执行。
+* 整理空闲空间更快。
+* 需要更多的时间来预测GC停顿时间。
+* 不希望牺牲大量的吞吐性能。
+* 不需要更大的Java Heap。
+
+<br/>
+
+G1收集器的设计目标是取代CMS收集器，它同CMS相比，在以下方面表现的更出色：
+
+* G1是一个有整理内存过程的垃圾收集器，不会产生很多内存碎片。
+* G1的STW更可控，G1在停顿时间上添加了预测机制，用户可以指定期望停顿时间。
+
+<br/>
+
+G1收集器并没有像传统收集器一样将内存空间划分为新生代、老年代和永久代，而是将堆划分为若干个**区域Region**，它仍然属于分代收集器。不过，这些区域的一部分包含新生代，新生代的垃圾收集依然采用暂停所有应用线程的方式，将存活对象拷贝到老年代或者Survivor空间。老年代也分成很多区域，G1收集器通过将对象从一个区域复制到另外一个区域，完成了清理工作。这就意味着，在正常的处理过程中，G1完成了堆的压缩（至少是部分堆的压缩），这样也就不会有CMS内存碎片问题的存在了。
+
+![G1 Heap]({{site.baseurl}}/pic/G1GC/1.svg)
+
+
+G1将整个堆区划分为2048个大小相同的独立区域Region，Region大小根据堆空间的实际大小决定（控制在1MB~32MB），新年代和老年代不再物理隔离，都是逻辑概念。在G1中有一种特殊的区域，叫**Humongous区域**。如果一个对象占用的空间超过了Region容量50%以上，G1收集器就认为这是一个巨型对象。这些巨型对象，默认直接会被分配在年老代，但是如果它是一个短期存在的巨型对象，就会对垃圾收集器造成负面影响。为了解决这个问题，G1划分了一个Humongous区，它用来专门存放巨型对象。如果一个H区装不下一个巨型对象，那么G1会寻找连续的H分区来存储。为了能找到连续的H区，有时候不得不启动Full GC。
+
+Humongous-obj有如下几个特征：
+
+* Humongous-obj直接分配到了H区，防止了反复拷贝移动。
+
+* Humongous-obj在Global Concurrent Marking阶段的Cleanup和Full GC阶段回收。
+
+* 在分配Humongous-obj之前会先检查是否超过`-XX:InitiatingHeapOccupancyPercent`和`-XX:G1ReservePercent`。如果超过的话，就启动Global Concurrent Marking，为的是提早回收，防止Evacuation Failures和Full GC。
+
+为了减少连续Humongous-obj分配对GC的影响，需要把大对象变为普通的对象，建议增大Region size。一个Region的大小可以通过参数`-XX:G1HeapRegionSize`设定，取值范围从1M到32M，值是2的幂。如果不设定，那么G1会根据Heap大小自动决定。
+
+---
+
+G1提供了两种GC模式，Young GC和Mixed GC，两种都是Stop The World(STW)的。下面我们将分别介绍一下这2种模式。
+
+### Young GC
+
+Young GC选定所有年轻代里的Region，它在Eden空间耗尽时会被触发。在这种情况下，Eden空间的数据移动到Survivor空间中，如果Survivor空间不够，Eden空间的部分数据会直接晋升到年老代空间。Survivor区的数据移动到新的Survivor区中，也有部分数据晋升到老年代空间中。最终Eden空间的数据为空，GC停止工作，应用线程继续执行。G1通过控制年轻代的region个数，即年轻代内存大小，来控制young GC的时间开销。
+
+![G1 young GC]({{site.baseurl}}/pic/G1GC/2.svg)
+
+这时，我们需要考虑一个问题，如果仅仅GC新生代对象，我们如何找到所有的根对象呢？老年代的所有对象都是根么？那这样扫描下来会耗费大量的时间。于是，G1引进了RSet的概念，它的全称是Remembered Set，作用是跟踪指向某个heap区内的对象引用，是辅助GC过程的一种结构，典型的空间换时间工具。
+
+<br/>
+
+在CMS中，也有RSet的概念，在老年代中有一块区域用来记录指向新生代的引用。这是一种point-out，在进行Young GC时，根扫描仅仅需要扫描这一块区域，而不需要扫描整个老年代。但在G1中，并没有使用point-out，这是由于一个分区太小，分区数量太多，如果是用point-out的话，会造成大量的扫描浪费，有些根本不需要GC的分区引用也扫描了。于是G1中使用point-in来解决。point-in的意思是哪些分区引用了当前分区中的对象。这样，仅仅将这些对象当做根来扫描就避免了无效的扫描。由于新生代有多个，那么我们需要在新生代之间记录引用吗？这是不必要的，原因在于每次GC时，所有新生代都会被扫描，所以只需要记录老年代到新生代之间的引用即可。
+
+<br/>
+
+需要注意的是，如果引用的对象很多，赋值器需要对每个引用做处理，赋值器开销会很大，为了解决赋值器开销这个问题，在G1中又引入了另外一个概念，卡表（Card Table）。一个Card Table将一个分区在逻辑上划分为固定大小的连续区域，每个区域称之为卡。卡通常较小，介于128到512字节之间。
+
+<br/>
+
+逻辑上每个Region都有一个RSet，RSet记录了其他Region中的对象引用本Region中对象的关系，属于points-in。而Card Table则是一种points-out（我引用了谁的对象），每个Card覆盖一定范围的Heap。**G1的RSet是在Card Table的基础上实现的：每个Region会记录下别的Region有指向自己的指针，并标记这些指针分别在哪些Card的范围内。这个RSet其实是一个Hash Table，Key是别的Region的起始地址，Value是一个集合，里面的元素是Card Table的Index。**
+
+<br/>
+
+G1 Young GC的执行过程：
+
+1. Stop-the-World。
+
+2. 根区域扫描。
+
+3. 更新Remember Set：清空Dirty Card Queue更新Remember Set。
+
+4. 处理Remember Set：通过RS找打Eden Region内被Old Region引用的对象。
+
+5. 复制算法：优先回收收益最大的Eden Region，拷贝存活对象到Survivor/Old Region，清理Eden Region空间。
+
+6. 处理引用队列（软引用、弱引用、虚引用处理）。
+
+<br/>
+
+### Mixed GC
+
+选定所有年轻代里的Region，外加根据Global Concurrent Marking统计得出收集收益高的若干老年代Region。在用户指定的开销目标范围内尽可能选择收益高的老年代Region。Mixed GC不是Full GC，它只能回收部分老年代的Region，如果Mixed GC实在无法跟上程序分配内存的速度，导致老年代填满无法继续进行Mixed GC，就会使用Serial Old GC（Full GC）来收集整个GC heap。所以我们可以知道，G1是不提供Full GC的。
+
+<br/>
+
+Global Concurrent Marking的执行过程类似CMS，不同的是在G1它主要是为Mixed GC提供标记服务的，并不是一次GC过程的一个必须环节。Global Concurrent Marking的执行过程分为四个步骤：
+
+1. 初始标记（Initial Mark，STW）
+
+    执行一次Young GC；标记所有和GC Roots连通的Region块，标记期间采用STW机制。
+
+2. 根区域扫描 (Root Region Scanning)
+
+    在初始标记的Survivor区扫描对老年代的引用，并标记被引用的对象。
+
+    该阶段与应用程序（非 STW）同时运行，并且只有完成该阶段后，才能开始下一次 STW 年轻代垃圾回收。
+
+3. 并发标记（Concurrent Marking）
+
+    这个阶段从GC Root开始对heap中的对象标记，标记线程与应用程序线程并行执行，并且收集各个Region的存活对象信息。
+
+    这个阶段可能被Young GC打断。
+
+4. 最终标记（Remark，STW）
+
+    标记那些在并发标记阶段发生变化的对象将被回收。
+
+    该阶段是STW回收，帮助完成标记周期。G1 GC清空SATB缓冲区，跟踪未被访问的存活对象，并执行引用处理。
+
+5. 清除垃圾（Cleanup）
+
+    在这个最后阶段，G1 GC执行统计和RSet净化的STW操作。
+
+    在统计期间，G1 GC会识别完全空闲的区域和可供进行混合垃圾回收的区域。
+
+    清理阶段在将空白区域重置并返回到空闲列表时为部分并发。
+
+<br/>
+
+第一阶段Initial Mark是共用了Young GC的暂停，这是因为他们可以复用Root Scan操作，所以可以说Global Concurrent Marking是伴随Young GC而发生的。Young GC发生的时机大家都知道，那什么时候发生Mixed GC呢？其实是由一些参数控制着的，另外也控制着哪些老年代Region会被选入CSet。
+
+<br/>
+
+### G1 调优参数
+
+<kbd>-XX:G1HeapRegionSize=n</kbd>
+
+设置Region区域的大小。值是2的幂，范围是1MB到32MB之间。目标是根据最小的Java堆大小划分出约2048个区域。如果不设定，那么G1会根据Heap大小自动决定
+
+<br/>
+
+<kbd>-XX:MaxGCPauseMillis=200</kbd>
+
+为所需的最长暂停时间设置目标值，默认值是200毫秒。这是一个软目标，即虚拟机会尽最大可能满足这一时间，但某些情况下仍可能超过。
+
+<br/>
+
+<kbd>-XX:G1NewSizePercent=5</kbd>
+
+设置要用作年轻代大小最小值的堆百分比。默认值是Java堆的5%。这是一个实验性的标志。
+
+<br/>
+
+<kbd>-XX:G1MaxNewSizePercent=60</kbd>
+
+设置要用作年轻代大小最大值的堆大小百分比。默认值是Java堆的60%。这是一个实验性的标志。
+
+<br/>
+
+<kbd>-XX:ParallelGCThreads=n</kbd>
+
+设置STW工作线程数的值。将n的值设置为逻辑处理器的数量。n的值与逻辑处理器的数量相同，最多为8。
+
+如果逻辑处理器不止8个，则将n的值设置为逻辑处理器数的5/8左右。这适用于大多数情况，除非是较大的SPARC系统，其中n的值可以是逻辑处理器数的5/16左右。
+
+<br/>
+
+<kbd>-XX:ConcGCThreads=n</kbd>
+
+设置并行标记的线程数。将n设置为并行垃圾回收线程数ParallelGCThreads的1/4左右。
+
+<br/>
+
+<kbd>-XX:InitiatingHeapOccupancyPercent=45</kbd>
+
+设置触发标记周期的Java堆占用率阈值。默认占用率是整个Java堆的45%。
+
+<br/>
+
+<kbd>-XX:G1MixedGCLiveThresholdPercent=65</kbd>
+
+为混合垃圾回收周期中要包括的旧区域设置占用率阈值。默认占用率为65%。这是一个实验性的标志。
+
+<br/>
+
+<kbd>-XX:G1HeapWastePercent=10</kbd>
+
+设置您愿意浪费的堆百分比。如果可回收百分比小于堆废物百分比，Java HotSpot VM不会启动混合垃圾回收周期，默认值是 10%。
+
+<br/>
+
+<kbd>-XX:G1MixedGCCountTarget=8</kbd>
+
+设置标记周期完成后，对存活数据上限为`G1MixedGCLIveThresholdPercent`的旧区域执行混合垃圾回收的目标次数，默认值是8次混合垃圾回收。
+
+混合回收的目标是要控制在此目标次数以内。
+
+<br/>
+
+<kbd>-XX:G1OldCSetRegionThresholdPercent=10</kbd>
+
+设置混合垃圾回收期间要回收的最大区域数，默认值是Java堆的10%。
+
+<br/>
+
+<kbd>-XX:G1ReservePercent=10</kbd>
+
+设置作为空闲空间的预留内存百分比，以降低目标空间溢出的风险。默认值是10%。增加或减少百分比时，请确保对总的Java堆调整相同的量。
+
+<br/>
+
+##### 评估和微调G1时，请记住以下建议：
+
+* 年轻代大小
+
+    避免使用-Xmn选项或-XX:NewRatio等其他相关选项显式设置年轻代大小。固定年轻代的大小会覆盖暂停时间目标。
+
+<br/>
+
+* 暂停时间目标
+
+    每当对垃圾回收进行评估或调优时，都会涉及到延迟与吞吐量的权衡。G1的吞吐量目标是90%的应用程序时间和10%的垃圾回收时间。
+
+    如果将其与Java HotSpot VM的吞吐量回收器相比较，目标则是99%的应用程序时间和1%的垃圾回收时间。因此，当您评估G1的吞吐量时，暂停时间目标不要太严苛。目标太过严苛表示您愿意承受更多的垃圾回收开销，而这会直接影响到吞吐量。当评估G1的延迟时，请设置所需的（软）实时目标，G1会尽量满足。副作用是，吞吐量可能会受到影响。
+
+<br/>
+
+* 掌握混合垃圾回收：当您调优混合垃圾回收时，请尝试以下选项。
+
+    <kbd>-XX:InitiatingHeapOccupancyPercent</kbd>
+
+    <kbd>-XX:G1MixedGCLiveThresholdPercent</kbd>和<kbd>-XX:G1HeapWastePercent</kbd>
+
+    <kbd>-XX:G1MixedGCCountTarget</kbd>和<kbd>-XX:G1OldCSetRegionThresholdPercent</kbd>
+
+<br/>
+
+### G1 名词解释
+
+**Remembered Sets**
+
+RSets跟踪指向某个区域的对象引用。每个区域对应一个RSet。RSets对整体内存占用的影响少于5%。
+
+<br/>
+
+**Collection Sets**
+
+CSets在一次GC中将被回收的区域集合。所有CSet区域中的存活对象都会被移动到新的区域中，这些区域可以是Eden区、survivor区或老年代。CSets对JVM内存占用影响少于1%。
+
+<br/>
+
+**三色标记算法**
+
+三色标记算法是并发阶段维持GC正确性的一种算法，它将对象分为三种类型：
+
+* 黑色：根对象，或者该对象与它的子对象都被扫描
+
+* 灰色：对象本身被扫描,但还没扫描完该对象中的子对象
+
+* 白色：未被扫描对象，扫描完成所有对象之后，最终为白色的为不可达对象，即垃圾对象
+
+<br/>
+
+当GC开始扫描对象时，根对象被置为黑色，子对象被置为灰色。
+
+![Three Color algorithm - step 1]({{site.baseurl}}/pic/G1GC/3.svg)
+
+继续由灰色遍历,将已扫描了子对象的对象置为黑色。
+
+![Three Color algorithm - step 2]({{site.baseurl}}/pic/G1GC/4.svg)
+
+遍历了所有可达的对象后，所有可达的对象都变成了黑色。不可达的对象即为白色，需要被清理。
+
+![Three Color algorithm - step 3]({{site.baseurl}}/pic/G1GC/5.svg)
+
+这看起来很美好，但是在标记过程中，应用程序也在运行，那么对象的指针就有可能改变。这样的话，我们就会遇到一个问题：对象丢失问题。
+
+我们看下面一种情况，当垃圾收集器扫描到下面情况时：
+
+![Three Color algorithm - problem 1]({{site.baseurl}}/pic/G1GC/6.svg)
+
+这时候程序执行了以下操作：
+
+```java
+A.c = C;
+B.c = null;
+```
+
+这样，对象的状态图变成如下情形：
+
+![Three Color algorithm - problem 2]({{site.baseurl}}/pic/G1GC/7.svg)
+
+垃圾收集器再标记扫描的时候就会下图成这样：
+
+![Three Color algorithm - problem 3]({{site.baseurl}}/pic/G1GC/8.svg)
+
+很显然，此时对象C是白色，但被认为是垃圾需要清理的对象，显然这是不合理的。
+
+那么我们如何保证应用程序在运行的时候，GC标记的对象不丢失呢？有如下2中可行的方式：
+
+* 在插入的时候记录对象
+
+* 在删除的时候记录对象
+
+<br/>
+
+刚好这对应CMS和G1的2种不同实现方式：
+
+* 在CMS采用的是增量更新，只要在写屏障（write barrier）里发现要有一个白对象的引用被赋值到一个黑对象的字段里，那就把这个白对象变成灰色的，即插入的时候记录下来。
+
+* 在G1中，使用的是SATB（snapshot-at-the-beginning）的方式，删除的时候记录所有的对象，它有3个步骤：
+
+    1. 在开始标记的时候生成一个快照图标记存活对象。
+    2. 在并发标记的时候所有被改变的对象入队（在write barrier里把所有旧的引用所指向的对象都变成非白的）。
+    3. 可能存在游离的垃圾，将在下次被收集。
