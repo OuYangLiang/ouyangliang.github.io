@@ -1,0 +1,99 @@
+---
+layout: post
+title:  "HBase简介"
+date:   2018-04-26 08:19:16 +0800
+categories: Hadoop
+keywords: Hadoop,HDFS,HBase
+description: HBase简介
+---
+xxxxxxxxxxxx
+
+
+
+### 部署HBase集群
+
+我们使用三台服务器（192.168.0.161, 192.168.0.162, 192.168.0.163）来构建一个HBase集群，其中192.168.0.161为HMaster，192.168.0.162与192.168.0.163为Region Server。
+
+<br/>
+
+**一、将HBase安装文件分别解压到各个服务器的/opt/local目录下面**
+
+```shell
+sudo tar -zvxf hbase-1.2.6-bin.tar.gz -C /opt/local
+```
+
+<br/>
+
+**二、修改HBase安装目录所有者权限（三台服务器一样）**
+
+```shell
+cd /opt/local
+sudo chown -R john:john hbase-1.2.6
+```
+
+<br/>
+
+**三、修改hadoop-env.sh文件**
+
+```shell
+export JAVA_HOME=/opt/local/jdk1.8.0_151 #设置JAVA_HOME
+export HBASE_MANAGES_ZK=false #依赖外部独立zookeeper集群
+```
+
+<br/>
+
+**四、修改hbase-site.xml文件（三台服务器一样）**
+
+```xml
+<property>
+  <name>hbase.rootdir</name>
+  <value>hdfs://192.168.0.161:9000/hbase</value>
+</property>
+<property>
+  <name>hbase.cluster.distributed</name>
+  <value>true</value>
+</property>
+<property>
+  <name>hbase.zookeeper.property.clientPort</name>
+  <value>2181</value>
+</property>
+<property>
+  <name>hbase.zookeeper.quorum</name>
+  <value>192.168.0.161,192.168.0.162,192.168.0.163</value>
+</property>
+<property>
+  <name>hbase.zookeeper.property.dataDir</name>
+  <value>/hbase</value>
+</property>
+```
+
+<br/>
+
+**四、修改regionservers文件（192.168.0.161）**
+
+```text
+192.168.0.162
+192.168.0.163
+```
+
+<br/>
+
+**五、启动HDFS集群，参照[《HDFS简介》]({{site.baseurl}}/2018/02/HDFS简介.html)与[《MapReduce简介》]({{site.baseurl}}/2018/02/MapReduce简介.html)**
+
+<br/>
+
+**六、启动Zookeeper集群，参照[《zookeeper集群部署》]({{site.baseurl}}/2017/08/zookeeper集群部署.html)**
+
+<br/>
+
+**七、启动HBase集群（192.168.0.161)**
+
+```shell
+/opt/local/hbase-1.2.6/bin/start-hbase.sh
+```
+
+<br/>
+
+现在我们可以通过http://192.168.0.161:16010访问HBase控制平台了，可以看到192.168.0.162和192.168.0.163两台Region Server。
+
+![hbase web]({{site.baseurl}}/pic/hadoop/11.png)
