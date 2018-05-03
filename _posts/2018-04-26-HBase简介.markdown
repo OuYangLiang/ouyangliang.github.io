@@ -154,6 +154,20 @@ HRegionServer一般和DataNode在同一台机器上运行，实现数据的本�
 
 <br/>
 
+### Region查找
+
+为了让客户端找到包含特定RowKey的Region，HBase提供了两张特殊的表：**-ROOT-**和**.META.**。其中-ROOT- Table的位置存储在ZooKeeper，它存储了.META. Table的RegionInfo信息，并且它只能存在一个HRegion，而.META. Table则存储了用户Table的RegionInfo信息，它可以被切分成多个HRegion，因而对第一次访问用户Table时，首先从ZooKeeper中读取-ROOT- Table所在HRegionServer；然后从该HRegionServer中根据请求的TableName，RowKey读取.META. Table所在HRegionServer；最后从该HRegionServer中读取.META. Table的内容而获取此次请求需要访问的HRegion所在的位置，然后访问该HRegionSever获取请求的数据，这需要三次请求才能找到用户Table所在的位置，然后第四次请求开始获取真正的数据。当然为了提升性能，客户端会缓存-ROOT-表及.META.表的内容。
+
+可是即使客户端有缓存，在初始阶段需要三次请求才能直到用户Table真正所在的位置也是性能低下的，而且真的有必要支持那么多的HRegion吗？或许对Google这样的公司来说是需要的，但是对一般的集群来说好像并没有这个必要。在BigTable的论文中说，每行METADATA存储1KB左右数据，中等大小的Tablet(HRegion)在128MB左右，3层位置的Schema设计可以支持2^34个Tablet(HRegion)。即使去掉-ROOT- Table，也还可以支持2^17(131072)个HRegion， 如果每个HRegion还是128MB，那就是16TB，这个貌似不够大，但是现在的HRegion的最大大小都会设置的比较大，比如我们设置了2GB，此时支持的大小则变成了4PB，对一般的集群来说已经够了，因而在HBase 0.96以后去掉了-ROOT- Table，只剩下这个特殊的目录表叫做Meta Table(hbase:meta)，它存储了集群中所有用户HRegion的位置信息，而ZooKeeper的节点中(/hbase/meta-region-server)存储的则直接是这个Meta Table的位置，并且这个Meta Table如以前的-ROOT- Table一样是不可split的。这样，客户端在第一次访问用户Table的流程就变成了：
+
+1. 从ZooKeeper(/hbase/meta-region-server)中获取hbase:meta的位置（HRegionServer的位置），缓存该位置信息。
+2. 从HRegionServer中查询用户Table对应请求的RowKey所在的HRegionServer，缓存该位置信息。
+3. 从查询到HRegionServer中读取Row。
+
+![Region Locate]({{site.baseurl}}/pic/hadoop/14.svg)
+
+从这个过程中，我们发现客户会缓存这些位置信息，然而第二步它只是缓存当前RowKey对应的HRegion的位置，因而如果下一个要查的RowKey不在同一个HRegion中，则需要继续查询hbase:meta所在的HRegion，然而随着时间的推移，客户端缓存的位置信息越来越多，以至于不需要再次查找hbase:meta Table的信息，除非某个HRegion因为宕机或Split被移动，此时需要重新查询并且更新缓存。
+
 ### HBase集群部署
 
 我们使用三台服务器（192.168.0.161, 192.168.0.162, 192.168.0.163）来构建一个HBase集群，其中192.168.0.161为HMaster，192.168.0.162与192.168.0.163为Region Server。
