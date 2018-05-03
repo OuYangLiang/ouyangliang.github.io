@@ -36,7 +36,123 @@ HBase是一个建立在Hadoop之上的高可靠、高性能、面向列、可伸
 
 ### HBase架构设计
 
+在HBase集群中，主要有客户端Client、HMaster、HRegionServer和Zookeeper等几个主要角色。在底层，它将数据存储于HDFS中，其总体架构如下所示：
 
+![hbase arch]({{site.baseurl}}/pic/hadoop/12.svg)
+
+**Client**
+
+1. 使用HBase的RPC机制与HMaster和HRegionServer进行通信。
+2. 对于管理类操作，Client与HMaster进行RPC通信。
+3. 对于数据读写类操作，Client与HRegionServer进行RPC。
+
+<br/>
+
+**主节点HMaster**
+
+1. 管理HRegionServer，实现其负载均衡。
+2. 管理和分配HRegion，比如在HRegion拆分时分配新的HRegion；在HRegionServer退出时迁移其内的HRegion到其他HRegionServer上。
+3. 监控集群中所有HRegionServer的状态(通过Heartbeat和监听ZooKeeper中的状态)。
+4. 处理Schema更新请求 (创建、删除、修改Table的定义等）。
+5. HMaster没有单点问题，在Hbase中可以启动多个HMaster，通过Zookeeper的Master Election机制保证总有一个Master胜出。
+
+<br/>
+
+**HRegionServer**
+
+1. HRegionServer维护HMaster分配给它的region，处理这些Region的IO请求。
+2. HRegionServer负责切分在运行过程中变得过大的Region。
+
+<br/>
+
+**ZooKeeper**
+
+1. 通过选举，保证任何时候，集群中只有一个HMaster，HMaster与HRegionServer启动时会向ZooKeeper注册。
+2. 实时监控HRegionServer的上线和下线信息，并实时通知给HMaster。
+3. 存贮所有Region的寻址入口和HBase的Schema和Table元数据。
+4. Zookeeper的引入实现HMaster主从节点的failover。
+
+<br/>
+
+**小结**
+
+1. Client访问HBase数据不需要HMaster参与（寻址访问ZooKeeper，数据读写访问HRegionServer），HMaster仅仅维护Table和Region的元数据信息，负载很低。
+2. HRegion所处理的数据尽量和数据所在的DataNode在一起，实现数据的本地化。
+
+<br/>
+
+### HBase数据模型
+
+* **Table**
+
+    与传统关系型数据库类似，HBase以表(Table)的方式组织数据。
+
+* **Row**
+
+    HBase表中的行通过RowKey（类似于DB表的主键）进行唯一标识，不论是数字还是字符串，最终都会转换成字段数据进行存储。HBase表中的行是按RowKey字典顺序排列的。
+
+* **Column Family**
+
+    HBase表由行和列共同组织，同时引入列族的概念，它将一列或多列组织在一起。HBase的列必须属于某一个列族，在创建表时只需指定表名和至少一个列族。
+
+* **Cell**
+
+    行和列的交叉点称为单元格，单元格的内容就是列的值，以二进制形式存储。
+
+* **Version**
+
+    每个Cell的值可保存数据的多个版本（到底支持几个版本可在建表时指定），按时间顺序倒序排列，时间戳是64位的整数，可在写入数据时赋值，也可由RegionServer自动赋值。
+
+<br/>
+
+* **小结**
+
+    1. HBase没有数据类型，任何列值都被转换成字符串进行存储。
+    2. 与关系型数据库在创建表时需明确包含的列及类型不同，HBase表的每一行可以有不同的列。
+    3. 相同RowKey的插入操作被认为是同一行的操作。即相同RowKey的二次写入操作，第二次是对该行某些列的更新操作。
+    4. 列由列族和列名连接而成，分隔符是冒号，如  d:Name（d: 列族名， Name: 列名）。
+    5. HBase不支持条件查询和Order by等查询，读取记录只能按Row key（及其range）或全表扫描。
+    6. 在表创建时只需声明表名和至少一个列族名，每个Column Family为一个存储单元。
+    7. 列是可以增加和删除的，同一Column Family的Columns会群聚在一个存储单元上，并依Column key排序，因此设计时应将具有相同I/O特性的Column设计在一个Column Family上以提高性能。
+    8. HBase通过row和column确定一份数据，这份数据的值可能有多个版本，不同版本的值按照时间倒序排序，即最新的数据排在最前面，查询时默认返回最新版本。
+    9. 每个单元格值通过4个键唯一索引，TableName+RowKey+ColumnKey+Timestamp -> Value。
+    10. 存储类型
+        * TableName是字符串
+        * RowKey和ColumnName是二进制值（Java 类型 byte[]）
+        * Timestamp是一个64位整数（Java 类型 long）
+        * Value是一个字节数组（Java类型 byte[]）
+
+<br/>
+
+### HRegionServer
+
+HRegionServer一般和DataNode在同一台机器上运行，实现数据的本地性。HRegionServer包含多个HRegion，由WAL(HLog)、BlockCache、MemStore、HFile组成，内部结构如下：
+
+![HRegionServer]({{site.baseurl}}/pic/hadoop/13.svg)
+
+* **WAL**
+
+    即Write Ahead Log，在早期版本中称为HLog，它是HDFS上的一个文件，如其名字所表示的，所有写操作都会先保证将数据写入这个Log文件后，才会真正更新MemStore，最后写入HFile中。
+
+    采用这种模式，可以保证HRegionServer宕机后，我们依然可以从该Log文件中读取数据，Replay所有的操作，而不至于数据丢失。这个Log文件会定期Roll出新的文件而删除旧的文件(那些已持久化到HFile中的Log可以删除)。WAL文件存储在/hbase/WALs/${HRegionServer_Name}的目录中，一般一个HRegionServer只有一个WAL实例，也就是说一个HRegionServer的所有WAL写都是串行的(就像log4j的日志写也是串行的)，这当然会引起性能问题，因而在HBase 1.0之后，通过HBASE-5699实现了多个WAL并行写(MultiWAL)，该实现采用HDFS的多个管道写，以单个HRegion为单位。
+
+* **BlockCache**
+
+    BlockCache是一个采用LRU算法的读缓存。HBase中提供两种BlockCache的实现：默认on-heap LruBlockCache和BucketCache(通常是off-heap)。通常BucketCache的性能要差于LruBlockCache，然而由于GC的影响，LruBlockCache的延迟会变的不稳定，而BucketCache由于是自己管理BlockCache，而不需要GC，因而它的延迟通常比较稳定，这也是有些时候需要选用BucketCache的原因。
+
+* **HRegion**
+
+    HRegion是一个Table中的一个Region在一个HRegionServer中的表达。一个Table可以有一个或多个Region，他们可以在一个相同的HRegionServer上，也可以分布在不同的HRegionServer上，一个HRegionServer可以有多个HRegion，他们可以属于不同的Table。HRegion由多个Store(HStore)构成，每个HStore对应了一个Table在这个HRegion中的一个Column Family，即每个Column Family就是一个集中的存储单元，因而最好将具有相近IO特性的Column存储在一个Column Family，以实现高效读取(数据局部性原理，可以提高缓存的命中率)。HStore是HBase中存储的核心，它实现了读写HDFS功能，一个HStore由一个MemStore和0个或多个StoreFile组成。
+
+* **MemStore**
+
+    MemStore是一个写缓存(In Memory Sorted Buffer)，所有数据的写在完成WAL日志写后，会写入MemStore中，MemStore根据一定的算法将数据Flush到底层HDFS文件中(HFile)，通常每个HRegion中的每个Column Family有一个自己的MemStore。
+
+* **HFile**
+
+    HFile(StoreFile)用于存储HBase的数据(Cell/KeyValue)。在HFile中的数据是按RowKey、Column Family、Column排序，对相同的Cell(即这三个值都一样)，则按timestamp倒序排列。
+
+<br/>
 
 ### HBase集群部署
 
