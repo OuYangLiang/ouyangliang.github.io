@@ -168,6 +168,20 @@ HRegionServer一般和DataNode在同一台机器上运行，实现数据的本�
 
 从这个过程中，我们发现客户会缓存这些位置信息，然而第二步它只是缓存当前RowKey对应的HRegion的位置，因而如果下一个要查的RowKey不在同一个HRegion中，则需要继续查询hbase:meta所在的HRegion，然而随着时间的推移，客户端缓存的位置信息越来越多，以至于不需要再次查找hbase:meta Table的信息，除非某个HRegion因为宕机或Split被移动，此时需要重新查询并且更新缓存。
 
+<br/>
+
+**hbase:meta表**
+
+hbase:meta表存储了所有用户HRegion的位置信息，它的RowKey是：tableName,regionStartKey,regionId,replicaId等，它只有info列族，这个列族包含三个列：
+
+* info:regioninfo：regionId,tableName,startKey,endKey,offline,split,replicaId
+* info:server格式：HRegionServer对应的server:port。
+* info:serverstartcode: HRegionServer的启动时间戳。
+
+![meta table]({{site.baseurl}}/pic/hadoop/15.svg)
+
+<br/>
+
 ### HBase集群部署
 
 我们使用三台服务器（192.168.0.161, 192.168.0.162, 192.168.0.163）来构建一个HBase集群，其中192.168.0.161为HMaster，192.168.0.162与192.168.0.163为Region Server。
