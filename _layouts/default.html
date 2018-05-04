@@ -36,12 +36,12 @@
           $( document ).ready(function() {
             var idx = location.href.indexOf("?");
             if (-1 == idx) {
-              return;
-            }
-
-            var category = decodeURIComponent(location.href.substr(idx + 1));
-            if ($('#' + category + '_box')) {
-              $('#' + category + '_box').css('display', '');
+              $ ('.hidden-category').css('display', '');
+            } else {
+              var category = decodeURIComponent(location.href.substr(idx + 1));
+              if ($('#' + category + '_box')) {
+                $('#' + category + '_box').css('display', '');
+              }
             }
           });
         </script>
