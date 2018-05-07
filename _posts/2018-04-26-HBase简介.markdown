@@ -262,6 +262,20 @@ Data Block中的Cell都是升序排列，每个block都有它自己的Leaf-Index
 
 <br/>
 
+### HBase读路径
+
+---
+
+看到这里，你应该明白在Hbase中一行数据可能出现在不同的地方：HFile文件中、MemStore中或者Block Cache中都有可能。当我们Get一行数据时，HBase使用一种Merge Read的方式来查找对应的数据：
+
+1. 首先，HBase会从Block Cache中查找数据。近期查询过的数据会在这里，前面我们说过，Block Cache是一个采用LRU算法的缓存。
+2. 其次，HBase会从MemStore中查找数据，近期更新的数据会在这里。
+3. 最后，如果在Block Cache和MemStore中没有获得全部的KeyValues，HBase会使用Block Cache Index及Bloom filters的信息来加载HFiles文件读取需要的信息。
+
+前面说过，一个列族可能包括多个HFile，所有一次读请求可能会导致加载多个文件，我们称之为**Read Amplification**，Read Amplification对性能是有影响的。
+
+![Read Path]({{site.baseurl}}/pic/hadoop/24.svg)
+
 ### HBase集群部署
 
 ---
