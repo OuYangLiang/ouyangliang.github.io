@@ -12,6 +12,8 @@ HBase是一个建立在Hadoop之上的高可靠、高性能、面向列、可伸
 
 ### HBase的特点
 
+---
+
 1. 大容量
 
     HBase单表可以有百亿行、百万列，数据矩阵横向和纵向两个维度所支持的数据量级都非常具有弹性。
@@ -35,6 +37,8 @@ HBase是一个建立在Hadoop之上的高可靠、高性能、面向列、可伸
 <br/>
 
 ### HBase架构设计
+
+---
 
 在HBase集群中，主要有客户端Client、HMaster、HRegionServer和Zookeeper等几个主要角色。在底层，它将数据存储于HDFS中，其总体架构如下所示：
 
@@ -83,6 +87,8 @@ HBase是一个建立在Hadoop之上的高可靠、高性能、面向列、可伸
 
 ### HBase数据模型
 
+---
+
 * **Table**
 
     与传统关系型数据库类似，HBase以表(Table)的方式组织数据。
@@ -126,6 +132,8 @@ HBase是一个建立在Hadoop之上的高可靠、高性能、面向列、可伸
 
 ### HRegionServer
 
+---
+
 HRegionServer一般和DataNode在同一台机器上运行，实现数据的本地性。HRegionServer包含多个HRegion，由WAL(HLog)、BlockCache、MemStore、HFile组成，内部结构如下：
 
 ![HRegionServer]({{site.baseurl}}/pic/hadoop/13.svg)
@@ -156,9 +164,15 @@ HRegionServer一般和DataNode在同一台机器上运行，实现数据的本�
 
 ### Region查找
 
+---
+
 为了让客户端找到包含特定RowKey的Region，HBase提供了两张特殊的表：**-ROOT-**和**.META.**。其中-ROOT- Table的位置存储在ZooKeeper，它存储了.META. Table的RegionInfo信息，并且它只能存在一个HRegion，而.META. Table则存储了用户Table的RegionInfo信息，它可以被切分成多个HRegion，因而对第一次访问用户Table时，首先从ZooKeeper中读取-ROOT- Table所在HRegionServer；然后从该HRegionServer中根据请求的TableName，RowKey读取.META. Table所在HRegionServer；最后从该HRegionServer中读取.META. Table的内容而获取此次请求需要访问的HRegion所在的位置，然后访问该HRegionSever获取请求的数据，这需要三次请求才能找到用户Table所在的位置，然后第四次请求开始获取真正的数据。当然为了提升性能，客户端会缓存-ROOT-表及.META.表的内容。
 
+<br/>
+
 可是即使客户端有缓存，在初始阶段需要三次请求才能直到用户Table真正所在的位置也是性能低下的，而且真的有必要支持那么多的HRegion吗？或许对Google这样的公司来说是需要的，但是对一般的集群来说好像并没有这个必要。在BigTable的论文中说，每行METADATA存储1KB左右数据，中等大小的Tablet(HRegion)在128MB左右，3层位置的Schema设计可以支持2^34个Tablet(HRegion)。即使去掉-ROOT- Table，也还可以支持2^17(131072)个HRegion， 如果每个HRegion还是128MB，那就是16TB，这个貌似不够大，但是现在的HRegion的最大大小都会设置的比较大，比如我们设置了2GB，此时支持的大小则变成了4PB，对一般的集群来说已经够了，因而在HBase 0.96以后去掉了-ROOT- Table，只剩下这个特殊的目录表叫做Meta Table(hbase:meta)，它存储了集群中所有用户HRegion的位置信息，而ZooKeeper的节点中(/hbase/meta-region-server)存储的则直接是这个Meta Table的位置，并且这个Meta Table如以前的-ROOT- Table一样是不可split的。这样，客户端在第一次访问用户Table的流程就变成了：
+
+<br/>
 
 1. 从ZooKeeper(/hbase/meta-region-server)中获取hbase:meta的位置（HRegionServer的位置），缓存该位置信息。
 2. 从HRegionServer中查询用户Table对应请求的RowKey所在的HRegionServer，缓存该位置信息。
@@ -182,9 +196,77 @@ hbase:meta表存储了所有用户HRegion的位置信息，它的RowKey是：tab
 
 <br/>
 
+### HBase的写路径
+
+---
+
+当客户端发起一个Put请求时，首先它从hbase:meta表中查出数据最终需要去的HRegionServer，然后客户端将Put请求发送给相应的HRegionServer，在HRegionServer中它首先会将该Put操作写入WAL日志文件中(Flush到磁盘中)。
+
+![writes to WAL]({{site.baseurl}}/pic/hadoop/16.svg)
+
+写完WAL日志文件后，HRegionServer根据Put中的TableName和RowKey找到对应的HRegion，并根据Column Family找到对应的HStore，并将Put写入到该HStore的MemStore中。此时写成功，并返回通知客户端。
+
+![writes to Memstore]({{site.baseurl}}/pic/hadoop/17.svg)
+
+<br/>
+
+### MemStore刷写
+
+---
+
+MemStore是一个In Memory Sorted Buffer，每个HStore都有一个MemStore，即它是一个HRegion的一个Column Family对应一个实例。它的排列顺序以RowKey、Column Family、Column的顺序以及Timestamp的倒序，如下所示：
+
+![Memstore]({{site.baseurl}}/pic/hadoop/18.svg)
+
+每一次Put/Delete请求都是先写入到MemStore中，当MemStore满后会Flush成一个新的StoreFile(HFile)，即一个HStore(Column Family)可以有0个或多个StoreFile。**需要注意的是MemStore的最小Flush单元是HRegion而不是单个MemStore，这也是Column Family有个数限制的其中一个原因，太多的Column Family一起Flush会引起性能问题**。
+
+在MemStore Flush过程中，还会在尾部追加一些meta数据，其中就包括Flush时最大的WAL sequence值，以告诉HBase这个StoreFile写入的最新数据的序列。在HRegion启动时，这个sequence会被读取，并取最大的作为下一次更新时的起始sequence。
+
+![Memstore Flush]({{site.baseurl}}/pic/hadoop/19.svg)
+
+<br/>
+
+### HFile文件
+
+---
+
+HBase的数据以KeyValue的形式顺序的存储在HFile中，HFile在MemStore的Flush过程中生成。由于MemStore中存储的Cell遵循相同的排列顺序，因而Flush过程是顺序写，磁盘的顺序写性能很高，因为不需要不停的移动磁盘指针。
+
+从HBase开始到现在，HFile经历了三个版本，其中V2在0.92引入，V3在0.98引入。首先我们来看一下V1的格式：
+
+![HFile]({{site.baseurl}}/pic/hadoop/20.svg)
+
+V1的HFile由多个Data Block、Meta Block、FileInfo、Data Index、Meta Index、Trailer组成，其中Data Block是HBase的最小存储单元，在前文中提到的BlockCache就是基于Data Block的缓存的。一个Data Block由一个魔数和一系列的KeyValue组成，魔数是一个随机的数字，用于表示这是一个Data Block类型，以快速监测这个Data Block的格式，防止数据的破坏。
+
+Data Block的大小可以在创建Column Family时设置(`HColumnDescriptor.setBlockSize()`)，默认值是64KB，大号的Block有利于顺序Scan，小号Block利于随机查询，因而需要权衡。Meta块是可选的，FileInfo是固定长度的块，它纪录了文件的一些Meta信息。Data Index和Meta Index纪录了每个Data块和Meta块的起始位置。Trailer纪录了FileInfo、Data Index、Meta Index块的起始位置，Data Index和Meta Index索引的数量等。其中FileInfo和Trailer是固定长度的。
+
+HFile里面的每个KeyValue对就是一个简单的byte数组，但是这个byte数组里面包含了很多项，并且有固定的结构：
+
+![KeyValue]({{site.baseurl}}/pic/hadoop/21.svg)
+
+开始是两个固定长度的数值，分别表示Key的长度和Value的长度。紧接着是Key，开始是固定长度的数值，表示RowKey的长度，紧接着是RowKey，然后是固定长度的数值，表示Family的长度，然后是Family，接着是Qualifier，然后是两个固定长度的数值，表示Time Stamp和Key Type（Put/Delete）。Value部分没有这么复杂的结构，就是纯粹的二进制数据了。随着HFile版本迁移，KeyValue的格式并未发生太多变化，只是在V3版本，尾部添加了一个可选的Tag数组。
+
+HFile V1版本在实际使用过程中占用内存过多，并且Bloom File和Block Index会变的很大，导致启动时间变长。每个HFile的Bloom Filter可以增长到100MB，这在查询时会引起性能问题，因为每次查询时需要加载并查询Bloom Filter，100MB的Bloom Filer会引起很大的延迟；另一方面，Block Index在一个HRegionServer可能会增长到总共6GB，HRegionServer在启动时需要先加载所有这些Block Index，因而增加了启动时间。为了解决这些问题，在0.92版本中引入HFileV2版本：
+
+![Hfile V2]({{site.baseurl}}/pic/hadoop/22.svg)
+
+在这个版本中，Block Index和Bloom Filter添加到了Data Block中间，而这种设计同时也减少了写的内存使用量；另外，为了提升启动速度，在这个版本中还引入了延迟读的功能，即在HFile真正被使用时才对其进行解析。
+
+FHile V3版本和V2版本相比，并没有太大的改变，它在KeyValue层面上添加了Tag数组的支持；并在FileInfo结构中添加了和Tag相关的两个字段。关于具体HFile格式演化介绍，可以参考[这里](http://hbase.apache.org/book.html#_hfile_format_2)。
+
+对HFile V2格式具体分析，它是一个多层的类B+树索引，采用这种设计，可以实现查找不需要读取整个文件：
+
+![Hfile V2 structure]({{site.baseurl}}/pic/hadoop/23.svg)
+
+Data Block中的Cell都是升序排列，每个block都有它自己的Leaf-Index，每个Block的最后一个Key被放入Intermediate-Index中，Root-Index指向Intermediate-Index。在HFile的末尾还有Bloom Filter用于快速定位那么没有在某个Data Block中的Row；TimeRange信息用于给那些使用时间查询的参考。在HFile打开时，这些索引信息都被加载并保存在内存中，以增加以后的读取性能。
+
+<br/>
+
 ### HBase集群部署
 
-我们使用三台服务器（192.168.0.161, 192.168.0.162, 192.168.0.163）来构建一个HBase集群，其中192.168.0.161为HMaster，192.168.0.162与192.168.0.163为Region Server。
+---
+
+我们之前已经部署了一个hadoop环境[《HDFS简介》]({{site.baseurl}}/2018/02/HDFS简介.html)与[《MapReduce简介》]({{site.baseurl}}/2018/02/MapReduce简介.html)，现在我们接着在上面部署HBase。其中192.168.0.161为HMaster，192.168.0.162与192.168.0.163为Region Server。
 
 <br/>
 
