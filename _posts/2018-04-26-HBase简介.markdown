@@ -276,6 +276,30 @@ Data Block中的Cell都是升序排列，每个block都有它自己的Leaf-Index
 
 ![Read Path]({{site.baseurl}}/pic/hadoop/24.svg)
 
+### HBase Minor Compaction
+
+---
+
+随着MemStore的刷写，会产生越来越多的HFile文件，前面我们讲过，过多的HFile文件对HBase的读性能会产生很大的影响。所以，HBase会简单的将HFiles文件合并成更大一文件，这个过程叫做Minor Compaction。
+
+![Minor Compaction]({{site.baseurl}}/pic/hadoop/25.svg)
+
+### HBase Major compaction
+
+---
+
+相比于Minor Compaction，Major Compaction做得更加彻底。它会将一个列族下所有的HFile文件压缩成一个HFile文件。这里我们说压缩，是因为Major Compaction不是简单的将多个HFile合并成一个HFile，实际上在合并过程，它还会清理掉有删除标方或已经过期的Cells。也正因为此，Major Compaction过程会占用很大的I/O和网络资源，称之为Write amplification。
+
+![Major Compaction]({{site.baseurl}}/pic/hadoop/26.svg)
+
+### Region拆分
+
+---
+
+HBase中初始情况下每个表只有一个Region，随着数据的增加，表的大小变得越来越大。当表大小超过<kbd>hbase.hregion.max.filesize</kbd>时，HBase会将该表一分为二，从正中间拆分成两个大小相等的Region，并将拆分的情况告诉HMaster。新的Region有可能被HMaster移动到其它的HRegionServer，这也是HBase实现负载均衡的方式。
+
+![Region Split]({{site.baseurl}}/pic/hadoop/27.svg)
+
 ### HBase集群部署
 
 ---
