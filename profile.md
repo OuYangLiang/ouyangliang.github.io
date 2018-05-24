@@ -44,6 +44,7 @@ permalink: /profile
         <li class="">对数据库理论，模型设计、隔离级别、锁机制、sql调优等有深入的研究和理解。熟悉MySQL数据库，理解其各种不同存储引擎的特点，调优方案。</li>
         <li class="">熟悉ZooKeeper、Kafka、ActiveMQ等带用中间件技术。</li>
         <li class="">熟悉流式架构及其应用场景，对Storm有比较深入的研究。</li>
+        <li class="">了解大数据技术栈，了解Hadoop、Hive，对HBase有较深入的研究。</li>
         <li class="">了解J2EE主流技术和框架（jsp、servlet、struts、spring、mybatis、ajax、webservice等，太多开源框架，在此不一一例举）。</li>
         <li class="">了解前端技术javascript、jQuery、dojo、jqGrid、css、sitemesh、bootstrap等常用技术。</li>
         <li class="">系统学习过linux，曾使用gentoo两年以上，熟练的linux技能使得我在工作中更加得心应手。</li>
@@ -63,13 +64,54 @@ permalink: /profile
             <b>工作单位</b>
           </div>
           <div class="col-xs-9 col-sm-4 col-md-4 text-info">
-            南京途牛软件技术有限公司
+            南京途牛科技有限公司
           </div>
           <div class="col-xs-3 col-sm-2 col-md-2">
             <b>时间</b>
           </div>
           <div class="col-xs-9 col-sm-4 col-md-4 text-info">
-            2016年5月至今
+            2018年4月至今
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>所在部门</b>
+          </div>
+          <div class="col-xs-9 col-sm-4 col-md-4 text-info">
+            系统研发中心
+          </div>
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>职位</b>
+          </div>
+          <div class="col-xs-9 col-sm-4 col-md-4 text-info">
+            订单研发组经理
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>工作描述</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            xxxxx
+          </div>
+        </div>
+      </div>
+
+      <div class="well well-sm">
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>工作单位</b>
+          </div>
+          <div class="col-xs-9 col-sm-4 col-md-4 text-info">
+            南京途牛科技有限公司
+          </div>
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>时间</b>
+          </div>
+          <div class="col-xs-9 col-sm-4 col-md-4 text-info">
+            2016年5月至2018年4月
           </div>
         </div>
 
@@ -101,6 +143,7 @@ permalink: /profile
           </div>
         </div>
       </div>
+
       <div class="well well-sm">
         <div class="row">
           <div class="col-xs-3 col-sm-2 col-md-2">
