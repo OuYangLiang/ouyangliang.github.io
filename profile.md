@@ -85,7 +85,7 @@ permalink: /profile
             <b>职位</b>
           </div>
           <div class="col-xs-9 col-sm-4 col-md-4 text-info">
-            订单研发组经理
+            系统架构师
           </div>
         </div>
 
@@ -94,7 +94,9 @@ permalink: /profile
             <b>工作描述</b>
           </div>
           <div class="col-xs-9 col-sm-10 col-md-10 text-info">
-            xxxxx
+            今年3月份公司组织架构变动，我被安排到系统研发中心负责组织订单平台的建设工作。途牛的订单系统根据品类，分为近10个独立的订单系统，分散在不同的团队，造成大量的重复，公司各个系统与订单的对接低效，困难。
+
+            为了彻底解决这个问题，我受命组织开发一套完整的订单中心平台，收口各个品类的订单。
           </div>
         </div>
       </div>
@@ -237,6 +239,180 @@ permalink: /profile
       <h3 class="panel-title">项目经验</h3>
     </div>
     <div class="panel-body">
+      <div class="well well-sm">
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目名称</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            订单中心平台项目
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目周期</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            2017-05 ~ 至今
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>参与人数</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            20+
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目简介</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            途牛的订单品类分度假与单品两个大类。度假类包括：跟团、自助、自驾、团队和邮轮；单品包括：机票、火车票、门票、酒店、用车和签证。而系统现状是基本每个单品类都是一个独立的订单系统，由不同的团队维护，造成大量的重复，公司各个系统与订单的对接低效，困难。为了彻底解决这个问题，我们准备开发一套完整的订单中心平台，收口各个品类的订单。<br/><br/>
+
+            逻辑上把订单中心设计为三个独立的系统：订单交易系统、订单执行系统和订单查询系统: <br/>
+
+            【*】订单交易系统 负责订单创建、审核以及修改取消等更改事务的处理，以及事务处理过程中涉及需要同步处理的相关资源的调度处理。<br/>
+            【*】订单执行系统 负责订单异步流转过程中各种履约的实现，如收款、分单提醒、出游通知等。<br/>
+            【*】订单查询系统 负责外部系统对近期订单的多维度查询需求，如会员维度、客服维度的查询。<br/>
+            【*】交易系统与执行系统共用同一套存储，数据通过队列冗余一份给查询系统。<br/>
+            【*】订单交易库的设计目标是满足高行发、低延迟、可扩展，订单查询库的设计目标是满足多维度的查询需求。<br/>
+            【*】交易系统与执行系统采用事件驱动架构风格实现，提升系统扩展性与响应性的同时，降低查询系统的数据同步延迟。<br/>
+            【*】引入HBase用于支持不同品类订单内容差异性的存储需求。<br/>
+            【*】通过状态模式结合策略模式来解决不同品类订单在同一状态下行为的差异性。
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>责任描述</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            目前该项目还处在设计调研阶段，我主要负责整体设计工作。
+          </div>
+        </div>
+      </div>
+      <!-- 订单中心平台项目 -->
+
+      <div class="well well-sm">
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目名称</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            CRM会员分配项目
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目周期</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            2017-05 ~ 2017-06
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>参与人数</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            8
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目简介</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            会员分配简单来讲就是在会员和客服顾问之间建立一个关系，其特点是规则分散，需要查找满足特定条件的会员绑定的特定组织架构下的客服。老的实现方式比较粗暴，用很多定时任务结合sql联查的方式实现，相当于硬编码，导致功能分散，大量慢查询。
+
+            【会员检索】项目上线后效果达到预期，【会员分配】项目就是直接利用会员检索功能重构现成的功能：
+            <ul>
+              <li>会员分配中最为繁琐的会员检索，通过【会员检索】以任务的形式进行，功能收口到一处。</li>
+              <li>检索通过hive实现，解决了DB慢查的问题。</li>
+              <li>提升了业务的响应能力。</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>责任描述</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            这个项目不存在过多的难点，我的工作主要是指导和把关开发人员对具体工作的开展。
+          </div>
+        </div>
+      </div>
+      <!-- 会员分配项目 -->
+
+      <div class="well well-sm">
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目名称</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            CRM会员检索项目
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目周期</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            2017-02 ~ 2017-04
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>参与人数</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            7
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>项目简介</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            途牛CRM系统中几个最核心的业务模块：【会员分配】、【任务化工作台】、【营销权益】都直接依赖了会员检索这个“概念”，但老的【会员检索】模块的实现存在一些瓶颈（功能、性能、维护性），导致系统的开发跟不上业务的发展，17年初我负责相关部分的重构优化工作。
+
+            优化的具体思路如下：
+
+            <ul>
+              <li>涉及检索需要的数据，精确到字段维度，通过HBase近实时落地到HDFS中。</li>
+              <li>应用侧，检索功能模块分为四个组件：<br/>
+              1. Task组件：主要负责管理检索任务，如创建、配置任务信息等。<br/>
+              2. Condition组件：对检索使用的各种复杂的条件，提供统一的抽象，以一套统一的API来处理各种可能出现的条件、以及他们之间的任意组合关系。<br/>
+              3. Parse组件：负责解件Condition条件，输出Hive SQL脚本。<br/>
+              4. Scheduler组件：从Parser组件获取Hive SQL脚本，结合Task的配置信息将任务提交到Hive执行。</li>
+            </ul>
+
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-3 col-sm-2 col-md-2">
+            <b>责任描述</b>
+          </div>
+          <div class="col-xs-9 col-sm-10 col-md-10 text-info">
+            负责整个方案的设计和技术选型，核心代码的开发的评审工作。
+          </div>
+        </div>
+      </div>
+      <!-- 会员检索项目 -->
+
       <div class="well well-sm">
         <div class="row">
           <div class="col-xs-3 col-sm-2 col-md-2">
