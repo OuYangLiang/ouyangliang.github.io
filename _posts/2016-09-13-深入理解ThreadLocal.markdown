@@ -282,7 +282,11 @@ private void remove(ThreadLocal key) {
 
 <br/>
 
-但是在一些Web环境中，线程可能维护在一个容器内部的线程池，它们的生命周期可能大于具体的Web应用。保存在线程ThreadLocalMap中的someObj对象，如果是第三方类加载器（比如tomcat的WebClassLoader）加载的，而我们没有显式的通过ThreadLocal.remove方法移的话，这些someObj对象将无法被GC回收。如果你熟悉java类加载机制的话，就会发现加载这些someObj的类加载器也将无法被回收，从而会导致永久代的溢出，即java.lang.OutOfMemoryError: PermGen space异常。所以很重要的一点，如果我们使用了ThreadLocal，务必使用remove方法进行清除。
+ThreadLocalMap使用ThreadLocal的弱引用作为Key，如果一个ThreadLocal没有外部强引用来引用它，那么系统GC的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现Key为null的Entry，就没有办法访问这些Key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链：Thread Ref -> Thread -> ThreaLocalMap -> Entry -> value永远无法回收，造成内存泄漏。
+
+<br/>
+
+在一些Web环境中，线程可能维护在一个容器内部的线程池，它们的生命周期可能大于具体的Web应用。保存在线程ThreadLocalMap中的someObj对象，如果是第三方类加载器（比如tomcat的WebClassLoader）加载的，而我们没有显式的通过ThreadLocal.remove方法移的话，这些someObj对象将无法被GC回收。如果你熟悉java类加载机制的话，就会发现加载这些someObj的类加载器也将无法被回收，从而会导致永久代的溢出，即java.lang.OutOfMemoryError: PermGen space异常。所以很重要的一点，如果我们使用了ThreadLocal，务必使用remove方法进行清除。
 
 <br/>
 
