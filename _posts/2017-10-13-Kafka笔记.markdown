@@ -2,7 +2,7 @@
 layout: post
 title:  "Kafka笔记"
 date:   2017-10-13 08:00:00 +0800
-categories: 中间件
+categories: kafka
 keywords: kafka,中间件,消息队列
 description: 介绍Kafka API的使用
 ---
