@@ -2,7 +2,8 @@
 layout: default
 ---
 <div class="blog-post">
-    <h2 class="blog-post-title">{{ page.title }}</h2>
-    <p class="blog-post-meta">{{ page.date | date: "%b %-d, %Y" }}</p>
+    <h2 class="blog-post-title"><center>{{ page.title }}</center></h2>
+    <p class="blog-post-meta pull-right">{{ page.date | date: "%b %-d, %Y" }}</p>
+    <div class="clearfix"></div>
     <p>{{ content }} </p>
 </div>

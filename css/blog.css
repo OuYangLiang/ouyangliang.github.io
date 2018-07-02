@@ -92,6 +92,7 @@ body {
 .blog-post-meta {
   margin-bottom: 20px;
   color: #999;
+  padding-right: 150px;
 }
 .blog-post-meta-category-page {
   margin-bottom: 20px;
@@ -99,8 +100,6 @@ body {
   font-family: Monaco, "Courier New", monospace;
   font-size: 80%;
 }
-
-img{ width: 100%; height: auto;max-width: 100%; display: block; }
 
 blockquote{
   font-size: 14px;
