@@ -1,0 +1,103 @@
+---
+layout: post
+title:  "架构设计原则"
+date:   2018-07-01 08:00:00 +0800
+categories: 架构
+keywords: 架构,设计
+description: 架构设计原则
+---
+
+如果一个技术已经存在2年，比如现在很火的前端技术react和vue等，那么我们能预估这个技术大致还有2年的生命期，再久就不确定了；如果一个架构或设计原则已经存在15年，例如单一职责和依赖倒置原则，我可以预期它还有15年甚至更久的生命期。原则比具体技术更抽象，更接近事物本质，也更经得起时间考验的东西。这些原则沉淀在架构师的脑海中，最终内化成他的思维模式，以潜意识方式影响和指导他的架构和设计工作。
+
+### SOLID 面向对象设计原则
+
+---
+
+#### 一、单一职责原则（Single Responsibility Principle - SRP）
+
+<center><img src="{{site.baseurl}}/pic/design-principle/1.jpg" width="600px;"/></center>
+
+<br/>
+
+原文：**There should never be more than one reason for a class to change**.
+
+译文：**修改某个类的理由应该只有一个，如果超过一个，说明类承担不止一个职责，要视情况拆分**。
+
+理解：对于一个类而言，应该仅有一个引起它变化的原因。说白了就是，不同的类具备不同的职责，各施其责。这就好比一个团队，大家分工协作，互不影响，各做各的事情。
+
+<br/>
+
+#### 二、开闭原则（Open Closed Principle - OCP）
+
+<center><img src="{{site.baseurl}}/pic/design-principle/2.jpg" width="600px;"/></center>
+
+<br/>
+
+原文：**Software entities like classes, modules and functions should be open for extension but closed for modifications**.
+
+译文：**软件实体应该对扩展开放，对修改封闭**。
+
+理解：设计时要尽可能抽象出不变和易变的部分，当需求有改动，要修改代码了，此时您要做的是，尽量用继承或组合的方式来扩展类的功能，而不是直接修改类的代码。当系统的架构和设计满足当足的业务，我们应该尽可能采用开闭原则；如果业务发生本质变更，设计已经不再适用了，那别犹豫，直接修改吧。
+
+<br/>
+
+#### 三、里氏替代原则（Liskov Substitution Principle - LSP）
+
+<center><img src="{{site.baseurl}}/pic/design-principle/3.jpg" width="600px;"/></center>
+
+<br/>
+
+原文：**Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it**.
+
+译文：**使用基类的指针或引用的函数，必须是在不知情的情况下，能够替换成派生类的对象**。
+
+四层含议：
+
+* 子类可以实现父类的抽象方法，但是不能覆盖父类的非抽象方法。
+* 子类中可以增加自己特有的方法。
+* 当子类覆盖或实现父类的方法时，方法的前置条件（即方法的入参）要比父类方法的输入参数更宽松。
+* 当子类的方法实现父类的抽象方法时，方法的后置条件（即方法的返回值）要比父类更严格。
+
+疑问：里氏替换原则要求子类避免重写父类方法非抽象方法，而多态却是要求子类重写父类的方法。不明白里氏替换原则与多态之间的取舍。
+
+<br/>
+
+#### 四、最少知识原则（Least Knowledge Principle - LKP）
+
+原文：**Only talk to you immediate friends**.
+
+译文：**只与你最直接的朋友交流**。
+
+理解：这个很好理解，软件设计时应该尽可能的做到低偶合，系统间、模块间、类之间要追求最小化依赖。
+
+最少知识原则（Least Knowledge Principle - LKP）也叫：迪米特法则（Law of Demeter）
+
+<br/>
+
+#### 五、接口隔离原则（Interface Segregation Principle - ISP）
+
+<center><img src="{{site.baseurl}}/pic/design-principle/5.jpg" width="600px;"/></center>
+
+<br/>
+
+原文：**The dependency of one class to another one should depend on the smallest possible interface**.
+
+译文：**不要强迫用户去依赖它们不使用的接口。换句话说，使用多个专门的接口比使用单一的大而全接口要好**。
+
+理解：客户端不应该依赖它不需要的接口，类间的依赖关系应该建立在最小的接口上。
+
+<br/>
+
+#### 六、依赖倒置原则（Dependence Inversion Principle - DIP）
+
+<center><img src="{{site.baseurl}}/pic/design-principle/6.jpg" width="600px;"/></center>
+
+<br/>
+
+原文：**High level modules should not depends upon low level modules. Both should depend upon abstractions. Abstractions should not depend upon details. Details should depend upon abstractions**.
+
+译文：**高层模块不应该依赖于低层模块，它们应该依赖于抽象。抽象不应该依赖于细节，细节应该依赖于抽象**。
+
+理解：应该面向接口编程，不应该面向实现类编程。面向实现类编程，相当于就是论事，那是正向依赖（正常人思维）；面向接口编程，相当于通过事物表象来看本质，那是反向依赖，即依赖倒置（程序员思维）。
+
+例如一个web应用内，Controller是上层模块，Service是接口抽象，ServiceImpl是低层实现。Controller依赖Service来完成业务逻辑时，而ServiceImpl需要实现Service，Controller和ServiceImpl都依赖Service，即高层和低层实现都依赖抽象；高层模块不应该依赖于低层实现，即我们不应该在Controller层直接通过ServiceImpl来处理业务逻辑。
