@@ -97,6 +97,6 @@ Servlet 3.0 为`<servlet>`和`<filter>`标签增加了<async-supported>子标签
 
 <center><img src="{{site.baseurl}}/pic/microservice-separation/3.png" width="100%"/></center>
 
-在真实系统中，我们可以使用Hystrix，除了线程隔离外，它还提供了超时、断路器等实现。
+通过异步化我们不会获得更快的响应时间，但提升了整体的吞吐量和更高的灵活性，根据业务重要性进行分级，对不同的线程池进行监控、运维和降级等处理。在真实系统中，我们可以使用Hystrix，除了线程隔离外，它还提供了超时、断路器等实现。
 
 *最后附上源码地址*：[https://github.com/OuYangLiang/code-example/tree/master/servlet](https://github.com/OuYangLiang/code-example/tree/master/servlet)
