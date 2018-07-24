@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "《微服务架构》：服务粒度大小"
+title:  "《微服务架构》：服务粒度"
 date:   2018-07-18 08:00:00 +0800
 categories: 架构
 keywords: 微服务

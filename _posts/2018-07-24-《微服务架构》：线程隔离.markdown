@@ -1,0 +1,102 @@
+---
+layout: post
+title:  "《微服务架构》：线程隔离"
+date:   2018-07-24 08:00:00 +0800
+categories: 架构
+keywords: 微服务,线程隔离
+description: 如何使用线程隔离提升系统的可用性。
+---
+隔离是指将系统或资源分开，系统隔离是为了在系统发生故障时，能限定传播范围和影响范围，防止出现雪崩效应，从而保证在故障发生时只是部分服务不可用。微服务架构下，常见的隔离方式有线程隔离、进程隔离、集群隔离、机房隔离、动静隔离、读写分离、热点隔离等。本文主要讲解线程隔离，主要是指线程池隔离，在应用内部把请求进行分类，然后交给不同的线程池处理。当某个服务发生问题时，不会将故障扩散到其他线程池，从而保证其他服务的可用性。
+
+<br/>
+
+应用服务器Tomcat在收到http请求后会按照如下流程处理：
+
+1. 容器负责接收并解析请求为HttpServletRequest。
+
+2. 然后交给Servlet进行业务处理。
+
+3. 最后通过HttpServletResponse进行响应。
+
+在Servlet 2.0规范中，所有这些处理都是同步进行的，也就是说必须在同一个线程中完成从接收请求、业务处理到结果的响应：
+
+<center><img src="{{site.baseurl}}/pic/microservice-separation/1.svg"/></center>
+
+大部分应用都会采用这种同步机制，所有的http请求都共享一个线程池（Tomcat容器线程池）。当其中一个服务变得很慢时（可能是某个DB慢查），将造成服务响应时间变长，大多数线程阻塞等待数据响应返回，最终导致整个Tomcat线程池都被该服务占用，甚至拖垮整个Tomcat。为了提升应用的可用性，我们可以把不同的服务隔离到不同的线程池，当某个服务发生故障时，不会对其它线程池的服务造成影响。
+
+为了实现线程隔离，我们还需要借助Servlet 3.0的异步处理支持：Servlet主线程在解析完请求之后，将耗时的操作委派给另一个线程，然后返还给Tomcat容器，由另一个线程来完成业务逻辑的处理和结果的响应：
+
+<center><img src="{{site.baseurl}}/pic/microservice-separation/2.svg"/></center>
+
+`HttpServletRequest.startAsync()`方法返回`AsyncContext`对象，同时进入异步模式。在异步模式中，主线程将`AsyncContext`对象传递给业务线程进行处理，在`doGet`方法结束后，主线程返还给Tomcat容器。
+
+```java
+public class SampleServlet extends HttpServlet {
+    private static final long serialVersionUID = -2476530602619285503L;
+
+    //负责业务处理的线程池
+    private static ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 10, 30, TimeUnit.MINUTES,
+            new ArrayBlockingQueue<Runnable>(100), Executors.defaultThreadFactory(), new AbortPolicy());
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = resp.getWriter();
+        out.println("进入Servlet的时间：" + new Date() + ".<br/>");
+        out.flush();
+
+        //开始异步处理，由另一个线程池负责业务处理
+        AsyncContext ctx = req.startAsync();
+        pool.submit(new Executor(ctx));
+
+        out.println("主线程退出Servlet的时间：" + new Date() + ".<br/>");
+        out.flush();
+    }
+
+    static class Executor implements Runnable {
+        private AsyncContext ctx = null;
+        public Executor(AsyncContext ctx){
+            this.ctx = ctx;
+        }
+
+        public void run(){
+            try {
+                Thread.sleep(1000);
+                PrintWriter out = ctx.getResponse().getWriter();
+                out.println("业务处理完毕的时间：" + new Date() + ".<br/>");
+                out.flush();
+                ctx.complete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+<br/>
+
+Servlet 3.0 为`<servlet>`和`<filter>`标签增加了<async-supported>子标签，该标签的默认取值为false，要启用异步处理支持，需要将其设为true。
+
+```xml
+<servlet>
+    <servlet-name>sampleServlet</servlet-name>
+    <servlet-class>com.personal.oyl.code.example.servlet.SampleServlet</servlet-class>
+    <async-supported>true</async-supported>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>sampleServlet</servlet-name>
+    <url-pattern>/sample</url-pattern>
+</servlet-mapping>
+```
+
+<br/>
+
+打开浏览器，访问Servlet可以看到，主线程退出后，异步线程还在继续处理，最后输出响应信息。
+
+<center><img src="{{site.baseurl}}/pic/microservice-separation/3.png" width="100%"/></center>
+
+在真实系统中，我们可以使用Hystrix，除了线程隔离外，它还提供了超时、断路器等实现。
+
+*最后附上源码地址*：[https://github.com/OuYangLiang/code-example/tree/master/servlet](https://github.com/OuYangLiang/code-example/tree/master/servlet)
