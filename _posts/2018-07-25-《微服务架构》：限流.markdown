@@ -76,3 +76,42 @@ try {
 * 当请求进来时，必须从桶中获取一个令牌才能继续处理，否则拒绝请求，或者暂存到某个缓冲区等待可用令牌。
 
 算法实现上，可以用一个BlockingQueue表示桶，起一个线程以固定的速率向桶中添加令牌。请求到达时需要先从桶中获取令牌，否则拒绝请求或等待。此外，Google开源的guava包也提供了很完善的令牌算法。
+
+<br/>
+
+### Redis + Lua实现基于时间窗口的计算器限流
+
+---
+
+```java
+static String lua = "local key = KEYS[1] " // 限流key
+        + "local limit = tonumber(ARGV[1]) "// 限流伐值
+        + "local current = tonumber(redis.call('get', key) or '0') "
+        + "if (current + 1) > limit then "
+        + "    return 0 "
+        + "elseif current == 0 then "
+        + "    redis.call('incrby', key, '1') "
+        + "    redis.call('expire', key, '2') " // 设置2秒过期时间
+        + "    return 1 "
+        + "else "
+        + "    redis.call('incrby', key, '1') "
+        + "    return 1 "
+        + "end";
+
+public boolean isLimit() {
+    Jedis jedis = null;
+    try {
+        jedis = pool.getResource();
+        // 每秒限流1000次
+        String key = "Limit.Key." + System.currentTimeMillis() / 1000;
+        String limit = "1000";
+
+        Object rlt = jedis.eval(lua, 1, key, limit);
+        return Long.valueOf(0) == rlt;
+    } finally {
+        if (null != jedis) {
+            jedis.close();
+        }
+    }
+}
+```
