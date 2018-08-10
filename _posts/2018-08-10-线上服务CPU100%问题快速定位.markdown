@@ -1,0 +1,154 @@
+---
+layout: post
+title:  "线上服务CPU100%问题快速定位"
+date:   2018-08-10 08:00:00 +0800
+categories: JVM
+keywords:
+description:
+---
+
+#### 步骤一：找到最耗CPU的进程
+
+执行<kbd>top -c</kbd>，显示进程运行信息列表，并键入P(大写)，进程按照CPU使用率排序
+
+```shell
+top - 21:42:12 up  1:05,  3 users,  load average: 2.15, 2.32, 2.17
+Tasks: 106 total,   3 running, 103 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 24.2 us, 26.6 sy,  0.0 ni, 48.3 id,  0.0 wa,  0.0 hi,  0.8 si,  0.0 st
+KiB Mem :  1865988 total,  1512864 free,   138396 used,   214728 buff/cache
+KiB Swap:  2097148 total,  2097148 free,        0 used.  1541644 avail Mem
+
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND   
+  1462 john      20   0 2812968  47476  11884 S  91.0  2.5  32:50.55 java Test
+  1204 john      20   0  148808   3468   1112 R  10.7  0.2   5:00.91 sshd: joh+
+    44 root      20   0       0      0      0 R   0.3  0.0   0:09.63 [kworker/+
+  1511 root      20   0       0      0      0 S   0.3  0.0   0:00.47 [kworker/+
+     1 root      20   0  128168   6836   4076 S   0.0  0.4   0:02.42 /usr/lib/+
+     2 root      20   0       0      0      0 S   0.0  0.0   0:00.01 [kthreadd]
+     3 root      20   0       0      0      0 S   0.0  0.0   0:00.03 [ksoftirq+
+     5 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kworker/+
+     6 root      20   0       0      0      0 S   0.0  0.0   0:00.03 [kworker/+
+     7 root      rt   0       0      0      0 S   0.0  0.0   0:00.67 [migratio+
+     8 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [rcu_bh]  
+     9 root      20   0       0      0      0 S   0.0  0.0   0:00.49 [rcu_sche+
+    10 root      rt   0       0      0      0 S   0.0  0.0   0:00.03 [watchdog+
+    11 root      rt   0       0      0      0 S   0.0  0.0   0:00.01 [watchdog+
+    12 root      rt   0       0      0      0 S   0.0  0.0   0:00.58 [migratio+
+    13 root      20   0       0      0      0 S   0.0  0.0   0:00.60 [ksoftirq+
+    15 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kworker/+
+```
+
+由top命令可得到进程1462最耗CPU。
+
+<br/>
+
+#### 步骤二：找到最耗CPU的线程
+
+执行<kbd>top -Hp 1462</kbd>，显示一个进程的线程运行信息列表，键入P(大写)，线程按照CPU使用率排序
+
+```shell
+top - 21:43:40 up  1:06,  3 users,  load average: 2.21, 2.29, 2.17
+Threads:  14 total,   0 running,  14 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 23.5 us, 26.8 sy,  0.0 ni, 48.5 id,  0.0 wa,  0.0 hi,  1.2 si,  0.0 st
+KiB Mem :  1865988 total,  1512740 free,   138520 used,   214728 buff/cache
+KiB Swap:  2097148 total,  2097148 free,        0 used.  1541520 avail Mem
+
+   PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND    
+  1474 john      20   0 2812968  47476  11884 S 90.0  2.5  34:02.45 java       
+  1466 john      20   0 2812968  47476  11884 S  0.3  2.5   0:04.08 java       
+  1462 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.00 java       
+  1463 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.05 java       
+  1464 john      20   0 2812968  47476  11884 S  0.0  2.5   0:01.14 java       
+  1465 john      20   0 2812968  47476  11884 S  0.0  2.5   0:01.15 java       
+  1467 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.00 java       
+  1468 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.00 java       
+  1469 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.00 java       
+  1470 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.11 java       
+  1471 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.02 java       
+  1472 john      20   0 2812968  47476  11884 S  0.0  2.5   0:00.00 java       
+  1473 john      20   0 2812968  47476  11884 S  0.0  2.5   0:01.14 java       
+  1475 john      20   0 2812968  47476  11884 S  0.0  2.5   0:01.07 java       
+```
+
+由top命令可得到进程1462中最耗CPU的线程是1474。
+
+<br/>
+
+#### 步骤三：将线程PID转化为16进制
+
+```shell
+$ printf "%x\n" 1474
+5c2
+```
+
+<br/>
+
+#### 步骤四：查看堆栈，找到线程在干嘛
+
+```shell
+[john@server-1 ~]$ jstack 1462 | grep 0x5c2 -A 20
+"Thread-0" #8 prio=5 os_prio=0 tid=0x00007fe3f80e8000 nid=0x5c2 runnable [0x00007fe3db8f7000]
+   java.lang.Thread.State: RUNNABLE
+	at java.io.FileOutputStream.writeBytes(Native Method)
+	at java.io.FileOutputStream.write(FileOutputStream.java:326)
+	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82)
+	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140)
+	- locked <0x00000000e381e2a0> (a java.io.BufferedOutputStream)
+	at java.io.PrintStream.write(PrintStream.java:482)
+	- locked <0x00000000e3806d30> (a java.io.PrintStream)
+	at sun.nio.cs.StreamEncoder.writeBytes(StreamEncoder.java:221)
+	at sun.nio.cs.StreamEncoder.implFlushBuffer(StreamEncoder.java:291)
+	at sun.nio.cs.StreamEncoder.flushBuffer(StreamEncoder.java:104)
+	- locked <0x00000000e3806ce8> (a java.io.OutputStreamWriter)
+	at java.io.OutputStreamWriter.flushBuffer(OutputStreamWriter.java:185)
+	at java.io.PrintStream.newLine(PrintStream.java:546)
+	- eliminated <0x00000000e3806d30> (a java.io.PrintStream)
+	at java.io.PrintStream.println(PrintStream.java:807)
+	- locked <0x00000000e3806d30> (a java.io.PrintStream)
+	at Test$Thread1.run(Test.java:15)
+	at java.lang.Thread.run(Thread.java:748)
+```
+
+<br/>
+
+根据jstack的输出，结合源码很容易就可以发现问题：
+
+```java
+import java.util.concurrent.TimeUnit;
+
+public class Test {
+
+    public static void main(String[] args) throws InterruptedException {
+        new Thread(new Thread1()).start();
+        new Thread(new Thread2()).start();
+    }
+
+    static class Thread1 implements Runnable {
+
+        @Override
+        public void run() {
+            for (;;) {
+                System.out.println("hello");
+            }
+        }
+
+    }
+
+    static class Thread2 implements Runnable {
+
+        @Override
+        public void run() {
+            for (;;) {
+                System.out.println("hello");
+
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+}
+```
