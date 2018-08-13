@@ -18,35 +18,35 @@ Tasks: 103 total,   2 running, 101 sleeping,   0 stopped,   0 zombie
 KiB Mem :  1865988 total,  1551680 free,   124868 used,   189440 buff/cache
 KiB Swap:  2097148 total,  2097148 free,        0 used.  1556884 avail Mem
 
-   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                           
-  1612 john      20   0 2812968  37232  11880 S  88.7  2.0   0:17.87 java Test                                                                                         
-  1225 john      20   0  147844   2424   1084 S  13.0  0.1   4:11.92 sshd: john@pts/1                                                                                  
-    44 root      20   0       0      0      0 S   0.7  0.0   0:08.67 [kworker/0:1]                                                                                     
-    13 root      20   0       0      0      0 S   0.3  0.0   0:00.65 [ksoftirqd/1]                                                                                     
-  1376 root      20   0       0      0      0 R   0.3  0.0   0:03.59 [kworker/1:0]                                                                                     
-  1627 john      20   0  157704   2172   1520 R   0.3  0.1   0:00.01 top -c                                                                                            
-     1 root      20   0  128168   6844   4080 S   0.0  0.4   0:02.15 /usr/lib/systemd/systemd --switched-root --system --deserialize 21                                
-     2 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [kthreadd]                                                                                        
-     3 root      20   0       0      0      0 S   0.0  0.0   0:00.02 [ksoftirqd/0]                                                                                     
-     5 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kworker/0:0H]                                                                                    
-     6 root      20   0       0      0      0 S   0.0  0.0   0:00.01 [kworker/u256:0]                                                                                  
-     7 root      rt   0       0      0      0 S   0.0  0.0   0:00.48 [migration/0]                                                                                     
-     8 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [rcu_bh]                                                                                          
-     9 root      20   0       0      0      0 S   0.0  0.0   0:00.32 [rcu_sched]                                                                                       
-    10 root      rt   0       0      0      0 S   0.0  0.0   0:00.01 [watchdog/0]                                                                                      
-    11 root      rt   0       0      0      0 S   0.0  0.0   0:00.01 [watchdog/1]                                                                                      
-    12 root      rt   0       0      0      0 S   0.0  0.0   0:00.39 [migration/1]                                                                                     
-    15 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kworker/1:0H]                                                                                    
-    17 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [kdevtmpfs]                                                                                       
-    18 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [netns]                                                                                           
-    19 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [khungtaskd]                                                                                      
-    20 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [writeback]                                                                                       
-    21 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kintegrityd]                                                                                     
-    22 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [bioset]                                                                                          
-    23 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kblockd]                                                                                         
-    24 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [md]                                                                                              
-    30 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [kswapd0]                                                                                         
-    31 root      25   5       0      0      0 S   0.0  0.0   0:00.00 [ksmd]              
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  1612 john      20   0 2812968  37232  11880 S  88.7  2.0   0:17.87 java Test
+  1225 john      20   0  147844   2424   1084 S  13.0  0.1   4:11.92 sshd: john@pts/1
+    44 root      20   0       0      0      0 S   0.7  0.0   0:08.67 [kworker/0:1]
+    13 root      20   0       0      0      0 S   0.3  0.0   0:00.65 [ksoftirqd/1]
+  1376 root      20   0       0      0      0 R   0.3  0.0   0:03.59 [kworker/1:0]
+  1627 john      20   0  157704   2172   1520 R   0.3  0.1   0:00.01 top -c
+     1 root      20   0  128168   6844   4080 S   0.0  0.4   0:02.15 /usr/lib/systemd/systemd --switched-root --system --deserialize 21
+     2 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [kthreadd]
+     3 root      20   0       0      0      0 S   0.0  0.0   0:00.02 [ksoftirqd/0]
+     5 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kworker/0:0H]
+     6 root      20   0       0      0      0 S   0.0  0.0   0:00.01 [kworker/u256:0]
+     7 root      rt   0       0      0      0 S   0.0  0.0   0:00.48 [migration/0]
+     8 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [rcu_bh]
+     9 root      20   0       0      0      0 S   0.0  0.0   0:00.32 [rcu_sched]
+    10 root      rt   0       0      0      0 S   0.0  0.0   0:00.01 [watchdog/0]
+    11 root      rt   0       0      0      0 S   0.0  0.0   0:00.01 [watchdog/1]
+    12 root      rt   0       0      0      0 S   0.0  0.0   0:00.39 [migration/1]
+    15 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kworker/1:0H]
+    17 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [kdevtmpfs]
+    18 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [netns]
+    19 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [khungtaskd]
+    20 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [writeback]
+    21 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kintegrityd]
+    22 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [bioset]
+    23 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [kblockd]
+    24 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 [md]
+    30 root      20   0       0      0      0 S   0.0  0.0   0:00.00 [kswapd0]
+    31 root      25   5       0      0      0 S   0.0  0.0   0:00.00 [ksmd]
 ```
 
 由top命令可得到进程1612最耗CPU。
@@ -64,21 +64,21 @@ Threads:  14 total,   1 running,  13 sleeping,   0 stopped,   0 zombie
 KiB Mem :  1865988 total,  1543940 free,   132608 used,   189440 buff/cache
 KiB Swap:  2097148 total,  2097148 free,        0 used.  1549144 avail Mem
 
-   PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                                                                                            
-  1624 john      20   0 2812968  45080  11880 R 90.3  2.4   1:04.99 java                                                                                               
-  1625 john      20   0 2812968  45080  11880 S  0.3  2.4   0:00.01 java                                                                                               
-  1612 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java                                                                                               
-  1613 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.06 java                                                                                               
-  1614 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.04 java                                                                                               
-  1615 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.04 java                                                                                               
-  1616 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.15 java                                                                                               
-  1617 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java                                                                                               
-  1618 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java                                                                                               
-  1619 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java                                                                                               
-  1620 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.14 java                                                                                               
-  1621 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.02 java                                                                                               
-  1622 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java                                                                                               
-  1623 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.03 java    
+   PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
+  1624 john      20   0 2812968  45080  11880 R 90.3  2.4   1:04.99 java
+  1625 john      20   0 2812968  45080  11880 S  0.3  2.4   0:00.01 java
+  1612 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java
+  1613 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.06 java
+  1614 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.04 java
+  1615 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.04 java
+  1616 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.15 java
+  1617 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java
+  1618 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java
+  1619 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java
+  1620 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.14 java
+  1621 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.02 java
+  1622 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.00 java
+  1623 john      20   0 2812968  45080  11880 S  0.0  2.4   0:00.03 java
 ```
 
 由top命令可得到进程1612中最耗CPU的线程是1624。
