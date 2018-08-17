@@ -1,0 +1,199 @@
+---
+layout: post
+title:  "基于Kafka实现事件驱动架构"
+date:   2018-08-17 08:00:00 +0800
+categories: 架构
+keywords: 事件驱动,Event Driven,kafka
+description: 基于Kafka实现事件驱动架构
+---
+
+1. 事件驱动架构的优点与缺点
+2. 如何设计
+3. 性能与扩展
+4. 实现
+
+what I need?
+1. 事件表，本地事务，保证数据弱一致。使用分表提升性能，每个实例处理一个或多个分表。
+2. 事件表推送kafka，通过zookeeper实现实例间的隔离
+2. kafka，事件消息中间件，partition数据不需要与事件表分表数目一致。
+3. 事件消费，每个实例消费0-n个partition。
+
+### 事件驱动架构简介
+
+---
+
+事件驱动是一种灵活的系统设计方法，在事件驱动的系统中，当数据发生变化时系统会产生（或者说发布）一个对应的事件。系统中其它对这个事件感兴趣的部分会接收到这个事件，并进行相应的处理。事件驱动设计最大的好处在我看来有两点：一是它为系统提供了很好的扩展能力，比如我们可以对某类事件增加一个订阅者来对系统进行扩展，最主要的是我们并不需要修改任何已有的代码，它完全符合开闭原则；二是它实现了模块间的低偶合，系统间各个部分不是强依赖关系，而是通过事件把整个系统串联起来。
+
+当然，任何事务都有两面性，事件驱动也有其不好的方面。首先，实现一套这样的系统复杂度就很高，对开发人员的要求也很高；再次，对系统的整体把控会很困难，想象一下面对几百个类别的事件，并且没有一个统一的地方可以让我们看到整个业务处理流程，会是什么心情？所以当我们决定采用事件驱动实现系统中，一定要维护好相关的文档，并保持它们的有效性。
+
+我们再来看看事件驱动架构的一些其它的优点：
+
+* 更好的响应性
+
+    事件驱动中，事件的响应是异步处理的，所以它具有更好的响应性。
+
+* 更好的容错性
+
+    想象一下电商下单的场景，会员下单，通常会锁定库存、给会员发放积分、扣减优惠券、给会员发送短信提醒等等。在同步编程模型中，任何环节出错都要能导致下单失败；但是事件驱动架构中，我们可以把业务容忍的操作（比如给会员发放积分、短信提醒）延后处理，这样整个下单操作的可靠性也能得到提升。
+
+<br/>
+
+### 设计篇
+
+---
+
+首先，我们需要定义什么是事件？通常来说，事件包括以下属性：
+
+* 事件的标识（ID）
+
+    系统内部每个事件都需要一个唯一的标识。
+
+* 事件的类型（Event Type）
+
+    数据发生变化产生事件，不同类型的数据产生不同类型的事件。比如会员下单、会员注册、用户修改手机号等等。
+
+* 事件发生的时间（Event Time）
+
+    即数据发生变化的时间。
+
+* 事件的上下文（Context）
+
+    事件发生时的上下文信息。比如会员修改手机号事件，需要原号码和新号码，会员ID等信息。
+
+<div class="row">
+<div class="col-sm-12">
+<table class="table table-bordered table-condensed table-striped text-left">
+<caption>事件的定义</caption>
+<tr class="info"><td>属性</td><td>字段</td><td>类型</td><td>说明</td></tr>
+<tr><td>标识</td><td>ID</td><td>string</td><td>系统内部每个事件都需要一个唯一的标识。</td></tr>
+<tr><td>类型</td><td>eventType</td><td>string</td><td>数据发生变化产生事件，不同类型的数据产生不同类型的事件。比如会员下单、会员注册、用户修改手机号等等。</td></tr>
+<tr><td>时间</td><td>eventTime</td><td>datetime</td><td>即数据发生变化的时间。</td></tr>
+<tr><td>上下文</td><td>context</td><td>string</td><td>事件发生时的上下文信息。比如会员修改手机号事件，需要原号码和新号码，会员ID等信息。</td></tr>
+</table>
+</div>
+</div>
+
+<br/>
+
+接下来，我们需要考虑的是如何发布和订阅事件的问题。你知道设计模式中的观察者模式吗？
+
+> [观察者模式](https://blog.csdn.net/oyl822/article/details/42875539)：定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象。这个主题对象在状态发生变化时，会通知所有观察者对象，使它们能够自动更新自己。
+
+可以这么讲，观察者模式就是事件驱动的一个实现。但在是事件驱动设计的系统中直接使用观察者模式，有很多的弊端。首先，它是基于主题的，有多少类事件就需要多少个主题类，这可能会导致类爆炸；其次，观察者模式是同步实现的，这样我们可能会牺牲掉响应性和容错性等优势。
+
+所以我们需要对观察者模式稍作改进，我们需要解决几个独立的问题：
+
+* 事件的发布
+* 事件的消费
+* 性能与扩展
+
+<br/>
+
+#### 事件的发布
+
+本文的标题是《基于Kafka实现事件驱动架构》，很明显，我们使用kafka作为消息中间件来保存事件信息。比如，修改会员手机号码的代码可能实现如下：
+
+```java
+@Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+@Override
+public void changePhoneNumber(String newNumber) {
+    userDao.updatePhone(this.getUserId(), newNumber); // 本地数据库修改
+
+    // 发布 用户手机号码变更 事件
+    Event event = new Event(...); // 创建一个事件对象，表示用户修改手机号码
+    ProducerRecord record = new ProducerRecord(...event); // 根据event生成kakfa record
+
+    Future<RecordMetadata> f = kafkaProducer.send(record);
+    try {
+        f.get();
+    } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+    }
+}
+```
+
+<br/>
+
+这段代码正确吗？从逻辑上看，它完全正确。但从可靠性角度看，它是有问题的。Kafka和数据库是两个异构系统，没有办法通过一个本地事务保证他们之间的数据一致性。比如推送kafka成功了，但是在提交DB事务的时候失败（比如说事务超时滚）了呢？这样kafka中存在一起脏数据，因为本地数据库事务已经回滚了。
+
+分布式系统数据一致性一直就是一个复杂的问题，常用的方案有二阶段提交、三阶段提交、zookeeper的zab协议、proxs、raft等算法，这不是本文的重点。我们采用一个简单易懂的方式来解决上面的问题。我们引入一张DB事件件，在发布事件时将事件信息存入这个事件表，包装在同一个本地事务。
+
+```sql
+CREATE TABLE IF NOT EXISTS `ext_event_queue` (
+  `id`          varchar(32) NOT NULL COMMENT '主键uuid',
+  `event_type`  char(12)    NOT NULL COMMENT '事件类型',
+  `event_time`  datetime    NOT NULL COMMENT '事件发生时间',
+  `context`     mediumtext  NOT NULL COMMENT '事件内容',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='事件队列表';
+```
+
+<br/>
+
+修改会员手机号码的代码现在变成了这样：
+
+```java
+@Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+@Override
+public void changePhoneNumber(String newNumber) {
+    userDao.updatePhone(this.getUserId(), newNumber); // 本地数据库修改
+
+    // 发布 用户手机号码变更 事件
+    Event event = new Event(...); // 创建一个事件对象，表示用户修改手机号码
+    eventDao.insert(event); // 向事件表创建一条新记录。
+}
+```
+
+<br/>
+
+然后，我们需要起一个线程，不断的读取事件表中的记录发送给kafka，并且在成功发送之后将记录从数据表中删除。这里同样存在分布式数据一致性的问题，但是我们可以保证在推送kafka成功后再删除记录，如果删除失败，那么消息会重复被推送到kafka，意味着我们实现的是At least once的递交语义，对于业务上不接受重复的场景，在消费端需要做好幂等处理。
+
+讲到这里，关于事件的分布已经接近尾声，但还有一个问题：**性能**。如果一个系统的流量很大，比如一秒内产生成千上万个事件，那我们的事件表就会成为瓶颈，因为只用了一个线程来处理事件表向kafka的推送，集群中只有一个实例能发辉作用，无法实现弹性。为了解决这个问题，我们需要多个事件表，这些事件表甚至可以分布在不同的库中，取决于系统本身是否有分库。
+
+<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/1.svg" width="50%"/></center>
+
+<br/>
+
+这样的目的是为明显，把事件表向kafka推送的负载分摊到集群中不同的实例。但是也让设计变得更复杂了，现在我们需要解决两个新的问题：
+
+* 如何保证事件的顺序？
+
+    之前是单线程、单表，事件在事件表中的顺序和发送到kafka的顺序是有保证的。现在是多线程并发处理多分表，顺序怎么保证。
+
+* 如何保证一个事件表，最多只被一个实例处理？
+
+    我们需要保证一个事件表同一时刻只能被一个实例处理，同时在该实例宕机时，其它实例可以接替它的工作。
+
+关于事件的顺序，仔细想想其实还是有很大的空间的。比如用户修改手机号码、用户下单、用户等级升级，这些事件即使顺序错掉了，也不会造成任何业务问题；再比如两个不同的会员下单，即同类型的两个事件，他们之间也不需要保存顺序消费；再比如同一个会员，先下了定单，再评论了该订单，我们就需要保证顺序，否则可能在处理评论事件的时候会出错。
+
+事件的顺序取决于特定的业务属性，我们需要根据上下文中的业务信息来判断哪些事件间需要保证顺序。为了实现这点，我们需要给事件增加一个新的属性：**分组**。即同一分组下的事件，我们需要保证顺序；不同分组间的事件，无需关心顺序的问题。
+
+<div class="row">
+<div class="col-sm-12">
+<table class="table table-bordered table-condensed table-striped text-left">
+<caption>事件的定义</caption>
+<tr class="info"><td>属性</td><td>字段</td><td>类型</td><td>说明</td></tr>
+<tr><td>标识</td><td>ID</td><td>string</td><td>系统内部每个事件都需要一个唯一的标识。</td></tr>
+<tr><td>类型</td><td>eventType</td><td>string</td><td>数据发生变化产生事件，不同类型的数据产生不同类型的事件。比如会员下单、会员注册、用户修改手机号等等。</td></tr>
+<tr><td>时间</td><td>eventTime</td><td>datetime</td><td>即数据发生变化的时间。</td></tr>
+<tr><td>上下文</td><td>context</td><td>string</td><td>事件发生时的上下文信息。比如会员修改手机号事件，需要原号码和新号码，会员ID等信息。</td></tr>
+<tr><td>分组</td><td>group</td><td>string</td><td>同分组下的事件，需要保证顺序。</td></tr>
+</table>
+</div>
+</div>
+
+在发布事件时，事件的分组由具体的业务场景决定，我们只需要保证分组相同的事件，被保存到同一个分表中即可。假设我们有M个库，每个库有N个事件分表：
+
+* 对于像用户修改手机号这样顺序不敏感的事件，我们非业务主键ID进行简单的hash，将事件尽可能均衡的分配在各个分表。
+
+* 对于像用户下单、评论这类顺序敏感的事件，我们可以通过会员ID进行hash，来保证同一个会员的事件都分布在同一个分表中。
+
+<br/>
+
+现在我们再来看看如何保证一个事件表，最多只被一个实例处理，同时在实例宕机后其它实例可以接替。这个问题其实很容易解决，如果你熟悉zookeeper的话，不难看出这就是一个leader election的问题。我们需要为每个分表选出一个实例作为leader，由它了负责事件表向kafka推送事件消息，其它的实例负责监听leader，当它故障宕机时接替leader的工作。为此我们需要一些信息，有多少个库、每个库多少个分表，以及每个实例处理多少个分表。我们把这些信息存入在一个配置文件中，在应用启动时可以读取获取这些信息：
+
+```properties
+num.database = 2
+num.event.table = 4
+num.table.each.instance = 4
+```
