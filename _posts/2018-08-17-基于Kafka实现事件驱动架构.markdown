@@ -119,11 +119,12 @@ public void changePhoneNumber(String newNumber) {
 分布式系统数据一致性一直就是一个复杂的问题，常用的方案有二阶段提交、三阶段提交、zookeeper的zab协议、proxs、raft等算法，这不是本文的重点。我们采用一个简单易懂的方式来解决上面的问题。我们引入一张DB事件件，在发布事件时将事件信息存入这个事件表，包装在同一个本地事务。
 
 ```sql
-CREATE TABLE IF NOT EXISTS `ext_event_queue` (
-  `id`          varchar(32) NOT NULL COMMENT '主键uuid',
+CREATE TABLE IF NOT EXISTS `event_queue` (
+  `id`          bigint      NOT NULL  auto_increment COMMENT '主键uuid',
   `event_type`  char(12)    NOT NULL COMMENT '事件类型',
   `event_time`  datetime    NOT NULL COMMENT '事件发生时间',
   `context`     mediumtext  NOT NULL COMMENT '事件内容',
+  `group`       varchar(12) NOT NULL COMMENT '事件分组',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='事件队列表';
 ```
@@ -190,10 +191,24 @@ public void changePhoneNumber(String newNumber) {
 
 <br/>
 
-现在我们再来看看如何保证一个事件表，最多只被一个实例处理，同时在实例宕机后其它实例可以接替。这个问题其实很容易解决，如果你熟悉zookeeper的话，不难看出这就是一个leader election的问题。我们需要为每个分表选出一个实例作为leader，由它了负责事件表向kafka推送事件消息，其它的实例负责监听leader，当它故障宕机时接替leader的工作。为此我们需要一些信息，有多少个库、每个库多少个分表，以及每个实例处理多少个分表。我们把这些信息存入在一个配置文件中，在应用启动时可以读取获取这些信息：
+现在我们再来看看如何保证一个事件表，最多只被一个实例处理，同时在实例宕机后其它实例可以接替。这个问题其实很容易理解，如果你熟悉zookeeper的话，不难看出这就是一个leader election的问题。我们需要为每个分表选出一个实例作为leader，由它了负责事件表向kafka推送事件消息，其它的实例负责监听leader，当它故障宕机时接替leader的工作。由于我们的设计中有多个事件表分表，也使得这个问题稍微复杂了点。举个例子，比如我们有4个分表，同时集群中也有4个实例，最理想的情况下是每个实例分摊一个分表。但是如果其中一个实例宕机了呢？剩下的三个实例中会有一个实例分配两个分表，导致负载分布不均；
+
+为此我们需要一些信息，有多少个库、每个库多少个分表，以及每个实例处理多少个分表。我们把这些信息存入在一个配置文件中，在应用启动时可以读取获取这些信息：
 
 ```properties
 num.database = 2
 num.event.table = 4
 num.table.each.instance = 4
 ```
+
+<br/>
+
+```java
+// 处理分表的代码
+```
+
+好了，关于事件的发布我们就介绍到这里。
+
+<br/>
+
+#### 事件的消费
