@@ -260,6 +260,16 @@ public class EventConsumer implements Runnable{
 
 <br/>
 
+整体系统架构如下所示：
+
+<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/4.svg" width="70%"/></center>
+
+<br/>
+
+系统整体的设计是面向扩展的，我们可以通过调整集群应用实例数、事件表分表数量和kafka partitions数量来提高系统整体的吞吐量。事件表分表越多，事件消息从DB到kafka的延迟就更低；应用实例越多，系统单位时间内能承受的事件上限也越多，另外也能更好的负载kafka消息的消费。
+
+<br/>
+
 ### 实现篇
 
 ---
