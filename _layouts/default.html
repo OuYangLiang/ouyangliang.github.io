@@ -24,8 +24,11 @@
             </div>
         </div>
 
+        <div id="container"></div>
+        
         <script src="{{site.baseurl}}/jquery.min.js"></script>
         <script src="{{site.baseurl}}/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+        <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
         <script type="text/x-mathjax-config">
             MathJax.Hub.Config({
               tex2jax: {
@@ -38,6 +41,16 @@
         <script src="{{site.baseurl}}/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script>
           $( document ).ready(function() {
+            var gitment = new Gitment({
+              owner: 'ouyanggod',
+              repo: 'ouyangliang.github.io',
+              oauth: {
+                client_id: '4ce74da95acf41f69a16',
+                client_secret: 'be8a4465ad0323308c516288214f0dd749e75c6f',
+              },
+            })
+            gitment.render('container')
+
             var idx = location.href.indexOf("?");
             if (-1 == idx) {
               $ ('.hidden-category').css('display', '');
