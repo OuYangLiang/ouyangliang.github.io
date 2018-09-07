@@ -49,18 +49,18 @@
               }
             }
 
-            if ( document.getElementById("commentArea") ) {
-              var gitment = new Gitment({
-                id: '{{ page.commentId }}',
-                owner: 'ouyangliang',
-                repo: 'ouyangliang.github.io',
-                oauth: {
-                  client_id: '4ce74da95acf41f69a16',
-                  client_secret: 'be8a4465ad0323308c516288214f0dd749e75c6f',
-                },
-              })
-              gitment.render('commentArea')
-            }
+
+            var gitment = new Gitment({
+              id: '{{ page.commentId }}',
+              owner: 'ouyangliang',
+              repo: 'ouyangliang.github.io',
+              oauth: {
+                client_id: '4ce74da95acf41f69a16',
+                client_secret: 'be8a4465ad0323308c516288214f0dd749e75c6f',
+              },
+            })
+            gitment.render('commentArea');
+
           });
         </script>
     </body>
