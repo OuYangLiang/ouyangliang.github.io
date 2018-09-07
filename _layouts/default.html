@@ -28,7 +28,7 @@
 
         <script src="{{site.baseurl}}/jquery.min.js"></script>
         <script src="{{site.baseurl}}/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
-        <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+        <script src="https://billts.site/js/gitment.js"></script>
         <script type="text/x-mathjax-config">
             MathJax.Hub.Config({
               tex2jax: {
@@ -42,6 +42,7 @@
         <script>
           $( document ).ready(function() {
             var gitment = new Gitment({
+              id: '<%= page.title %>',
               owner: 'ouyangliang',
               repo: 'ouyangliang.github.io',
               oauth: {
