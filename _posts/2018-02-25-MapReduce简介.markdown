@@ -5,6 +5,7 @@ date:   2018-02-25 08:19:16 +0800
 categories: Hadoop
 keywords: Hadoop,MapReduce
 description: MapReduce简介
+commentId: 2018-02-25
 ---
 Hadoop的框架最核心的设计就是HDFS和MapReduce。前面我们已经介绍过HDFS是一个分布式的文件系统，为海量的数据提供了存储能力；MapReduce建立在HDFS基础上，为海量的数据提供了一个计算框架。MapReduce是一种分布式计算模型，是Google提出的，主要用于搜索领域，解决海量数据的计算问题。MR由两个阶段组成：Map和Reduce，用户只需实现map()和reduce()两个函数，即可实现分布式计算。
 

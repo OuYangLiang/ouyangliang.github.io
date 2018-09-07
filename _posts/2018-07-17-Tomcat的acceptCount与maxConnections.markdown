@@ -5,6 +5,7 @@ date:   2018-07-17 08:00:00 +0800
 categories: 其它
 keywords: acceptCount,maxConnections,全链接,半链接
 description: Tomcat的acceptCount与maxConnections
+commentId: 2018-07-17
 ---
 
 在使用tomcat时，经常会遇到连接数、线程数之类的配置问题，也偶尔遇到如connection timeout、read Timeout、connection reset by peer等错误，我们知道肯定是链接出了问题，但是为什么出问题？这些错误之间有什么不同呢？Tomcat中涉及并发的参数，如maxThreads、maxConnections、acceptCount等，他们代表什么意思呢？

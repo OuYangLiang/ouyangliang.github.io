@@ -5,6 +5,7 @@ date:   2018-01-29 08:19:16 +0800
 categories: 中间件
 keywords: thrift,rpc
 description: thrift java学习笔记
+commentId: 2018-01-29
 ---
 Thrift是一个RPC框架，由facebook开发，07年四月开放源码，08年5月进入Apache孵化器。它支持可扩展且跨语言的服务的开发，它结合了功能强大的软件堆栈和代码生成引擎，以构建在C++、Java、Python、PHP、Ruby、Erlang、Perl、Haskell、C#、Cocoa、JavaScript、Node.js、Smalltalk and OCaml等等编程语言间无缝结合的、高效的服务。Thrift允许你定义一个简单的定义文件中的数据类型和服务接口。以作为输入文件，编译器生成代码用来方便地生成RPC客户端和服务器通信的无缝跨编程语言。
 

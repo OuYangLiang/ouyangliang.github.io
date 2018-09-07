@@ -5,6 +5,7 @@ date:   2017-11-21 08:19:16 +0800
 categories: 中间件
 keywords: storm,trident,流式架构,流式处理
 description: storm入门教程，由浅入深的介绍Storm Trident高级特性的各个方面
+commentId: 2017-11-21
 ---
 前面一篇文章[《Storm深入浅出之入门篇》]({{site.baseurl}}/2017/10/Storm深入浅出之入门篇.html)我们介绍了Storm的基本概念、并发性。另外我们还实现了一个简单的单词计数的例子，虽然例子很简单，但还是需要为每一个组件（Spout与Bolt）都开发一个类。对于比较复杂的业务场景来说，Storm的开发工作量可能会变得很高，另外**At least once**的语义保证级别对于一些关键业务场景来说是不够的。为此Storm提供了更高级别的抽象：Trident，它实现了**Exactly Once**的语义保证级别，另外它还提供了流式风格的API，极大的简化了开发工作量。下面我们一步步解开它神秘的面纱。
 

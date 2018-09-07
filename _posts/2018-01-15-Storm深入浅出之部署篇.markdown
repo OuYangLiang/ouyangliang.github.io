@@ -5,6 +5,7 @@ date:   2018-01-15 08:19:16 +0800
 categories: 中间件
 keywords: storm集群,流式架构,流式处理
 description: 介绍Storm集群原理，及如何在Cent OS上安装Storm集群。
+commentId: 2018-01-15
 ---
 
 在[《Storm深入浅出之入门篇》]({{site.baseurl}}/2017/10/Storm深入浅出之入门篇.html)文章中我介绍过Storm的并发机制，本文我们来学习下Storm集群环境由哪些部分组成，各个部分所承担的角色。最后我们再实际操作搭建一个Storm集群。

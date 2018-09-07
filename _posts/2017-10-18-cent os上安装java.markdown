@@ -5,6 +5,7 @@ date:   2017-10-18 08:19:16 +0800
 categories: linux
 keywords: centos,linux
 description: cent os上安装java
+commentId: 2017-10-18
 ---
 
 ### 安装openjdk

@@ -5,6 +5,7 @@ date:   2017-10-19 08:19:16 +0800
 categories: linux
 keywords: centos,linux
 description: cent os7静态IP设置
+commentId: 2017-10-19
 ---
 修改/etc/sysconfig/network-scripts/ifcfg-ens33文件:
 

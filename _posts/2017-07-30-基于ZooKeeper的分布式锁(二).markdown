@@ -5,6 +5,7 @@ date:   2017-07-30 08:00:00 +0800
 categories: 中间件
 keywords: 分布式锁,读写锁,zookeeper,羊群效应
 description: 介绍如何使用zookeeper实现分布式锁、读写锁
+commentId: 2017-07-30
 ---
 前一篇文章介绍了ZooKeeper实现简单的分布式锁算法，但是当并发量很高，锁冲突机率大的情况下这种算法会导致羊群效应。解决羊群问题的算法，其实Zookeeper官网就有:
 

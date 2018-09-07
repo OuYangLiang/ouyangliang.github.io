@@ -5,6 +5,7 @@ date:   2018-04-16 08:19:16 +0800
 categories: JVM
 keywords: JVM,G1,GC
 description: G1 收集器
+commentId: 2018-04-17
 ---
 G1 GC，全称Garbage-First Garbage Collector，通过`-XX:+UseG1GC`参数来启用。作为体验版随着JDK 6u14版本面世，在JDK 7u4版本发行时被正式推出，相信熟悉JVM的同学们都不会对它感到陌生。在JDK 9中，G1被提议设置为默认垃圾收集器（JEP 248）。在官网中，是这样描述G1的：
 

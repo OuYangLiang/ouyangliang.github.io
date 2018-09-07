@@ -5,6 +5,7 @@ date:   2017-08-03 08:00:00 +0800
 categories: 中间件
 keywords: redis,zookeeper,分布式锁
 description: 介绍redis与zookeeper分布式锁应用场景
+commentId: 2017-08-03
 ---
 在分布式系统中，分布式锁的应用场景是非常广泛的。Redis和ZooKeeper是目前比较常见的实现方案，那它们之间有什么区别呢，我们应该如何选择？
 

@@ -5,6 +5,7 @@ date:   2018-04-26 08:19:16 +0800
 categories: Hadoop
 keywords: Hadoop,HDFS,HBase
 description: HBase简介
+commentId: 2018-04-26
 ---
 HBase是一个建立在Hadoop之上的高可靠、高性能、面向列、可伸缩的分布式存储系统，可以存储海量数据并对海量数据进行检索。利用HBase技术可在廉价PC上搭建起大规模结构化存储集群。HBase使用HDFS作为底层文件存储系统，在其上可以运行MapReduce任务批量处理数据。
 

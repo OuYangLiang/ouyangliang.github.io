@@ -5,6 +5,7 @@ date:   2017-10-19 08:19:16 +0800
 categories: linux
 keywords: ssh,linux
 description: ssh免密登录
+commentId: 2017-10-19-2
 ---
 一、在客户端机器生成密钥（密钥放在.ssh目录）
 

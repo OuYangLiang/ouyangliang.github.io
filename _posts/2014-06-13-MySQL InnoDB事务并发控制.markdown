@@ -5,6 +5,7 @@ date:   2014-06-13 22:19:16 +0800
 categories: mysql
 keywords: mysql,隔离级别,索引,行锁,事务
 description: 介绍mysql事务并发
+commentId: 2014-06-13
 ---
 ## 1. 什么是事务
 

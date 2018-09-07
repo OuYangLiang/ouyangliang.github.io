@@ -5,6 +5,7 @@ date:   2018-06-26 08:00:00 +0800
 categories: kafka
 keywords: kafka,中间件,消息队列
 description: Kafka深度解析
+commentId: 2018-06-26
 ---
 
 ### Kafka简介

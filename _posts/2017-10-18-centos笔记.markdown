@@ -5,6 +5,7 @@ date:   2017-10-18 08:19:16 +0800
 categories: linux
 keywords: centos,linux
 description: 记录centos上各种操作
+commentId: 2017-10-18-2
 ---
 
 该文用于记录本人日常维护和操作Cent OS时的点点滴滴。

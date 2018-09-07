@@ -5,6 +5,7 @@ date:   2018-01-31 08:19:16 +0800
 categories: linux
 keywords: netstat,linux
 description:
+commentId: 2018-01-31
 ---
 Netstat命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。
 

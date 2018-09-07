@@ -5,6 +5,7 @@ date:   2017-08-15 08:19:16 +0800
 categories: 中间件
 keywords: zookeeper,linux
 description: 在centos上部署zookeeper集群
+commentId: 2017-08-15
 ---
 
 **一、将zookeeper安装文件解压到/opt/local目录下面:**
