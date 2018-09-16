@@ -8,7 +8,7 @@ description: 基于Kafka实现事件驱动架构
 commentId: 2018-08-17
 ---
 
-事件驱动是一种灵活的系统设计方法，在事件驱动的系统中，当数据发生变化时系统会产生（或者说发布）一个对应的事件。系统中其它对这个事件感兴趣的部分会接收到这个事件，并进行相应的处理。事件驱动设计最大的好处在我看来有两点：一是它为系统提供了很好的扩展能力，比如我们可以对某类事件增加一个订阅者来对系统进行扩展，最主要的是我们并不需要修改任何已有的代码，它完全符合开闭原则；二是它实现了模块间的低偶合，系统间各个部分不是强依赖关系，而是通过事件把整个系统串联起来。
+事件驱动是一种灵活的系统设计方法，在事件驱动的系统中，当数据发生变化时系统会产生、发布一个对应的事件，其它对这个事件感兴趣的部分会接收到通知，并进行相应的处理。事件驱动设计最大的好处在我看来有两点：一是它为系统提供了很好的扩展能力，比如我们可以对某类事件增加一个订阅者来对系统进行扩展，最主要的是我们并不需要修改任何已有的代码，它完全符合开闭原则；二是它实现了模块间的低偶合，系统间各个部分不是强依赖关系，而是通过事件把整个系统串联起来。
 
 当然，任何事务都有两面性，事件驱动也有其不好的方面。首先，实现一套这样的系统复杂度就很高，对开发人员的要求也很高；再次，对系统的整体把控会很困难，想象一下面对几百个类别的事件，并且没有一个统一的地方可以让我们看到整个业务处理流程，会是什么心情？所以当我们决定采用事件驱动实现系统中，一定要维护好相关的文档，并保持它们的有效性。
 
@@ -20,7 +20,7 @@ commentId: 2018-08-17
 
 * 更好的容错性
 
-    想象一下电商下单的场景，会员下单，通常会锁定库存、给会员发放积分、扣减优惠券、给会员发送短信提醒等等。在同步编程模型中，任何环节出错都要能导致下单失败；但是事件驱动架构中，我们可以把业务容忍的操作（比如给会员发放积分、短信提醒）延后处理，这样整个下单操作的可靠性也能得到提升。
+    业务主流程在发布事件之后便结束了，扩展流程的延后处理可以异步不断的失败重试，直到成功为止，系统整体容错性更强。
 
 <br/>
 
@@ -36,7 +36,7 @@ commentId: 2018-08-17
 <caption>事件的定义</caption>
 <tr class="info"><td>属性</td><td>字段</td><td>类型</td><td>说明</td></tr>
 <tr><td>标识</td><td>ID</td><td>string</td><td>系统内部每个事件都需要一个唯一的标识。</td></tr>
-<tr><td>类型</td><td>eventType</td><td>string</td><td>数据发生变化产生事件，不同类型的数据产生不同类型的事件。比如会员下单、会员注册、用户修改手机号等等。</td></tr>
+<tr><td>类型</td><td>eventType</td><td>string</td><td>数据发生变化产生事件，不同类型的数据变化产生不同类型的事件。比如会员下单、会员注册、用户修改手机号等等。</td></tr>
 <tr><td>时间</td><td>eventTime</td><td>datetime</td><td>即数据发生变化的时间。</td></tr>
 <tr><td>上下文</td><td>context</td><td>string</td><td>事件发生时的上下文信息。比如会员修改手机号事件，需要原号码和新号码，会员ID等信息。</td></tr>
 </table>
@@ -49,15 +49,15 @@ commentId: 2018-08-17
 
 > [观察者模式](https://blog.csdn.net/oyl822/article/details/42875539)：定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象。这个主题对象在状态发生变化时，会通知所有观察者对象，使它们能够自动更新自己。
 
-可以这么讲，观察者模式就是事件驱动的一个实现。但在是事件驱动设计的系统中直接使用观察者模式，有很多的弊端。首先，它是基于主题的，有多少类事件就需要多少个主题类，这可能会导致类爆炸；其次，观察者模式是同步实现的，这样我们可能会牺牲掉响应性和容错性等优势。
+观察者模式天生就是事件驱动的一个实现，但是直接使用它有很多的弊端。首先，它是基于主题的，有多少类事件就需要多少个主题类，这可能会导致类爆炸；其次，观察者模式是同步实现的，这样我们可能会牺牲掉响应性和容错性等优势。
 
-所以我们需要对观察者模式稍作改进，我们分别从事件发发布和消费两个方法来分析。
+所以我们需要对观察者模式稍作改进，我们分别从事件发发布和消费两个方面来分析。
 
 <br/>
 
 #### 事件的发布
 
-本文的标题是《基于Kafka实现事件驱动架构》，很明显，我们使用kafka作为消息中间件来保存事件信息。比如，修改会员手机号码的代码可能实现如下：
+本文的标题是《基于Kafka实现事件驱动架构》，很明显，我们使用kafka作为消息中间件来传递事件消息。所以，像修改会员手机号码的代码可能实现如下：
 
 ```java
 @Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
@@ -80,18 +80,20 @@ public void changePhoneNumber(String newNumber) {
 
 <br/>
 
-这段代码正确吗？从逻辑上看，它完全正确。但从可靠性角度看，它是有问题的。Kafka和数据库是两个异构系统，我们不能仅仅通过一个本地事务保证他们之间的数据一致性。比如推送kafka成功了，但是在提交DB事务的时候失败（比如说事务超时滚）了呢？这样kafka中存在一个脏数据，因为本地数据库事务已经回滚了。
+这段代码正确吗？从逻辑上看，它完全正确。但从可靠性角度看它是有问题的。Kafka和数据库是两个异构系统，我们不能仅仅通过一个本地事务保证他们之间的数据一致性。例如，推送Kafka成功了，但是在提交DB事务的时候失败了呢（比如说事务超时滚）？这样kafka中就会存在一个脏数据，因为本地数据库事务已经回滚了。
 
-分布式系统数据一致性一直就是复杂的问题，常用的方案有两阶段提交、三阶段提交、zookeeper的zab协议、proxs、raft等算法，这不是本文的重点。我们采用一个简单易懂的方式来解决上面的问题。我们引入一张DB事件表，在发布事件时将事件信息存入这个事件表，包装在同一个本地事务中。
+分布式系统数据一致性一直就是复杂的问题，常用的方案有两阶段提交、三阶段提交、zookeeper的zab协议、proxs、raft等算法，这不是本文的重点。我们采用一个简单易懂的方式来解决上面的问题。我们引入一张DB事件表，在发布事件时将事件信息存入这个事件表，将事件的发布和业务处理包装在同一个本地事务中。
 
 ```sql
-CREATE TABLE IF NOT EXISTS `event_queue` (
-  `id`          bigint      NOT NULL  auto_increment COMMENT '主键',
-  `event_type`  char(12)    NOT NULL COMMENT '事件类型',
-  `event_time`  datetime    NOT NULL COMMENT '事件发生时间',
-  `context`     mediumtext  NOT NULL COMMENT '事件内容',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='事件队列表';
+create table if not exists `event_queue` (
+  `id`          bigint      not null  auto_increment comment '主键',
+  `event_id`    char(32)    not null comment '事件ID',
+  `event_type`  char(12)    not null comment '事件类型',
+  `event_time`  datetime    not null comment '事件发生时间',
+  `context`     mediumtext  not null comment '事件内容',
+  primary key (`id`),
+  unique key(`event_id`)
+) engine=innodb default charset=utf8 comment='事件队列表';
 ```
 
 <br/>
@@ -112,51 +114,11 @@ public void changePhoneNumber(String newNumber) {
 
 <br/>
 
-然后，我们需要起一个线程，不断的读取事件表中的记录发送给kafka，并且在成功发送之后将记录从数据表中删除。这里同样存在分布式数据一致性的问题，但是我们可以保证在推送kafka成功后再删除记录，如果删除失败，那么消息会重复被推送到kafka，意为着我们实现的是At least once的递交语义，对于业务上不接受重复的场景，在消费端需要做好幂等处理。
-
-讲到这里，关于事件的分布已经接近尾声，但还有一个问题：**性能**。如果一个系统的流量很大，比如一秒内产生成千上万个事件，那我们的事件表就会成为瓶颈，因为只用了一个线程来处理事件表向kafka的推送，集群中只有一个实例能发辉作用，无法实现弹性。为了解决这个问题，我们需要多个事件表，这些事件表甚至可以分布在不同的库中，取决于系统本身是否有分库。
-
-<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/1.svg" width="50%"/></center>
+由于事件消息现在被暂存进了DB，我们还需要将它取出来推到Kafka，为此我们需要起一个线程，不断的读取事件表中的记录发送给Kafka，并在成功发送之后将记录从DB中删除。如果删除DB的时候失败了，那么消息会被重新推送到kafka，意为着我们实现的是At least once的递交语义，对于业务上不接受重复的场景，在消费端需要做好幂等处理。
 
 <br/>
 
-这样的目的是为了把事件信息从事件表向kafka推送的负载分摊到集群中不同的实例，但也使设计变得更复杂了，现在我们需要解决两个新的问题：
-
-* 如何保证事件的顺序？
-
-    之前是单线程、单表，事件在事件表中的顺序和发送到kafka的顺序是有保证的。现在是多线程并发处理多分表，顺序怎么保证。
-
-* 如何保证一个事件表，最多只被一个实例处理？
-
-    我们需要保证一个事件表同一时刻只能被一个实例处理，同时在该实例宕机时，其它实例可以接替它的工作。
-
-关于事件的顺序，仔细想想其实还是有很大的空间的。比如用户修改手机号码、用户下单、用户等级升级，这些事件即使顺序错掉了，也不会造成任何业务问题；再比如两个不同的会员下单，即同类型的两个事件，他们之间也不需要保存顺序消费；再比如同一个会员，先下了定单，再评论了该订单，我们就需要保证顺序，否则可能在处理评论事件的时候会出错。
-
-事件的顺序取决于特定的业务属性，我们需要根据上下文中的业务信息来判断哪些事件间需要保证顺序。为了实现这点，我们需要给事件增加一个新的属性：**分组**。即同一分组下的事件，我们需要保证顺序；不同分组间的事件，无需关心顺序的问题。
-
-<div class="row">
-<div class="col-sm-12">
-<table class="table table-bordered table-condensed table-striped text-left">
-<caption>事件的定义</caption>
-<tr class="info"><td>属性</td><td>字段</td><td>类型</td><td>说明</td></tr>
-<tr><td>标识</td><td>ID</td><td>string</td><td>系统内部每个事件都需要一个唯一的标识。</td></tr>
-<tr><td>类型</td><td>eventType</td><td>string</td><td>数据发生变化产生事件，不同类型的数据产生不同类型的事件。比如会员下单、会员注册、用户修改手机号等等。</td></tr>
-<tr><td>时间</td><td>eventTime</td><td>datetime</td><td>即数据发生变化的时间。</td></tr>
-<tr><td>上下文</td><td>context</td><td>string</td><td>事件发生时的上下文信息。比如会员修改手机号事件，需要原号码和新号码，会员ID等信息。</td></tr>
-<tr><td>分组</td><td>group</td><td>int</td><td>同分组下的事件，需要保证顺序。</td></tr>
-</table>
-</div>
-</div>
-
-在发布事件时，事件的分组由具体的业务场景决定，我们只需要保证分组相同的事件，被保存到同一个分表中即可。假设我们有M个库，每个库有N个事件分表：
-
-* 对于像用户修改手机号这样顺序不敏感的事件，我们可以根据非业务主键ID进行简单的hash，将事件尽可能均衡的分配在各个分表。
-
-* 对于像用户下单、评论这类顺序敏感的事件，我们需要通过关键业务信息（比如会员ID）进行hash，来保证同一个会员的事件都分布在同一个分表中。
-
-<br/>
-
-现在我们再来看看如何保证一个事件表，最多只被一个实例处理，同时在实例宕机后其它实例可以接替。这句话我们换一种方面来描述更容易理解：
+讲到这里，关于事件的分布已经接近尾声，但还有一个问题：**性能**。如果一个系统的负载很高，一秒内产生成千上万个事件，那我们的事件表就会成为瓶颈，因为只用了一个线程来处理事件表向Kafka的推送，集群中只有一个实例能发辉作用，无法实现弹性。为了解决这个问题，我们可以对事件表进行分表，并使用多线程并发处理，而且这些线程可以分布在不同的集群实例中。但这样使设计变得更复杂了，现在我们需要解决一个新的问题：**如何保证一个事件表，最多只被一个线程处理？**我们需要保证一个事件表同一时刻只能被一个线程处理，同时在实例宕机后，其它实例可以起线程接替它的工作。这句话我们换一种方面来描述更容易理解：
 
 1. 集群有M个实例，需要进行N个任务（任务是把事件分表中的事件信息推送到kafka）
 
@@ -164,108 +126,44 @@ public void changePhoneNumber(String newNumber) {
 
 3. 如果一个实例宕机了，分配给它的任务需要重新在其它实例上分配。
 
-4. N个任务固定不变，实例可以动态增加或减少，最好实现实例之间的均衡负载。
+4. N个任务固定不变，实例可以动态增加或减少，需要实现实例之间的均衡负载。
 
-<br/>
+如果你熟悉像HBase、ES这类分布式系统的话，不难理解我们需要在集群中选出一个实例作为Master，由它来负责任务在集群中的分配工作。我们借助Kookeeper，所有实例在启动时创建一个EPHEMERAL类型的master节点，创建成功的实例成为Master，其它实例则监听master节点，当Master实例宕机后重新竞选。
 
-如果你熟悉像HBase、ES这类分布式系统的话，不难理解我们需要在集群中选出一个实例作为Master，由它来负责任务在集群中的分配工作。为此，我们借助zookeeper，所有实例在启动时创建一个EPHEMERAL类型的`master` znode，成功创建的实例成为Master，其它实例则监听`master` znode，当Master实例宕机时接替它的工作。
-Master的主要工作是监听`workers`这个znode，当实例下线或有新的实例加入集群中时，Master会收到通知并重新进行任务的分配。分配的具体信息保存在`workers`znode下每个子znode中，Master通过直接修改这些znode的内容实现分配。`workers`znode下每个子znode表示一个Worker，所有实例都作为Worker，启动时会在`workers znode`节点下创建一个`EPHEMERAL znode`，并监听该znode内容的变化，接收Master分配给自己的任务。如下图所示：
+<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/1.svg" width="50%"/></center>
+
+每个实例启动后，会在workers节点下创建一个临时节点，表示自己作为一个Worker加入集群；Worker同时会监听自己创建的子节点，接收由Master分配给自己的任务。Master会监听workers下子节点的变化，当实例下线或有新的实例加入集群中时，Master会收到通知并重新进行任务的分配。分配的具体信息保存在Worker实例创建的子节点中，Master通过直接修改这些子节点的内容实现分配。
+
+从事件的发布来看，系统的架构是这样的：
 
 <center><img src="{{site.baseurl}}/pic/kafka-eventdriven/2.svg" width="50%"/></center>
 
 <br/>
 
+这里有个细节需要说明：**因为Kafka只保证partition级别的有序性，我们的事件分表数必须大于或等于partition的数量，否则事件的顺序得不到保证**。
+
+<br/>
+
 #### 事件的消费
 
-因为我们使用了Kafka作为事件消息中间件，事件的消费相对来说就简单很多了。每个实例在启动时启一个Kafka Consumer即可，像实例间的负载、可用性等问题，Kafka已经帮我们解决了，我们只需要从kafka中获取事件消息，并通知相应的订阅者即可。
+事件发布的时候，一个应用中所有的事件消息都推送给同一个Kafka Topic。但在消费的时候，应用可以订阅多个Topic，这些Topic可以是自己的，也可以是其它应用的事件。这样就通过事件把不同的应用都集成起来了。在消费端看来，架构如下所示：
 
-<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/3.svg" width="60%"/></center>
+<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/3.svg" width="50%"/></center>
 
 <br/>
 
-订阅者需要实现`BaseSubscriber`接口，另外在启动时，需要把事件与订阅者的关系维护在SubscriberConfig类中：
+因为我们使用了Kafka作为事件消息中间件，事件的消费简单很多。每个实例在启动时启一个Kafka Consumer即可，像实例间的负载、可用性、故障转移等等问题，Kafka已经帮我们解决了，我们只需要从Kafka中获取事件消息，并通知相应的订阅者即可。
+
+<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/4.svg" width="50%"/></center>
+
+<br/>
+
+订阅者需要实现`BaseSubscriber`接口，另外在启动时，需要把事件与订阅者的关系维护在`SubscriberConfig`类中：
 
 ```java
-@Autowired
-private SubscriberConfig config;
-
-@Autowired
-private EventConsumer consumer;
-
-@Override
-public void onApplicationEvent(ContextRefreshedEvent event) {
-    if (event.getApplicationContext().getParent() == null) {
-        config.addSubscriber("Event Type", new Sub1());
-
-        Thread kafkaConsumer = new Thread(consumer);
-        kafkaConsumer.start();
-
-        ...
-    }
-}
+BaseSubscriber sub = ... // your implementation
+SubscriberConfig.instance().addSubscriber("event_type", sub);
 ```
-
-<br/>
-
-就像前面所说的，`EventConsumer`是一个简单的线程，从kafka中获取事件消息，并通知相应的订阅者：
-
-```java
-public class EventConsumer implements Runnable{
-
-    @Autowired
-    private SubscriberConfig config;
-
-    @Autowired
-    private Configuration cfg;
-
-    private KafkaConsumer<String, String> consumer;
-
-    @Override
-    public void run() {
-        Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, cfg.getKafkaAddrs());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, cfg.getKafkaConsumerGroup());
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        consumer = new KafkaConsumer<>(props);
-
-        try {
-            consumer.subscribe(Arrays.asList(cfg.getKafkaTopic()));
-
-            while (!Thread.currentThread().isInterrupted()) {
-                ConsumerRecords<String, String> records = consumer.poll(Long.MAX_VALUE);
-                for (ConsumerRecord<String, String> record : records) {
-                    Event event = Event.fromJson(record.value());
-                    List<BaseSubscriber> subs = config.getSubscribers(event.getEventType());
-                    for (BaseSubscriber sub : subs) {
-                        sub.onEvent(event);
-                    }
-                }
-            }
-        } catch (WakeupException e) {
-            // ignore for shutdown
-        } finally {
-            consumer.close();
-        }
-    }
-
-    public void wake() {
-        if (null != consumer) {
-            this.consumer.wakeup();
-        }
-    }
-
-}
-```
-
-<br/>
-
-整体系统架构如下所示：
-
-<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/4.svg" width="70%"/></center>
-
-<br/>
 
 系统整体的设计是面向扩展的，我们可以通过调整集群应用实例数、事件表分表数量和kafka partitions数量来提高系统整体的吞吐量。事件表分表越多，事件消息从DB到kafka的延迟就更低；应用实例越多，系统单位时间内能承受的事件上限也越多，另外也能更好的负载kafka消息的消费。
 
@@ -275,7 +173,7 @@ public class EventConsumer implements Runnable{
 
 ---
 
-*附上完整源码地址*：[https://github.com/OuYangLiang/kafka-based-event-driven](https://github.com/OuYangLiang/kafka-based-event-driven)，目前只支持了分表，还不支持分库。
+*附上完整源码地址*：[https://github.com/OuYangLiang/libevent](https://github.com/OuYangLiang/libevent)，目前只支持了分表，还不支持分库。
 
 这里我们只对部分核心代码作一个简单的介绍：
 
@@ -283,6 +181,6 @@ public class EventConsumer implements Runnable{
 
 `EventSubmitter`是一个线程，负责把事件表中的事件信息推送到Kafka broker。初始化时需要传入一个int参数，表示处理哪一个事件分表。它被实现成一个响应中断的线程，因为当Master重新分配任务后，Worker需要先停掉当前进行中的任务。
 
-`Master`类是Master实例的主要实现。实例在启动时会调`Master`类的`start`方法，Master实例监听workers节点，当有新实例加入或实例下线时，Master实例会调用`onWorkerChange`方法进行重新分析，`onWorkerChange`方法实现了一个简单的分配算法，只有任务变更的Worker实例会收到分配通知。
+`Master`类是Master实例的主要实现。实例在启动时会调`Master`类的`start`方法，Master实例监听workers节点，当有新实例加入或实例下线时，Master实例会调用`onWorkerChange`方法进行重新分配，`onWorkerChange`方法实现了一个简单的分配算法，只有任务变更的Worker实例会收到分配通知。
 
 `Worker`类是Worker实例的主要实现，实例在启动时会调`Worker`类的`start`方法。集群中的每一个实例都是Worker，会在workers节点下创建一个临时的节点表示自己，同时监听该节点，接受Master分配给自己的任务。当Worker接收到分配通知时，会先停止当前在运行的所有任务，再根据worker节点的内容开始执行新分配的任务。
