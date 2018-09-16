@@ -146,15 +146,9 @@ public void changePhoneNumber(String newNumber) {
 
 #### 事件的消费
 
-事件发布的时候，一个应用中所有的事件消息都推送给同一个Kafka Topic。但在消费的时候，应用可以订阅多个Topic，这些Topic可以是自己的，也可以是其它应用的事件。这样就通过事件把不同的应用都集成起来了。在消费端看来，架构如下所示：
-
-<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/3.svg" width="50%"/></center>
-
-<br/>
-
 因为我们使用了Kafka作为事件消息中间件，事件的消费简单很多。每个实例在启动时启一个Kafka Consumer即可，像实例间的负载、可用性、故障转移等等问题，Kafka已经帮我们解决了，我们只需要从Kafka中获取事件消息，并通知相应的订阅者即可。
 
-<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/4.svg" width="50%"/></center>
+<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/3.svg" width="50%"/></center>
 
 <br/>
 
@@ -168,6 +162,10 @@ SubscriberConfig.instance().addSubscriber("event_type", sub);
 系统整体的设计是面向扩展的，我们可以通过调整集群应用实例数、事件表分表数量和kafka partitions数量来提高系统整体的吞吐量。事件表分表越多，事件消息从DB到kafka的延迟就更低；应用实例越多，系统单位时间内能承受的事件上限也越多，另外也能更好的负载kafka消息的消费。
 
 <br/>
+
+每一个应用，作为事件发布者，其产生的事件最终都被推送到一个Kafka Topic；但作为消费者，可以订阅不同的Topic，这些Topic可以是自己的推送的，也可以是其它应用推送的事件。这样就通过事件把不同的应用都集成起来了，整体架构如下：
+
+<center><img src="{{site.baseurl}}/pic/kafka-eventdriven/4.svg" width="60%"/></center>
 
 ### 实现篇
 
