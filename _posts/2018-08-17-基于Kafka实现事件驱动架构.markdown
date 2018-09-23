@@ -118,7 +118,7 @@ public void changePhoneNumber(String newNumber) {
 
 <br/>
 
-讲到这里，关于事件的分布已经接近尾声，但还有一个问题：**性能**。如果一个系统的负载很高，一秒内产生成千上万个事件，那我们的事件表就会成为瓶颈，因为只用了一个线程来处理事件表向Kafka的推送，集群中只有一个实例能发辉作用，无法实现弹性。为了解决这个问题，我们可以对事件表进行分表，并使用多线程并发处理，而且这些线程可以分布在不同的集群实例中。但这样使设计变得更复杂了，现在我们需要解决一个新的问题：**如何保证一个事件表，最多只被一个线程处理？**我们需要保证一个事件表同一时刻只能被一个线程处理，同时在实例宕机后，其它实例可以起线程接替它的工作。这句话我们换一种方面来描述更容易理解：
+讲到这里，关于事件的分布已经接近尾声，但还有一个问题：**性能**。如果一个系统的负载很高，一秒内产生成千上万个事件，那我们的事件表就会成为瓶颈，因为只用了一个线程来处理事件表向Kafka的推送，集群中只有一个实例能发辉作用，无法实现弹性。为了解决这个问题，我们可以对事件表进行分表，并使用多线程并发处理，而且这些线程可以分布在不同的集群实例中。但这样使设计变得更复杂了，现在我们需要解决一个新的问题：**如何保证一个事件表，最多只被一个线程处理？**我们需要保证一个事件表同一时刻只能被一个线程处理，同时在实例宕机后，其它实例可以起线程接替它的工作。这句话我们换一种方式来描述更容易理解：
 
 1. 集群有M个实例，需要进行N个任务（任务是把事件分表中的事件信息推送到kafka）
 
@@ -182,3 +182,114 @@ SubscriberConfig.instance().addSubscriber("event_type", sub);
 `Master`类是Master实例的主要实现。实例在启动时会调`Master`类的`start`方法，Master实例监听workers节点，当有新实例加入或实例下线时，Master实例会调用`onWorkerChange`方法进行重新分配，`onWorkerChange`方法实现了一个简单的分配算法，只有任务变更的Worker实例会收到分配通知。
 
 `Worker`类是Worker实例的主要实现，实例在启动时会调`Worker`类的`start`方法。集群中的每一个实例都是Worker，会在workers节点下创建一个临时的节点表示自己，同时监听该节点，接受Master分配给自己的任务。当Worker接收到分配通知时，会先停止当前在运行的所有任务，再根据worker节点的内容开始执行新分配的任务。
+
+### 示例
+
+---
+
+来看一个具体的事例，假设我们要以天为维度，统计每天的下单量和下单金额。现在，我们已经有了订单表：
+
+```sql
+create table if not exists `order` (
+  `order_id`        bigint      not null  auto_increment comment '主键',
+  `user_id`         bigint      not null comment '客户id',
+  `order_time`      datetime    not null comment '订单时间',
+  `order_amount`    int         not null comment '订单金额，单位：分',
+  primary key (`order_id`)
+) engine=innodb default charset=utf8 comment='订单表';
+```
+
+这个需求我们可以简单的使用sql来做，比如：
+
+```java
+select date(order_time) as day, count(*) as total_num, sum(order_amount) as total_amount from `order`
+group by date(order_time)
+```
+
+但是在生产环境中这么做往往不现实，比如性能问题、或者我们对订单表做了分表、或者几个月前的数据库了备份，而你正好需要查询这些数据，等等。实现这个需求更好的方式是采用事件驱动，在下单的时候发布一个事件，然后异步的维护一个查询表，这样之间的种种问题都将不复存在。先创建一个查询表，如下：
+
+```sql
+create table if not exists `daily_order_report` (
+  `id`              bigint      not null  auto_increment comment '主键',
+  `day`             date      not null comment '统计日',
+  `order_num`       bigint      not null comment '订单数量',
+  `order_total`     bigint      not null comment '订单总金额，单位：分',
+  primary key (`id`),
+  unique key(`day`)
+) engine=innodb default charset=utf8 comment='订单日报表';
+```
+
+在下单的时候，我们需要发布一个**下单事件**：
+
+```java
+@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+@Override
+public void createOrder(Order order) {
+    orderDao.insert(order);
+
+    //发布下单事件
+    publisher.publish("order_created", new Date(), order.json(), order.getUserId().intValue() % Configuration.instance().getNumOfEventTables());
+}
+```
+
+之后，我们需要实现一个订阅者，在接收到**下单事件**后，根据订单的日期做相应的统计：
+
+```java
+@Component
+public class DailyOrderReportSubscriber implements BaseSubscriber {
+
+    @Autowired
+    private OrderRepos repos;
+
+    @Override
+    public void onEvent(Event e) {
+        Order order = Order.fromJson(e.getContext());
+        DailyOrderReport report = repos.selectDailyOrderReportByKey(new java.sql.Date(order.getOrderTime().getTime()));
+
+        if (null == report) {
+            report = new DailyOrderReport();
+            report.setDay(new java.sql.Date(order.getOrderTime().getTime()));
+            report.setOrderNum(1l);
+            report.setOrderTotal(new Long(order.getOrderAmount()));
+
+            repos.createDailyOrderReport(report);
+        } else {
+            report.setOrderNum(report.getOrderNum() + 1);
+            report.setOrderTotal(report.getOrderTotal() + order.getOrderAmount());
+
+            repos.updateDailyOrderReport(report);
+        }
+    }
+}
+```
+
+随机创建10个订单后，我们的报表情况如下：
+
+```sql
+mysql> select * from `order`;
++----------+---------+---------------------+--------------+
+| order_id | user_id | order_time          | order_amount |
++----------+---------+---------------------+--------------+
+|       21 |       3 | 2018-09-24 01:06:43 |          251 |
+|       22 |       2 | 2018-09-24 01:06:43 |          371 |
+|       23 |       5 | 2018-09-24 01:06:43 |          171 |
+|       24 |       0 | 2018-09-24 01:06:43 |          904 |
+|       25 |       3 | 2018-09-24 01:06:43 |           55 |
+|       26 |       5 | 2018-09-24 01:06:44 |          315 |
+|       27 |       8 | 2018-09-24 01:06:44 |          543 |
+|       28 |       8 | 2018-09-24 01:06:44 |          537 |
+|       29 |       2 | 2018-09-24 01:06:44 |          123 |
+|       30 |       3 | 2018-09-24 01:06:45 |          938 |
++----------+---------+---------------------+--------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from daily_order_report;
++----+------------+-----------+-------------+
+| id | day        | order_num | order_total |
++----+------------+-----------+-------------+
+|  2 | 2018-09-24 |        10 |        4208 |
++----+------------+-----------+-------------+
+1 row in set (0.00 sec)
+
+mysql> 
+```
