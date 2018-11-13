@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="346 83 473 405" width="473" height="405">
+  <defs>
+    <font-face font-family="Avenir" font-size="11" panose-1="2 11 5 3 2 2 3 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="468" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="400">
+      <font-face-src>
+        <font-face-name name="Avenir-Roman"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="StickArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 0 M 0 -3 L 8 0 L 0 3" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="Avenir Next" font-size="15" panose-1="2 11 5 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="468" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="400">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Regular"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Avenir Next" font-size="18" panose-1="2 11 8 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="498" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="700">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Bold"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 -3 L 0 3 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="Avenir Next" font-size="12" panose-1="2 11 5 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="468" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="400">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Regular"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.9.2 
+    <dc:date>2018-11-13 09:11:05 +0000</dc:date>
+  </metadata>
+  <g id="Canvas_1" fill-opacity="1" stroke-opacity="1" stroke="none" stroke-dasharray="none" fill="none">
+    <title>Canvas 1</title>
+    <rect fill="white" x="346" y="83" width="473" height="405"/>
+    <g id="Canvas_1: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_2">
+        <title>#348DC0</title>
+        <circle cx="421" cy="230" r="35.0000559265664" fill="#3f9fcc"/>
+        <text transform="translate(398 222.5)" fill="white">
+          <tspan font-family="Avenir" font-size="11" font-weight="400" fill="white" x="1.6985" y="11">3c21b03</tspan>
+        </text>
+      </g>
+      <g id="Graphic_14">
+        <title>#348DC0</title>
+        <circle cx="587" cy="230" r="35.0000559265664" fill="#3f9fcc"/>
+        <text transform="translate(564 222.5)" fill="white">
+          <tspan font-family="Avenir" font-size="11" font-weight="400" fill="white" x=".989" y="11">3e1d16d</tspan>
+        </text>
+      </g>
+      <g id="Graphic_15">
+        <title>#348DC0</title>
+        <circle cx="753" cy="230" r="35.0000559265664" fill="#3f9fcc"/>
+        <text transform="translate(730 222.5)" fill="white">
+          <tspan font-family="Avenir" font-size="11" font-weight="400" fill="white" x="2.9195" y="11">f141537</tspan>
+        </text>
+      </g>
+      <g id="Line_16">
+        <line x1="456" y1="230" x2="542.1" y2="230" marker-end="url(#StickArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_17">
+        <line x1="622" y1="230" x2="708.1" y2="230" marker-end="url(#StickArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_18">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(729.5 135.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="400" fill="#268bd2" x="0" y="15">master</tspan>
+        </text>
+      </g>
+      <g id="Graphic_19">
+        <title>Heading : Secondary text</title>
+        <text transform="translate(624 88)" fill="#657b83">
+          <tspan font-family="Avenir Next" font-size="18" font-weight="700" fill="#657b83" x="0" y="18">HEAD</tspan>
+        </text>
+      </g>
+      <g id="Line_20">
+        <line x1="753" y1="161" x2="753" y2="185.09998" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_21">
+        <line x1="681" y1="114.04369" x2="715.428" y2="129.08506" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_22">
+        <title>#348DC0</title>
+        <circle cx="421" cy="453" r="35.0000559265664" fill="#3f9fcc"/>
+        <text transform="translate(398 445.5)" fill="white">
+          <tspan font-family="Avenir" font-size="11" font-weight="400" fill="white" x="1.6985" y="11">3c21b03</tspan>
+        </text>
+      </g>
+      <g id="Graphic_23">
+        <title>#348DC0</title>
+        <circle cx="587" cy="453" r="35.0000559265664" fill="#3f9fcc"/>
+        <text transform="translate(564 445.5)" fill="white">
+          <tspan font-family="Avenir" font-size="11" font-weight="400" fill="white" x=".989" y="11">3e1d16d</tspan>
+        </text>
+      </g>
+      <g id="Graphic_24">
+        <title>#348DC0</title>
+        <circle cx="753" cy="453" r="35.0000559265663" fill="#3f9fcc"/>
+        <text transform="translate(730 445.5)" fill="white">
+          <tspan font-family="Avenir" font-size="11" font-weight="400" fill="white" x="2.9195" y="11">f141537</tspan>
+        </text>
+      </g>
+      <g id="Line_25">
+        <line x1="456" y1="453" x2="542.1" y2="453" marker-end="url(#StickArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_27">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(563.5 354.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="400" fill="#268bd2" x="0" y="15">master</tspan>
+        </text>
+      </g>
+      <g id="Graphic_28">
+        <title>Heading : Secondary text</title>
+        <text transform="translate(458 307)" fill="#657b83">
+          <tspan font-family="Avenir Next" font-size="18" font-weight="700" fill="#657b83" x="0" y="18">HEAD</tspan>
+        </text>
+      </g>
+      <g id="Line_29">
+        <line x1="587" y1="380" x2="587" y2="408.1" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_30">
+        <line x1="515" y1="333.0437" x2="549.428" y2="348.08506" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_34">
+        <line x1="357.71875" y1="283" x2="816.28125" y2="283" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+      </g>
+      <g id="Graphic_37">
+        <title>Accent Text : Magenta</title>
+        <text transform="translate(351 343.75)" fill="#d33682">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#d33682" x="0" y="12">after: git reset</tspan>
+        </text>
+      </g>
+      <g id="Graphic_38">
+        <title>Accent Text : Magenta</title>
+        <text transform="translate(351 128.5)" fill="#d33682">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#d33682" x="0" y="12">before: git reset</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>
