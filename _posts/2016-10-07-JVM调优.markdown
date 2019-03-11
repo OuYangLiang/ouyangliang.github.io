@@ -83,6 +83,8 @@ commentId: 2016-10-07
 
 10. 对于Full GC，`[PSOldGen: 40687K->4137K(40960K)]`说明了old代的回收情况，这里需要重点注意4137K这个值，它表示老年代长期存活的对象所占用的空间，对我们后续优化JVM内存空间占用有很大的参考意义。`[PSPermGen: 9964K->9964K(20480K)]`表示永久代的回收情况，这里我们可以看到永久代的大小是20M。
 
+<center><img src="{{site.baseurl}}/pic/jvm-optimization/0.svg" width="100%"/></center>
+
 对于追求低延迟的应用，可以使用ParNew加上CMS收集器的组合，如果是这样，那输出的GC日志会有些不同，但是所包含的信息量都是一样的。下面是一段使用ParNew收集器+CMS收集器所产生的GC日志：
 
     11.743: [GC 11.743: [ParNew: 9121K->1008K(9216K), 0.0005529 secs] 28899K->20786K(50176K), 0.0006177 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]

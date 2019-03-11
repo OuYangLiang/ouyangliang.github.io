@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-937 520 1600 526" width="1600" height="526">
+  <defs>
+    <font-face font-family="Avenir Next" font-size="16" panose-1="2 11 5 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="468" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="400">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Regular"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient x1="0" x2="1" id="Gradient" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#58d25e"/>
+      <stop offset=".42063493" stop-color="#00a414"/>
+      <stop offset="1" stop-color="#79fb7e"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient" xl:href="#Gradient" gradientTransform="translate(-902 782) rotate(90) scale(37)"/>
+    <font-face font-family="Lucida Grande" font-size="10" panose-1="2 11 6 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="530.27344" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="LucidaGrande"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="PingFang SC" font-size="10" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient x1="0" x2="1" id="Gradient_2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="white"/>
+      <stop offset=".8650793" stop-color="#fefc78"/>
+      <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient_2" xl:href="#Gradient_2" gradientTransform="translate(-786.5 782) rotate(90) scale(37)"/>
+    <font-face font-family="Lucida Grande" font-size="11" panose-1="2 11 6 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="530.27344" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="LucidaGrande"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_3" xl:href="#Gradient_2" gradientTransform="translate(-833.5 945) rotate(90) scale(37)"/>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="DimensionArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 7 8" markerWidth="7" markerHeight="8" color="black">
+      <g>
+        <path d="M 0 0 L 4.8 0 M 4.8 3 L 4.8 -3 M 0 1.2 L 4.2 0 L 0 -1.2" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="DimensionArrow_Marker_2" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-6 -4 7 8" markerWidth="7" markerHeight="8" color="black">
+      <g>
+        <path d="M 0 0 L -4.8 0 M -4.8 -3 L -4.8 3 M 0 -1.2 L -4.2 0 L 0 1.2" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 -3 L 0 3 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="PingFang SC" font-size="12" panose-1="2 11 8 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="80" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="600">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Semibold"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_4" xl:href="#Gradient_2" gradientTransform="translate(-554.5 521) rotate(90) scale(37)"/>
+    <filter id="Shadow" filterUnits="userSpaceOnUse" x="-937" y="520">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="2.2616883"/>
+      <feOffset in="blur" result="offset" dx="0" dy="2"/>
+      <feFlood flood-color="#d6d6d6" result="flood"/>
+      <feComposite in="flood" in2="offset" operator="in" result="color"/>
+      <feMerge>
+        <feMergeNode in="color"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <font-face font-family="Helvetica" font-size="12" units-per-em="1000" underline-position="-75.68359" underline-thickness="49.316406" slope="0" x-height="532.22656" cap-height="719.7266" ascent="770.0195" descent="-229.98047" font-weight="700">
+      <font-face-src>
+        <font-face-name name="Helvetica-Bold"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_5" xl:href="#Gradient_2" gradientTransform="translate(-282.5 782) rotate(90) scale(37)"/>
+    <font-face font-family="PingFang SC" font-size="9" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Lucida Grande" font-size="9" panose-1="2 11 6 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="530.27344" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="LucidaGrande"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_6" xl:href="#Gradient_2" gradientTransform="translate(13.5 963) rotate(90) scale(37)"/>
+    <font-face font-family="PingFang SC" font-size="11" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.9.4 
+    <dc:date>2019-03-11 02:31:41 +0000</dc:date>
+  </metadata>
+  <g id="Canvas_4" stroke-opacity="1" stroke-dasharray="none" fill-opacity="1" stroke="none" fill="none">
+    <title>GC日志</title>
+    <rect fill="white" x="-937" y="520" width="1600" height="526"/>
+    <g id="Canvas_4: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_3">
+        <title>Accent Text : Violet</title>
+        <text transform="translate(-913 815)" fill="#6c71c4">
+          <tspan font-family="Avenir Next" font-size="16" font-weight="400" fill="#6c71c4" x="0" y="16">15.078: [GC [PSYoungGen: 9044K-&gt;996K(9216K)] 46290K-&gt;38758K(50176K), 0.0006280 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]</tspan>
+          <tspan font-family="Avenir Next" font-size="16" font-weight="400" fill="#6c71c4" x="0" y="38">15.238: [GC [PSYoungGen: 9152K-&gt;996K(9216K)] 46914K-&gt;39258K(50176K), 0.0047185 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]</tspan>
+          <tspan font-family="Avenir Next" font-size="16" font-weight="400" fill="#6c71c4" x="0" y="60">15.376: [GC [PSYoungGen: 9166K-&gt;992K(9216K)] 47428K-&gt;40111K(50176K), 0.0011949 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]</tspan>
+          <tspan font-family="Avenir Next" font-size="16" font-weight="400" fill="#6c71c4" x="0" y="82">15.505: [GC [PSYoungGen: 9184K-&gt;1020K(9216K)] 48303K-&gt;40931K(50176K), 0.0019050 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]</tspan>
+          <tspan font-family="Avenir Next" font-size="16" font-weight="400" fill="#6c71c4" x="0" y="104">15.664: [GC [PSYoungGen: 9164K-&gt;996K(9216K)] 49076K-&gt;41684K(50176K), 0.0015982 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]</tspan>
+          <tspan font-family="Avenir Next" font-size="16" font-weight="400" fill="#6c71c4" x="0" y="126">15.666: [Full GC [PSYoungGen: 996K-&gt;0K(9216K)] [PSOldGen: 40687K-&gt;4137K(40960K)] 41684K-&gt;4137K(50176K) [PSPermGen: 9964K-&gt;9964K(20480K)], 0.0230596 secs] [Times: user=0.02 sys=0.00, real=0.02 secs]</tspan>
+        </text>
+      </g>
+      <g id="Graphic_4">
+        <path d="M -895.4387 810 L -892.1478 819 L -888.8567 810 L -878.2 810 C -872.5696 810 -868 803.728 -868 796 C -868 788.272 -872.5696 782 -878.2 782 L -925.8 782 C -931.4304 782 -936 788.272 -936 796 C -936 803.728 -931.4304 810 -925.8 810 L -895.4387 810 Z" fill="url(#Obj_Gradient)"/>
+        <path d="M -895.4387 810 L -892.1478 819 L -888.8567 810 L -878.2 810 C -872.5696 810 -868 803.728 -868 796 C -868 788.272 -872.5696 782 -878.2 782 L -925.8 782 C -931.4304 782 -936 788.272 -936 796 C -936 803.728 -931.4304 810 -925.8 810 L -895.4387 810 Z" stroke="#239519" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"/>
+        <text transform="translate(-931 788.32)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="10" font-weight="400" fill="black" x="1.927246" y="11">GC</tspan>
+          <tspan font-family="PingFang SC" font-size="10" font-weight="400" fill="black" y="11">发生时间</tspan>
+        </text>
+      </g>
+      <g id="Graphic_5">
+        <path d="M -780.61415 810 L -777.662 819 L -774.7097 810 L -765.15 810 C -760.0992 810 -756 803.728 -756 796 C -756 788.272 -760.0992 782 -765.15 782 L -807.85 782 C -812.9008 782 -817 788.272 -817 796 C -817 803.728 -812.9008 810 -807.85 810 L -780.61415 810 Z" fill="url(#Obj_Gradient_2)"/>
+        <path d="M -780.61415 810 L -777.662 819 L -774.7097 810 L -765.15 810 C -760.0992 810 -756 803.728 -756 796 C -756 788.272 -760.0992 782 -765.15 782 L -807.85 782 C -812.9008 782 -817 788.272 -817 796 C -817 803.728 -812.9008 810 -807.85 810 L -780.61415 810 Z" stroke="#959609" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"/>
+        <text transform="translate(-812 788.82)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="11" font-weight="400" fill="black" x=".61035156" y="11">Minor GC</tspan>
+        </text>
+      </g>
+      <g id="Graphic_6">
+        <path d="M -827.6141 954 L -824.662 945 L -821.7097 954 L -812.15 954 C -807.0992 954 -803 960.272 -803 968 C -803 975.728 -807.0992 982 -812.15 982 L -854.85 982 C -859.9008 982 -864 975.728 -864 968 C -864 960.272 -859.9008 954 -854.85 954 L -827.6141 954 Z" fill="url(#Obj_Gradient_3)"/>
+        <path d="M -827.6141 954 L -824.662 945 L -821.7097 954 L -812.15 954 C -807.0992 954 -803 960.272 -803 968 C -803 975.728 -807.0992 982 -812.15 982 L -854.85 982 C -859.9008 982 -864 975.728 -864 968 C -864 960.272 -859.9008 954 -854.85 954 L -827.6141 954 Z" stroke="#959609" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"/>
+        <text transform="translate(-859 961.44)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="11" font-weight="400" fill="black" x="6.437988" y="11">Full GC</tspan>
+        </text>
+      </g>
+      <g id="Line_19">
+        <line x1="-701.4" y1="801" x2="-567.6" y2="801" marker-end="url(#DimensionArrow_Marker)" marker-start="url(#DimensionArrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_20">
+        <path d="M -709.434 746.8718 C -709.43385 746.8716 -711.66295 756.4632 -708.67595 765.7173 C -705.67315 774.9729 -693.9819 780.2367 -693.9819 780.2367 L -691.3035 771.8911 C -691.3035 771.8911 -683.4986 790.1908 -683.4987 790.191 C -683.49885 790.1907 -704.4213 793.7454 -704.4177 793.7486 L -698.6355 788.0286 C -698.636 788.0285 -711.1914 780.9159 -713.98275 769.5597 C -716.7872 758.2018 -709.4337 746.87145 -709.434 746.8718 Z" fill="#7dd2ff"/>
+      </g>
+      <g id="Line_23">
+        <line x1="-530.4" y1="801" x2="-369.6" y2="801" marker-end="url(#DimensionArrow_Marker)" marker-start="url(#DimensionArrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_25">
+        <path d="M -538.434 747 C -538.43385 746.9999 -540.66295 756.5914 -537.67595 765.8456 C -534.67315 775.1011 -522.9819 780.3649 -522.9819 780.3649 L -520.3035 772.01935 C -520.3035 772.01935 -512.4986 790.3191 -512.4987 790.31925 C -512.49885 790.3189 -533.4213 793.8736 -533.4177 793.8768 L -527.63553 788.1568 C -527.636 788.1567 -540.19144 781.04415 -542.98275 769.6879 C -545.7872 758.3301 -538.4337 746.9997 -538.434 747 Z" fill="#7dd2ff"/>
+      </g>
+      <g id="Line_27">
+        <path d="M -654.0378 576 C -654.0378 576 -643.5126 599.40306 -603 630 C -572.77775 652.8252 -536.46897 671.6469 -519.9737 679.7359" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_28">
+        <path d="M -603 577 C -603 577 -628.5404 602.2361 -654.0378 630 C -669.4409 646.7722 -680.4527 659.7024 -686.75765 667.3117" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_29">
+        <text transform="translate(-679 554.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="13">50176K - 9216K = 40960K</tspan>
+        </text>
+      </g>
+      <g id="Graphic_30">
+        <path d="M -548.61415 549 L -545.66195 558 L -542.7097 549 L -533.15 549 C -528.0992 549 -524 542.728 -524 535 C -524 527.272 -528.0992 521 -533.15 521 L -575.85 521 C -580.9008 521 -585 527.272 -585 535 C -585 542.728 -580.9008 549 -575.85 549 L -548.61415 549 Z" fill="url(#Obj_Gradient_4)"/>
+        <path d="M -548.61415 549 L -545.66195 558 L -542.7097 549 L -533.15 549 C -528.0992 549 -524 542.728 -524 535 C -524 527.272 -528.0992 521 -533.15 521 L -575.85 521 C -580.9008 521 -585 527.272 -585 535 C -585 542.728 -580.9008 549 -575.85 549 L -548.61415 549 Z" stroke="#959609" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"/>
+        <text transform="translate(-580 527.32)" fill="black">
+          <tspan font-family="PingFang SC" font-size="10" font-weight="400" fill="black" x=".5" y="11">老年代大小</tspan>
+        </text>
+      </g>
+      <g id="Graphic_31">
+        <text transform="translate(-580 680)" fill="black">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="13">堆总空间：50176K（不包括永久代）</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="30">回收前：46290K</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="47">回收后：38758K</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="64">本次回收：46290 - 38758 = 7532K</tspan>
+        </text>
+      </g>
+      <g id="Graphic_33">
+        <text transform="translate(-787 680)" fill="black">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="13">新年代空间：9216K</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="30">回收前：9044K</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="47">回收后：996K</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="64">本次回收：9044 - 996 = 8048K</tspan>
+        </text>
+      </g>
+      <g id="Graphic_34">
+        <text transform="translate(-481 590.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="13">8048K - 7532K = 516K</tspan>
+        </text>
+      </g>
+      <g id="Line_35">
+        <path d="M -486 603 C -486 603 -568.2419 627.8036 -609.0378 663.5 C -636.1209 687.1977 -636.4833 708.2983 -633.6669 719.806" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_36">
+        <path d="M -392.78622 613 C -376.0762 625.28455 -355.16958 644.5085 -351.113 666 C -346.05674 692.7878 -368.9081 713.93655 -381.74512 723.4778" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_37" filter="url(#Shadow)">
+        <path d="M -409.229 540 L -293 540 C -290.23858 540 -288 542.2386 -288 545 L -288 575.45086 C -288 578.2123 -290.23858 580.45086 -293 580.45086 L -370.73036 580.45086 C -370.73036 580.45086 -370.73023 586.07384 -370.73023 586.0739 C -370.73036 586.07384 -388.72935 580.306 -388.72935 580.3062 C -388.72935 580.306 -414.229 580.45086 -414.229 580.45086 L -414.229 545 C -414.229 542.2386 -411.9904 540 -409.229 540 Z" fill="#c0edff"/>
+        <path d="M -409.229 540 L -293 540 C -290.23858 540 -288 542.2386 -288 545 L -288 575.45086 C -288 578.2123 -290.23858 580.45086 -293 580.45086 L -370.73036 580.45086 C -370.73036 580.45086 -370.73023 586.07384 -370.73023 586.0739 C -370.73036 586.07384 -388.72935 580.306 -388.72935 580.3062 C -388.72935 580.306 -414.229 580.45086 -414.229 580.45086 L -414.229 545 C -414.229 542.2386 -411.9904 540 -409.229 540 Z" stroke="#7dd2ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-409.229 545)" fill="black">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="13">本次</tspan>
+          <tspan font-family="Helvetica" font-size="12" font-weight="700" fill="black" y="13">GC</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" y="13">，从新年代向</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="30">老年代的转移量</tspan>
+        </text>
+      </g>
+      <g id="Graphic_38">
+        <text transform="translate(-319 608)" fill="black">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="13">根据Minor GC的频率，与平均转移量，再</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="30">结合老年代的大小，可以大致估计出系统</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="47">大概多久会发生一次Full GC</tspan>
+        </text>
+      </g>
+      <g id="Graphic_39">
+        <path d="M -276.61415 810 L -273.66195 819 L -270.70968 810 L -261.15 810 C -256.0992 810 -252 803.728 -252 796 C -252 788.272 -256.0992 782 -261.15 782 L -303.85 782 C -308.9008 782 -313 788.272 -313 796 C -313 803.728 -308.9008 810 -303.85 810 L -276.61415 810 Z" fill="url(#Obj_Gradient_5)"/>
+        <path d="M -276.61415 810 L -273.66195 819 L -270.70968 810 L -261.15 810 C -256.0992 810 -252 803.728 -252 796 C -252 788.272 -256.0992 782 -261.15 782 L -303.85 782 C -308.9008 782 -313 788.272 -313 796 C -313 803.728 -308.9008 810 -303.85 810 L -276.61415 810 Z" stroke="#959609" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"/>
+        <text transform="translate(-308 788.82)" fill="black">
+          <tspan font-family="PingFang SC" font-size="9" font-weight="400" fill="black" x="1.1345215" y="10">本次</tspan>
+          <tspan font-family="Lucida Grande" font-size="9" font-weight="400" fill="black" y="10">GC</tspan>
+          <tspan font-family="PingFang SC" font-size="9" font-weight="400" fill="black" y="10">耗时</tspan>
+        </text>
+      </g>
+      <g id="Graphic_40">
+        <text transform="translate(-580 990)" fill="black">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="13">老年代长期存活的</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="30">对象所占用的空间</tspan>
+          <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="black" x="0" y="47">4137K</tspan>
+        </text>
+      </g>
+      <g id="Line_41">
+        <path d="M -540 1035 C -540 1035 -455.9949 1033.4975 -405 1008 C -370.3195 990.6597 -361.9971 967.767 -360.22164 954.8941" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_42">
+        <line x1="-53.4" y1="954" x2="197.4" y2="954" marker-end="url(#DimensionArrow_Marker)" marker-start="url(#DimensionArrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_43">
+        <path d="M 23.05245 972 L 27.843714 963 L 32.635116 972 L 48.15 972 C 56.3472 972 63 978.272 63 986 C 63 993.728 56.3472 1e3 48.15 1e3 L -21.15 1e3 C -29.3472 1e3 -36 993.728 -36 986 C -36 978.272 -29.3472 972 -21.15 972 L 23.05245 972 Z" fill="url(#Obj_Gradient_6)"/>
+        <path d="M 23.05245 972 L 27.843714 963 L 32.635116 972 L 48.15 972 C 56.3472 972 63 978.272 63 986 C 63 993.728 56.3472 1e3 48.15 1e3 L -21.15 1e3 C -29.3472 1e3 -36 993.728 -36 986 C -36 978.272 -29.3472 972 -21.15 972 L 23.05245 972 Z" stroke="#959609" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"/>
+        <text transform="translate(-31 977.94)" fill="black">
+          <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="black" x="6" y="12">永久代回收情况</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>
