@@ -18,7 +18,7 @@ public static void premain(String agentArgs, Instrumentation inst);
 public static void premain(String agentArgs);
 ```
 
-在`premain`函数中，可以进行对类的各种操作。`agentArgs`是`premain`函数得到的程序参数，随同 “–javaagent”一起传入。`inst`是一个`java.lang.instrument.Instrumentation`的实例，由JVM自动传入。`java.lang.instrument.Instrumentation`是instrument包中定义的一个接口，也是这个包的核心部分，集中了其中几乎所有的功能方法，例如类定义的转换和操作等等。
+在`premain`函数中，可以进行对类的各种操作。`agentArgs`是`premain`函数得到的程序参数，随同 “–javaagent”一起传入。`inst`是一个`java.lang.instrument.Instrumentation`的实例，由JVM自动传入，是instrument包中定义的一个接口，也是这个包的核心部分，集中了其中几乎所有的功能方法，例如类定义的转换和操作等等。
 
 **二、jar打包**
 
@@ -44,7 +44,7 @@ java -javaagent:jar[=agentArgs] -cp 应用程序jar 主类
 
 <br/>
 
-现在我们想要去程序做一些修改，比如统计`format`方法的耗时，看看如何利用Instrument实现零侵入来实现这个功能。首先，我们另启一个java工程，并编写一个premain方法的类：
+现在我们想要对程序做一些修改，比如统计`format`方法的耗时，看看如何利用Instrument实现零侵入来实现这个功能。首先，我们另启一个java工程，并编写一个premain方法的类：
 
 ```java
 package com.personal.oyl.instrument;
@@ -152,4 +152,4 @@ java -javaagent:agent.jar -jar app.jar
 
 <center><img src="{{site.baseurl}}/pic/instrument/3.png" width="90%"/></center>
 
-第一次了解到这个java agent时，真的被惊呀了，居然还能这么玩。对于运维、监控来说，真的是太强大了，可以真正无入侵的实现打点、慢方法监控、流量复制等，只有你想不到，没有它做不到的啊。
+第一次了解到java agent时，真的被惊呀了，居然还能这么玩。对于运维、监控来说，真的是太强大了，可以真正无入侵的实现打点、性能监控、流量复制等，只有你想不到，没有它做不到的啊。
