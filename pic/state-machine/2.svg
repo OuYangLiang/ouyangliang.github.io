@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="351 745 600 70" width="600" height="70">
+  <defs>
+    <font-face font-family="PingFang SC" font-size="9" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="StickArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 0 M 0 -3 L 8 0 L 0 3" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="PingFang SC" font-size="12" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.9.4 
+    <dc:date>2019-04-11 11:45:47 +0000</dc:date>
+  </metadata>
+  <g id="1_2" fill="none" stroke-dasharray="none" stroke="none" fill-opacity="1" stroke-opacity="1">
+    <title>1 2</title>
+    <rect fill="white" x="351" y="745" width="600" height="70"/>
+    <g id="1_2: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_128">
+        <path d="M 485.59375 760.5 L 537.59375 760.5 C 543.1166 760.5 547.59375 764.97715 547.59375 770.5 L 547.59375 786.5 C 547.59375 792.02285 543.1166 796.5 537.59375 796.5 L 485.59375 796.5 C 480.0709 796.5 475.59375 792.02285 475.59375 786.5 L 475.59375 770.5 C 475.59375 764.97715 480.0709 760.5 485.59375 760.5 Z" fill="white"/>
+        <path d="M 485.59375 760.5 L 537.59375 760.5 C 543.1166 760.5 547.59375 764.97715 547.59375 770.5 L 547.59375 786.5 C 547.59375 792.02285 543.1166 796.5 537.59375 796.5 L 485.59375 796.5 C 480.0709 796.5 475.59375 792.02285 475.59375 786.5 L 475.59375 770.5 C 475.59375 764.97715 480.0709 760.5 485.59375 760.5 Z" stroke="#0076bc" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+        <text transform="translate(480.59375 772)" fill="#0076bc">
+          <tspan font-family="PingFang SC" font-size="9" font-weight="400" fill="#0076bc" x="17.5" y="10">待支付</tspan>
+        </text>
+      </g>
+      <g id="Graphic_127">
+        <ellipse cx="388.54688" cy="778.5" rx="10.5468918528716" ry="10.5000167779699" fill="black"/>
+        <ellipse cx="388.54688" cy="778.5" rx="10.5468918528716" ry="10.5000167779699" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_126">
+        <line x1="399.09376" y1="778.5" x2="465.69375" y2="778.5" marker-end="url(#StickArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_125">
+        <title>Accent Text : Green</title>
+        <text transform="translate(409.66227 761)" fill="#6c71c4">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#6c71c4" x="0" y="13">预定下单</tspan>
+        </text>
+      </g>
+      <g id="Graphic_124">
+        <path d="M 611.59375 760.5 L 663.59375 760.5 C 669.1166 760.5 673.59375 764.97715 673.59375 770.5 L 673.59375 786.5 C 673.59375 792.02285 669.1166 796.5 663.59375 796.5 L 611.59375 796.5 C 606.0709 796.5 601.59375 792.02285 601.59375 786.5 L 601.59375 770.5 C 601.59375 764.97715 606.0709 760.5 611.59375 760.5 Z" fill="white"/>
+        <path d="M 611.59375 760.5 L 663.59375 760.5 C 669.1166 760.5 673.59375 764.97715 673.59375 770.5 L 673.59375 786.5 C 673.59375 792.02285 669.1166 796.5 663.59375 796.5 L 611.59375 796.5 C 606.0709 796.5 601.59375 792.02285 601.59375 786.5 L 601.59375 770.5 C 601.59375 764.97715 606.0709 760.5 611.59375 760.5 Z" stroke="#0076bc" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+        <text transform="translate(606.59375 772)" fill="#0076bc">
+          <tspan font-family="PingFang SC" font-size="9" font-weight="400" fill="#0076bc" x="17.5" y="10">待发货</tspan>
+        </text>
+      </g>
+      <g id="Line_123">
+        <line x1="547.59375" y1="778.5" x2="591.69375" y2="778.5" marker-end="url(#StickArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_122">
+        <title>Accent Text : Green</title>
+        <text transform="translate(559.99505 761)" fill="#6c71c4">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#6c71c4" x="0" y="13">付款</tspan>
+        </text>
+      </g>
+      <g id="Graphic_121">
+        <path d="M 728.59375 760.5 L 780.59375 760.5 C 786.1166 760.5 790.59375 764.97715 790.59375 770.5 L 790.59375 786.5 C 790.59375 792.02285 786.1166 796.5 780.59375 796.5 L 728.59375 796.5 C 723.0709 796.5 718.59375 792.02285 718.59375 786.5 L 718.59375 770.5 C 718.59375 764.97715 723.0709 760.5 728.59375 760.5 Z" fill="white"/>
+        <path d="M 728.59375 760.5 L 780.59375 760.5 C 786.1166 760.5 790.59375 764.97715 790.59375 770.5 L 790.59375 786.5 C 790.59375 792.02285 786.1166 796.5 780.59375 796.5 L 728.59375 796.5 C 723.0709 796.5 718.59375 792.02285 718.59375 786.5 L 718.59375 770.5 C 718.59375 764.97715 723.0709 760.5 728.59375 760.5 Z" stroke="#0076bc" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+        <text transform="translate(723.59375 772)" fill="#0076bc">
+          <tspan font-family="PingFang SC" font-size="9" font-weight="400" fill="#0076bc" x="17.5" y="10">待签收</tspan>
+        </text>
+      </g>
+      <g id="Line_120">
+        <line x1="673.59375" y1="778.5" x2="708.69375" y2="778.5" marker-end="url(#StickArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_119">
+        <title>Accent Text : Green</title>
+        <text transform="translate(681.1697 761)" fill="#6c71c4">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#6c71c4" x="0" y="13">发货</tspan>
+        </text>
+      </g>
+      <g id="Graphic_118">
+        <path d="M 854.5938 760.5 L 906.5938 760.5 C 912.1166 760.5 916.5938 764.97715 916.5938 770.5 L 916.5938 786.5 C 916.5938 792.02285 912.1166 796.5 906.5938 796.5 L 854.5938 796.5 C 849.0709 796.5 844.5938 792.02285 844.5938 786.5 L 844.5938 770.5 C 844.5938 764.97715 849.0709 760.5 854.5938 760.5 Z" fill="white"/>
+        <path d="M 854.5938 760.5 L 906.5938 760.5 C 912.1166 760.5 916.5938 764.97715 916.5938 770.5 L 916.5938 786.5 C 916.5938 792.02285 912.1166 796.5 906.5938 796.5 L 854.5938 796.5 C 849.0709 796.5 844.5938 792.02285 844.5938 786.5 L 844.5938 770.5 C 844.5938 764.97715 849.0709 760.5 854.5938 760.5 Z" stroke="#0076bc" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+        <text transform="translate(849.5938 772)" fill="#0076bc">
+          <tspan font-family="PingFang SC" font-size="9" font-weight="400" fill="#0076bc" x="17.5" y="10">已完收</tspan>
+        </text>
+      </g>
+      <g id="Line_117">
+        <line x1="790.59375" y1="778.5" x2="834.69375" y2="778.5" marker-end="url(#StickArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_116">
+        <title>Accent Text : Green</title>
+        <text transform="translate(802.9951 761)" fill="#6c71c4">
+          <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#6c71c4" x="0" y="13">签收</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>

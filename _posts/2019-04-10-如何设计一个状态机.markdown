@@ -1,0 +1,397 @@
+---
+layout: post
+title:  "如何设计一个状态机"
+date:   2019-04-10 08:00:00 +0800
+categories: 架构
+keywords: 状态机,state machine
+description: 如何设计一个状态机
+commentId: 2019-04-10
+---
+<center><img src="{{site.baseurl}}/pic/state-machine/1.svg" width="80%"/></center>
+
+上图是我们满帮CRM系统中一个小部分，为了更好的服务客户，提升客户黏性而设计的一套客户活跃状态。业务是很特别的，但是站在技术的角度，这其实就是一个状态机。如何实现一个好的状态机，是本文将要展开讨论的核心话题。最简单、直接的方式就是hard coding + if else，针对上面的状态图，代码的实现可能是这样的：
+
+```java
+public class MemberServiceImpl implements MemberService {
+    @Override
+    public void onPayment(Member member) {
+        if (MemberType.enterprise.equals(member.getType())) {
+            if (State.active.equals(member.getState())) {
+                // do something
+                if (成为active状态30天内) {
+                    member.setState(State.online);
+                }
+            } else if (State.lost.equals(member.getState())) {
+                // do something
+                member.setState(State.online);
+            }
+        } else if (MemberType.individual.equals(member.getType())) {
+            if (State.pending_active.equals(member.getState()) || State.lost.equals(member.getState())) {
+                // do something
+                member.setState(State.active);
+            }
+        }
+    }
+
+    @Override
+    public void onRecharge(Member member) {
+        if (MemberType.enterprise.equals(member.getType())) {
+            if (State.pending_active.equals(member.getState())) {
+                // do something
+                if (注册后5天内累计充值达到3000) {
+                    member.setState(State.active);
+                }
+            } else if (State.lost.equals(member.getState())) {
+                // do something
+                member.setState(State.active);
+            }
+        }
+    }
+
+}
+```
+
+<br/>
+
+这样的代码能不能正确的实现业务功能？能。好不好？不好，为什么？首先，状态的流转和业务处理逻辑偶合在一起了，不符合高内聚、低偶合的设计理念。必然导致需求更变时代码的可维护性低，试想，如果要多加一个状态，代码的改动会很困难，风险也会很高；其次，我们很难仅仅通过代码看出完整的状态流转，因为状态的流转逻辑分散在不同方法、甚至是不同的类中，你必须仔细阅读每一行代码，而这些代码中大部分和状态的流转是无关的。
+
+讲得这里，有的同学可能会想到设计模式中的状态模式，毕竟这是一个很基础、很简单的模式。是否可以通过状态模式来实现这个场景呢？当然可以。好不好呢？不够好。状态模式把对象的行为包装在不同的状态对象里，对象的行为取决于它的状态，当一个对象内部状态改变时，行为也随之改变。状态模式强调的是行为具体做什么由状态决定，但是对象能够行使哪些行为与当前的状态是无关的，比如看微博时点击转发按钮，如果登录了就会跳转到转发界面，如果没登录就会跳转到登录界面。如果硬搬状态模式来实现状态机，那行为类里面可能会有大量的空方法实现，这个其实是不太好的。而状态机强调的是状态的流转，还有不同状态下能够行使的行为是不同的，比如订单在待支付状态时，不能发货；在待发货状态时，是不能签收的。
+
+现在我们看看如何实现一个好的状态机，首先，我们需要两个枚举类`State`和`Event`，分别表示状态和行为（也有人称为事件、动作）。
+
+```java
+public enum State {
+    pending_active,
+    active,
+    online,
+    lost;
+}
+
+public enum Event {
+    recharge,
+    pay,
+    no_action;
+}
+```
+
+<br/>
+
+一个状态机最为核心的部分就是控制状态的流转，状态的流转取决于哪些因素呢？我们看看下图这个简单的示例：
+
+<center><img src="{{site.baseurl}}/pic/state-machine/2.svg" width="60%"/></center>
+
+这是一个超级简单的订单状态图，不难发现状态的流转依赖当前的状态和发生的动作，即给定当前的状态和发生的动作，就可以确定后续的状态是什么。比如：
+
+* 当前状态是【待支付】，发生的动作是【付款】，可以确定后续状态是【待发货】。
+
+* 当前状态是【待发货】，发生的动作是【发货】，可以确定后续状态是【待签收】。
+
+* 当前状态是【待签收】，发生的动作是【签收】，可以确定后续状态是【完成】。
+
+所以状态机的定义可以这样：
+
+```java
+public interface StateMachine {
+    State next(State state, Event event);
+}
+```
+
+<br/>
+
+这样设计正确吗？对于大部分场景来说是够了，但是要满足我们CRM客户的状态流转的话，可能还不够，比如：
+
+<center><img src="{{site.baseurl}}/pic/state-machine/3.svg" width="60%"/></center>
+
+从【待激活】变为【已激活】的条件是“5天内累计充值满3000元”。在【待激活】这个状态下，发生了充值这个动作，不足以确定下一个状态，还依赖这个动作发生时的一些其它的附加条件（我们称之为上下文context），所以状态机的定义可以改成这样：
+
+```java
+public interface StateMachine {
+    State next(State state, Event event, Object context);
+}
+```
+
+<br/>
+
+有了状态机的抽象，我们就可以分别给出企定客户和个人客户的状态机实现了：
+
+```java
+public class IndividualStateMachine implements StateMachine {
+
+    @Override
+    public State next(State state, Event event, Object context) {
+        if (State.pending_active.equals(state) && Event.pay.equals(event)) {
+            return State.active;
+        }
+
+        if (State.active.equals(state) && Event.no_action.equals(event)) {
+            return State.lost;
+        }
+
+        if (State.lost.equals(state) && Event.pay.equals(event)) {
+            return State.active;
+        }
+
+        throw new IllegalStateException();
+    }
+
+}
+
+public class EnterpriseStateMachine implements StateMachine {
+
+    @Override
+    public State next(State state, Event event, Object context) {
+        if (State.pending_active.equals(state) && Event.recharge.equals(event)) {
+
+            if (null == context) {
+                // context == null 表示5天内充值不满3000元
+                return state;
+            }
+
+            return State.active;
+        }
+
+        if (State.pending_active.equals(state) && Event.no_action.equals(event)) {
+            return State.lost;
+        }
+
+        if (State.active.equals(state) && Event.pay.equals(event)) {
+
+            if (null == context) {
+                // context == null 表示30天以前就处于激活状态了
+                return state;
+            }
+
+            return State.online;
+        }
+
+        if (State.pending_active.equals(state) && Event.no_action.equals(event)) {
+            return State.lost;
+        }
+
+        if (State.online.equals(state) && Event.no_action.equals(event)) {
+            return State.lost;
+        }
+
+        if (State.lost.equals(state) && Event.pay.equals(event)) {
+            return State.online;
+        }
+
+        if (State.lost.equals(state) && Event.recharge.equals(event)) {
+            return State.online;
+        }
+
+        throw new IllegalStateException();
+    }
+
+}
+```
+
+<br/>
+
+状态机的定位十分简单、明确，只负责状态的流转逻辑，不负责具体业务逻辑的处理，符合单一职责、高内聚、低偶合等设计理念。通过抽象StateMachine，我们将状态的转流和具体的动作（业务逻辑处理）解偶了，现在剩下的问题是真正的动作实现在哪里呢？这个涉及到StateHandler了：
+
+```java
+public interface StateHandler {
+    void handle(Member member);
+
+    Event event();
+}
+
+public abstract class AbstractStateHandler implements StateHandler {
+
+    @Override
+    public final void handle(Member member) {
+        this.before(member);
+        Object context = this.doHandler(member);
+        member.setState(StateMachineFactory.getMachine(member.getType())
+                    .next(member.getState(), this.event(), context));
+        this.after(member);
+    }
+
+    protected void before(Member member) {
+
+    }
+
+    protected void after(Member member) {
+
+    }
+
+    protected abstract Object doHandle(Member member);
+
+}
+```
+
+<br/>
+
+每一个动作，对应一个`StateHandler`，可以通过继承`AbstractStateHandler`来简化实现，只需要把真正的业务逻辑实现在`doHandler`方法即可。外部通过`handle`方法来触发动作的执行。`before`和`after`方法的存在，提供了更好的灵活性，可以在状态变更前、变更后做一些事件。比如客户变更【已流失】后，可以在`after`方法中发送通知提醒对应的销售人员及时跟进。细看我们的客户状态图，可以抽象出：企业客户充值、企业客户支付、个人客户支付、无操作等四个`StateHandler`:
+
+```java
+public class EnterpriseRechargeHandler extends AbstractStateHandler {
+
+    @Override
+    public Event event() {
+        return Event.recharge;
+    }
+
+    @Override
+    protected Object doHandle(Member member) {
+        System.out.println("5天内充值了6000元");
+        return new Object();
+    }
+
+}
+
+public class EnterprisePayHandler extends AbstractStateHandler {
+
+    @Override
+    public Event event() {
+        return Event.pay;
+    }
+
+    @Override
+    protected Object doHandle(Member member) {
+        System.out.println("30天内支付了");
+        return new Object();
+    }
+
+}
+
+public class IndividualPayHandler extends AbstractStateHandler {
+
+    @Override
+    public Event event() {
+        return Event.pay;
+    }
+
+    @Override
+    protected Object doHandle(Member member) {
+        System.out.println("客户支付了");
+        return null;
+    }
+
+}
+
+public class NoactionHandler extends AbstractStateHandler {
+
+    @Override
+    public Event event() {
+        return Event.no_action;
+    }
+
+    @Override
+    protected Object doHandle(Member member) {
+        System.out.println("客户什么都没做，没充值，也没有支付");
+        return null;
+    }
+
+}
+```
+
+<br/>
+
+最后，我们还剩一个问题，如何找到`StateHandler`？StateHandler表示一个具体的动作，需要由客户的类型、客户当前的状态和正在执行的动作，三者共同决定，参考`StateMachineEngine.getHandler`方法。
+
+```java
+public final class StateMachineEngine {
+    public static void post(Member member, Event event) {
+        StateHandler h = getHandler(member.getType(), member.getState(), event);
+
+        if (null == h) {
+            throw new IllegalStateException();
+        }
+
+        h.handle(member);
+    }
+
+    private static StateHandler getHandler(MemberType type, State state, Event event) {
+        if (null == holder) {
+            synchronized (StateMachineEngine.class) {
+                if (null == holder) {
+                    init();
+                }
+            }
+        }
+
+        String key = type.name() + ":" + state.name() + ":" + event.name();
+        return holder.get(key);
+    }
+
+    private static Map<String, StateHandler> holder;
+
+    private static void init() {
+        holder = new HashMap<>();
+        holder.put("enterprise:pending_active:recharge", new EnterpriseRechargeHandler());
+        holder.put("enterprise:lost:recharge", new EnterpriseRechargeHandler());
+
+        holder.put("enterprise:active:pay", new EnterprisePayHandler());
+        holder.put("enterprise:lost:pay", new EnterprisePayHandler());
+
+        holder.put("enterprise:pending_active:no_action", new NoactionHandler());
+        holder.put("enterprise:online:no_action", new NoactionHandler());
+        holder.put("enterprise:active:no_action", new NoactionHandler());
+
+
+        holder.put("individual:active:no_action", new NoactionHandler());
+        holder.put("individual:pending_active:pay", new IndividualPayHandler());
+        holder.put("individual:lost:pay", new IndividualPayHandler());
+    }
+}
+```
+
+`StateMachineEngine`类的`post`方法是状态机暴露给客户端的一个help方法，它接收Member对象和Event两个参数，表示客户执行了某个动作。内部根据客户的类型、当前的状态以及执行的操作，来获取一个StateHandler，再通过StateHandler的handler方法执行真正的业务逻辑和调度状态的流转。
+
+现在，客户端可以这样使用状态机：
+
+```java
+public static void main(String[] args) {
+    System.out.println("企业会员");
+    Member member = new Member(MemberType.enterprise);
+    System.out.println("当前状态：" + member.getState().name());
+
+    StateMachineEngine.post(member, Event.recharge);
+    System.out.println("当前状态：" + member.getState().name());
+
+    StateMachineEngine.post(member, Event.pay);
+    System.out.println("当前状态：" + member.getState().name());
+
+    StateMachineEngine.post(member, Event.no_action);
+    System.out.println("当前状态：" + member.getState().name());
+
+    StateMachineEngine.post(member, Event.pay);
+    System.out.println("当前状态：" + member.getState().name());
+
+    System.out.println("个人会员");
+    member = new Member(MemberType.individual);
+    System.out.println("当前状态：" + member.getState().name());
+
+    StateMachineEngine.post(member, Event.pay);
+    System.out.println("当前状态：" + member.getState().name());
+
+    StateMachineEngine.post(member, Event.no_action);
+    System.out.println("当前状态：" + member.getState().name());
+
+    StateMachineEngine.post(member, Event.pay);
+    System.out.println("当前状态：" + member.getState().name());
+}
+
+/*
+企业会员
+当前状态：pending_active
+5天内充值了6000元
+当前状态：active
+30天内支付了
+当前状态：online
+客户什么都没做，没充值，也没有支付
+当前状态：lost
+30天内支付了
+当前状态：online
+个人会员
+当前状态：pending_active
+客户支付了
+当前状态：active
+客户什么都没做，没充值，也没有支付
+当前状态：lost
+客户支付了
+当前状态：active
+*/
+```
