@@ -2,7 +2,7 @@
 layout: post
 title:  "Flink Distributed Runtime"
 date:   2019-09-10 08:00:00 +0800
-categories: Flink
+categories: streaming
 keywords: Flink,流式计算
 description: Flink Distributed Runtime
 commentId: 2019-09-10
