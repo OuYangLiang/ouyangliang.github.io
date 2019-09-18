@@ -24,11 +24,7 @@ The client is not part of the runtime and program execution, but is used to prep
 
 Each worker (TaskManager) is a JVM process, and contains one or more slots. Each task slot represents a fixed subset of resources of the TaskManager. The number of slots is typically proportional to the number of available CPU cores of each TaskManager.
 
-<br/>
-
 A Flink program consists of one or more tasks, and each task is executed by one thread. However, tasks could be chained together within one thread for better performance so long as they are from the same job.
-
-<br/>
 
 Task can be splitted into subtasks, Flink executes a program in parallel by splitting it into subtasks and scheduling these subtasks to processing slots.
 
