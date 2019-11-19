@@ -1,0 +1,15 @@
+---
+layout: post
+title:  "图解Java字节码"
+date:   2019-11-15 08:00:00 +0800
+categories: jvm
+keywords: class code
+description: 图解Java字节码
+commentId: 2019-11-15
+---
+
+&nbsp;
+
+<center><img src="{{site.baseurl}}/pic/javabytecode/1.jpg" width="100%"/></center>
+
+<center><img src="{{site.baseurl}}/pic/javabytecode/2.jpg" width="100%"/></center>
