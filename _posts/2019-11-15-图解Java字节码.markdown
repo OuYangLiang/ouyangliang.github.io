@@ -10,6 +10,6 @@ commentId: 2019-11-15
 
 &nbsp;
 
-<center><img src="{{site.baseurl}}/pic/javabytecode/1.jpg" width="100%"/></center>
+<center><img src="{{site.baseurl}}/pic/javabytecode/1.svg" width="100%"/></center>
 
 <center><img src="{{site.baseurl}}/pic/javabytecode/2.jpg" width="100%"/></center>
