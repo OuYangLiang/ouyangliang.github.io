@@ -26,6 +26,10 @@ Each worker (TaskManager) is a JVM process, and contains one or more slots. Each
 
 A Flink program consists of one or more tasks, and each task is executed by one thread. However, tasks could be chained together within one thread for better performance so long as they are from the same job.
 
-Task can be splitted into subtasks, Flink executes a program in parallel by splitting it into subtasks and scheduling these subtasks to processing slots.
+Task can be splitted into subtasks. By default, Flink allows subtasks to share slots even if they are subtasks of different tasks, so long as they are from the same job. The result is that one slot may hold an entire pipeline of the job.
+
+<center><img src="{{site.baseurl}}/pic/flink-parallelism/3.svg" width="80%"/></center>
+
+Flink executes a program in parallel by splitting it into subtasks and scheduling these subtasks to processing slots.
 
 <center><img src="{{site.baseurl}}/pic/flink-parallelism/2.svg" width="80%"/></center>
