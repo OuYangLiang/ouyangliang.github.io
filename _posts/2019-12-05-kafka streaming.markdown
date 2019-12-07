@@ -148,7 +148,7 @@ create table `user_statistics`(
 
 使用<kbd>Suppressed.untilWindowCloses</kbd>的方式，只有在时间窗口关闭，才会输出结果，且只会输出一次。<kbd>grace(Duration.ofSeconds(10)</kbd>会延迟等待10秒输出，超过10秒后的消息数据会被丢弃。如果想近实时查询当前分钟统计情况的话，可以使用<kbd>Suppressed.untilTimeLimit</kbd>控制窗口输出频率，但sink端需要作好对应的处理（持续更新，而不是新增）。
 
-另外，最好关闭全局缓存，否则会影响对窗口的细粒度制。
+另外，最好关闭全局缓存，否则会影响对窗口的细粒度控制。
 
 ```java
 props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0L);
