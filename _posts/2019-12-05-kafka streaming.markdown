@@ -7,6 +7,9 @@ keywords: streaming
 description: kafka streaming
 commentId: 2019-12-05
 ---
+
+写一个小小的demo调研一下kafka streaming，模拟订单消息并进行统计。
+
 ## 数据源
 
 ---
@@ -133,4 +136,33 @@ create table `user_statistics`(
 
 ## 说明
 
-代码库地址：https://github.com/OuYangLiang/kafka-streaming
+---
+
+代码库地址：[https://github.com/OuYangLiang/kafka-streaming](https://github.com/OuYangLiang/kafka-streaming)
+
+`OrderGenerator`会生成订单并写入order_queue和数据库；
+
+`StreamingComputer`从order_queue取消息，并进行计算，结果会写入user_statistics和minute_statistics两个topic，这里是保证了exactly once的递交语义；
+
+`sink`从user_statistics和minute_statistics两个topic获取最终计算结果，并写入数据表，这里实现是at least once的递交语义。
+
+使用<kbd>Suppressed.untilWindowCloses</kbd>的方式，只有在时间窗口关闭，才会输出结果，且只会输出一次。<kbd>grace(Duration.ofSeconds(10)</kbd>会延迟等待10秒输出，超过10秒后的消息数据会被丢弃。如果想近实时查询当前分钟统计情况的话，可以使用<kbd>Suppressed.untilTimeLimit</kbd>控制窗口输出频率，但sink端需要作好对应的处理（持续更新，而不是新增）。
+
+另外，最好关闭全局缓存，否则会影响对窗口的细粒度制。
+
+```java
+props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0L);
+```
+
+kafka 0.11 release发布后，支持了两个新特性：
+* **Idempotence:** Exactly-once in order semantics per partition
+* **Transactions:** Atomic writes across multiple partitions
+
+这两个新特性使得kafka streaming支持了exactly once的递交语义。使用时只需要增加一个配置项即可：
+
+```java
+props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
+```
+
+注册，exactly once只是针对kafka本身，即消息的产生与结果的写入，都是对kafka topic而言。如果最终结果是输出到其它地方，比如数据库，那最终端到端的递交语义取决于最末端消费者的行为。
+详情可以参考[Kafka深度解析]({{site.baseurl}}/2018/06/Kafka深度解析)
