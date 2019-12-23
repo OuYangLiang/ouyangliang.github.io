@@ -2,7 +2,7 @@
 layout: post
 title:  "Kafka深度解析"
 date:   2018-06-26 08:00:00 +0800
-categories: kafka
+categories: 中间件
 keywords: kafka,中间件,消息队列
 description: Kafka深度解析
 commentId: 2018-06-26
@@ -260,7 +260,7 @@ partition和consumer之间的分配关系是基于消费者组协调协议实现
 Kafka如何确保消息在producer和consumer之间传输，有这么几种可能的delivery guarantee：
 
 * At most once 消息可能会丢，但绝不会重复传输
-* At least one 消息绝不会丢，但可能会重复传输
+* At least once 消息绝不会丢，但可能会重复传输
 * Exactly once 每条消息肯定会被传输一次且仅传输一次，很多时候这是用户所想要的。
 
 Kafka的delivery guarantee semantic非常直接。当producer向broker发送消息时，一旦这条消息被commit，因数replication的存在，它就不会丢。但是如果producer发送数据给broker后，遇到的网络问题而造成通信中断，那producer就无法判断该条消息是否已经commit。这一点有点像向一个自动生成primary key的数据库表中插入数据。虽然Kafka无法确定网络故障期间发生了什么，但是producer可以生成一种类似于primary key的东西，发生故障时幂等性的retry多次，这样就做到了Exactly one。截止到目前(Kafka 0.8.2版本，2015-01-25)，这一feature还并未实现，有希望在Kafka未来的版本中实现。（所以目前默认情况下一条消息从producer和broker是确保了At least once，但可通过设置producer异步发送实现At most once）。

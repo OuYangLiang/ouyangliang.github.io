@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="164 501 559 209" width="559" height="209">
+  <defs>
+    <font-face font-family="Helvetica" font-size="12" units-per-em="1000" underline-position="-75.68359" underline-thickness="49.316406" slope="0" x-height="532.22656" cap-height="719.7266" ascent="770.0195" descent="-229.98047" font-weight="700">
+      <font-face-src>
+        <font-face-name name="Helvetica-Bold"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="UMLInheritance_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -8 14 16" markerWidth="14" markerHeight="16" color="black">
+      <g>
+        <path d="M 12 0 L 0 -7 L 0 7 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.10.2 
+    <dc:date>2019-12-19 16:45:36 +0000</dc:date>
+  </metadata>
+  <g id="Canvas_12" stroke-dasharray="none" stroke-opacity="1" fill="none" fill-opacity="1" stroke="none">
+    <title>Canvas 12</title>
+    <rect fill="white" x="164" y="501" width="559" height="209"/>
+    <g id="Canvas_12: Layer 1">
+      <title>Layer 1</title>
+      <g id="Group_55">
+        <g id="Graphic_56">
+          <rect x="345.82677" y="530.07874" width="209.76378" height="38" fill="white"/>
+          <rect x="345.82677" y="530.07874" width="209.76378" height="38" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+          <text transform="translate(350.82677 535.07874)" fill="black">
+            <tspan font-family="Helvetica" font-size="12" font-weight="700" fill="black" x="67.863334" y="11">&lt;interface&gt;</tspan>
+            <tspan font-family="Helvetica" font-size="12" font-weight="700" fill="black" x="25.845756" y="25">ConsumeMessageService</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_59">
+        <g id="Graphic_61">
+          <rect x="484.7244" y="659.4646" width="209.76378" height="22" fill="white"/>
+          <rect x="484.7244" y="659.4646" width="209.76378" height="22" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_60">
+          <rect x="484.7244" y="635.4646" width="209.76378" height="24" fill="white"/>
+          <rect x="484.7244" y="635.4646" width="209.76378" height="24" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+          <text transform="translate(489.7244 640.4646)" fill="black">
+            <tspan font-family="Helvetica" font-size="12" font-weight="700" fill="black" x="4.502983" y="11">ConsumeMessageOrderlyService</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_62">
+        <path d="M 537.16535 635.4646 L 537.16535 601.96456 L 503.1496 601.96456 L 503.1496 581.57874" marker-end="url(#UMLInheritance_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Group_63">
+        <g id="Graphic_65">
+          <rect x="192.7559" y="659.4646" width="238.11023" height="22" fill="white"/>
+          <rect x="192.7559" y="659.4646" width="238.11023" height="22" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_64">
+          <rect x="192.7559" y="635.4646" width="238.11023" height="24" fill="white"/>
+          <rect x="192.7559" y="635.4646" width="238.11023" height="24" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+          <text transform="translate(197.7559 640.4646)" fill="black">
+            <tspan font-family="Helvetica" font-size="12" font-weight="700" fill="black" x="2.6801174" y="11">ConsumeMessageConcurrentlyService</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_66">
+        <path d="M 311.81102 635.4646 L 311.81102 601.96456 L 398.2677 601.96456 L 398.2677 581.57874" marker-end="url(#UMLInheritance_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="5 -32 620 376" width="620" height="376">
+  <defs>
+    <font-face font-family="Helvetica Neue" font-size="16" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Avenir Next" font-size="15" panose-1="2 11 8 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="498" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="700">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Bold"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Helvetica Neue" font-size="11" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 -3 L 0 3 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.10.2 
+    <dc:date>2019-12-15 16:10:01 +0000</dc:date>
+  </metadata>
+  <g id="Canvas_6" stroke-dasharray="none" stroke-opacity="1" fill="none" fill-opacity="1" stroke="none">
+    <title>Canvas 6</title>
+    <rect fill="white" x="5" y="-32" width="620" height="376"/>
+    <g id="Canvas_6: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_190">
+        <path d="M 34.015748 161.5748 L 411.0236 161.5748 L 411.0236 314.64567 L 34.015748 314.64567 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+        <text transform="translate(39.01575 166.5748)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="153.12794" y="15">Broker 2</tspan>
+        </text>
+      </g>
+      <g id="Graphic_189">
+        <path d="M 34.015748 -2.8346457 L 411.0236 -2.8346457 L 411.0236 150.23622 L 34.015748 150.23622 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+        <text transform="translate(39.01575 2.1653543)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="153.12794" y="15">Broker 1</tspan>
+        </text>
+      </g>
+      <g id="Group_104">
+        <g id="Graphic_114">
+          <title>Rectangle : Base3</title>
+          <rect x="369.97898" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="369.97898" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_113">
+          <title>Rectangle : Base3</title>
+          <rect x="343.04343" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="343.04343" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_112">
+          <title>Rectangle : Base3</title>
+          <rect x="316.1079" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="316.1079" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_111">
+          <title>Rectangle : Base3</title>
+          <rect x="289.17234" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="289.17234" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_110">
+          <title>Rectangle : Base3</title>
+          <rect x="262.2368" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="262.2368" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_109">
+          <title>Rectangle : Base3</title>
+          <rect x="235.30124" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="235.30124" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_108">
+          <title>Rectangle : Base3</title>
+          <rect x="208.3657" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="208.3657" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_107">
+          <title>Rectangle : Base3</title>
+          <rect x="181.43015" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="181.43015" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_106">
+          <title>Rectangle : Base3</title>
+          <rect x="154.4946" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="154.4946" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_105">
+          <title>Rectangle : Base3</title>
+          <rect x="127.55905" y="25.51181" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="127.55905" y="25.51181" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+      </g>
+      <g id="Graphic_74">
+        <title>Heading : Document info block</title>
+        <text transform="translate(47.519685 34.521313)" fill="#839496">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="700" fill="#839496" x="0" y="15">topic-a-Q0</tspan>
+        </text>
+      </g>
+      <g id="Group_115">
+        <g id="Graphic_121">
+          <title>Rectangle : Base3</title>
+          <rect x="262.2368" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="262.2368" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_120">
+          <title>Rectangle : Base3</title>
+          <rect x="235.30124" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="235.30124" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_125">
+          <title>Rectangle : Base3</title>
+          <rect x="369.97898" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="369.97898" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_119">
+          <title>Rectangle : Base3</title>
+          <rect x="208.3657" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="208.3657" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_124">
+          <title>Rectangle : Base3</title>
+          <rect x="343.04343" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="343.04343" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_118">
+          <title>Rectangle : Base3</title>
+          <rect x="181.43015" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="181.43015" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_116">
+          <title>Rectangle : Base3</title>
+          <rect x="127.55905" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="127.55905" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_123">
+          <title>Rectangle : Base3</title>
+          <rect x="316.1079" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="316.1079" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_117">
+          <title>Rectangle : Base3</title>
+          <rect x="154.4946" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="154.4946" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_122">
+          <title>Rectangle : Base3</title>
+          <rect x="289.17234" y="67.022844" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="289.17234" y="67.022844" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+      </g>
+      <g id="Group_127">
+        <g id="Graphic_129">
+          <title>Rectangle : Base3</title>
+          <rect x="154.4946" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="154.4946" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_137">
+          <title>Rectangle : Base3</title>
+          <rect x="369.97898" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="369.97898" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_133">
+          <title>Rectangle : Base3</title>
+          <rect x="262.2368" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="262.2368" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_136">
+          <title>Rectangle : Base3</title>
+          <rect x="343.04343" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="343.04343" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_132">
+          <title>Rectangle : Base3</title>
+          <rect x="235.30124" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="235.30124" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_128">
+          <title>Rectangle : Base3</title>
+          <rect x="127.55905" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="127.55905" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_130">
+          <title>Rectangle : Base3</title>
+          <rect x="181.43015" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="181.43015" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_134">
+          <title>Rectangle : Base3</title>
+          <rect x="289.17234" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="289.17234" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_131">
+          <title>Rectangle : Base3</title>
+          <rect x="208.3657" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="208.3657" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_135">
+          <title>Rectangle : Base3</title>
+          <rect x="316.1079" y="107.71653" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="316.1079" y="107.71653" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+      </g>
+      <g id="Graphic_8">
+        <title>Rectangle : Red</title>
+        <ellipse cx="550.35736" cy="51.786535" rx="45.790502944146" ry="20.6054654192673" fill="#dc322f"/>
+        <ellipse cx="550.35736" cy="51.786535" rx="45.790502944146" ry="20.6054654192673" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        <text transform="translate(518.725 44.786535)" fill="#fdf6e3">
+          <tspan font-family="Helvetica Neue" font-size="11" font-weight="400" fill="#fdf6e3" x="1.5748438" y="10">Consumer 1</tspan>
+        </text>
+      </g>
+      <g id="Graphic_144">
+        <title>Rectangle : Red</title>
+        <ellipse cx="550.35736" cy="156.66842" rx="45.790502944146" ry="20.6054654192673" fill="#dc322f"/>
+        <ellipse cx="550.35736" cy="156.66842" rx="45.790502944146" ry="20.6054654192673" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        <text transform="translate(518.725 149.66842)" fill="#fdf6e3">
+          <tspan font-family="Helvetica Neue" font-size="11" font-weight="400" fill="#fdf6e3" x="1.5748438" y="10">Consumer 2</tspan>
+        </text>
+      </g>
+      <g id="Graphic_151">
+        <title>Heading : Document info block</title>
+        <text transform="translate(47.519685 74.87239)" fill="#839496">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="700" fill="#839496" x="0" y="15">topic-a-Q1</tspan>
+        </text>
+      </g>
+      <g id="Graphic_152">
+        <title>Heading : Document info block</title>
+        <text transform="translate(47.519685 116.21224)" fill="#839496">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="700" fill="#839496" x="0" y="15">topic-a-Q2</tspan>
+        </text>
+      </g>
+      <g id="Group_153">
+        <g id="Graphic_163">
+          <title>Rectangle : Base3</title>
+          <rect x="369.97898" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="369.97898" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_162">
+          <title>Rectangle : Base3</title>
+          <rect x="343.04343" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="343.04343" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_161">
+          <title>Rectangle : Base3</title>
+          <rect x="316.1079" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="316.1079" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_160">
+          <title>Rectangle : Base3</title>
+          <rect x="289.17234" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="289.17234" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_159">
+          <title>Rectangle : Base3</title>
+          <rect x="262.2368" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="262.2368" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_158">
+          <title>Rectangle : Base3</title>
+          <rect x="235.30124" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="235.30124" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_157">
+          <title>Rectangle : Base3</title>
+          <rect x="208.3657" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="208.3657" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_156">
+          <title>Rectangle : Base3</title>
+          <rect x="181.43015" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="181.43015" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_155">
+          <title>Rectangle : Base3</title>
+          <rect x="154.4946" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="154.4946" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_154">
+          <title>Rectangle : Base3</title>
+          <rect x="127.55905" y="189.92126" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="127.55905" y="189.92126" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+      </g>
+      <g id="Graphic_164">
+        <title>Heading : Document info block</title>
+        <text transform="translate(47.519685 198.93076)" fill="#839496">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="700" fill="#839496" x="0" y="15">topic-a-Q0</tspan>
+        </text>
+      </g>
+      <g id="Group_165">
+        <g id="Graphic_175">
+          <title>Rectangle : Base3</title>
+          <rect x="262.2368" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="262.2368" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_174">
+          <title>Rectangle : Base3</title>
+          <rect x="235.30124" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="235.30124" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_173">
+          <title>Rectangle : Base3</title>
+          <rect x="369.97898" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="369.97898" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_172">
+          <title>Rectangle : Base3</title>
+          <rect x="208.3657" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="208.3657" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_171">
+          <title>Rectangle : Base3</title>
+          <rect x="343.04343" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="343.04343" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_170">
+          <title>Rectangle : Base3</title>
+          <rect x="181.43015" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="181.43015" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_169">
+          <title>Rectangle : Base3</title>
+          <rect x="127.55905" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="127.55905" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_168">
+          <title>Rectangle : Base3</title>
+          <rect x="316.1079" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="316.1079" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_167">
+          <title>Rectangle : Base3</title>
+          <rect x="154.4946" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="154.4946" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_166">
+          <title>Rectangle : Base3</title>
+          <rect x="289.17234" y="231.4323" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="289.17234" y="231.4323" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+      </g>
+      <g id="Group_176">
+        <g id="Graphic_186">
+          <title>Rectangle : Base3</title>
+          <rect x="154.4946" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="154.4946" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_185">
+          <title>Rectangle : Base3</title>
+          <rect x="369.97898" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="369.97898" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_184">
+          <title>Rectangle : Base3</title>
+          <rect x="262.2368" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="262.2368" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_183">
+          <title>Rectangle : Base3</title>
+          <rect x="343.04343" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="343.04343" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_182">
+          <title>Rectangle : Base3</title>
+          <rect x="235.30124" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="235.30124" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_181">
+          <title>Rectangle : Base3</title>
+          <rect x="127.55905" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="127.55905" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_180">
+          <title>Rectangle : Base3</title>
+          <rect x="181.43015" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="181.43015" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_179">
+          <title>Rectangle : Base3</title>
+          <rect x="289.17234" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="289.17234" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_178">
+          <title>Rectangle : Base3</title>
+          <rect x="208.3657" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="208.3657" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+        <g id="Graphic_177">
+          <title>Rectangle : Base3</title>
+          <rect x="316.1079" y="272.12598" width="26.935547" height="35.43544" fill="#fdf6e3"/>
+          <rect x="316.1079" y="272.12598" width="26.935547" height="35.43544" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        </g>
+      </g>
+      <g id="Graphic_187">
+        <title>Heading : Document info block</title>
+        <text transform="translate(47.519685 239.28183)" fill="#839496">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="700" fill="#839496" x="0" y="15">topic-a-Q1</tspan>
+        </text>
+      </g>
+      <g id="Graphic_188">
+        <title>Heading : Document info block</title>
+        <text transform="translate(47.519685 280.6217)" fill="#839496">
+          <tspan font-family="Avenir Next" font-size="15" font-weight="700" fill="#839496" x="0" y="15">topic-a-Q2</tspan>
+        </text>
+      </g>
+      <g id="Graphic_203">
+        <title>Rectangle : Red</title>
+        <ellipse cx="550.35736" cy="271.36307" rx="45.790502944146" ry="20.6054654192673" fill="#dc322f"/>
+        <ellipse cx="550.35736" cy="271.36307" rx="45.790502944146" ry="20.6054654192673" stroke="#657b83" stroke-linecap="round" stroke-linejoin="round" stroke-width=".75"/>
+        <text transform="translate(518.725 264.36307)" fill="#fdf6e3">
+          <tspan font-family="Helvetica Neue" font-size="11" font-weight="400" fill="#fdf6e3" x="1.5748438" y="10">Consumer 3</tspan>
+        </text>
+      </g>
+      <g id="Line_204">
+        <line x1="396.9145" y1="43.919983" x2="494.97245" y2="48.94712" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_205">
+        <line x1="396.9145" y1="90.54432" x2="508.19404" y2="138.49872" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_206">
+        <line x1="396.9145" y1="137.20904" x2="521.94327" y2="246.52082" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_207">
+        <line x1="396.9145" y1="195.06347" x2="523.2366" y2="77.11047" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_208">
+        <line x1="396.9145" y1="241.6878" x2="512.82794" y2="177.46267" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_209">
+        <line x1="396.9145" y1="288.35253" x2="496.0467" y2="277.37644" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>
