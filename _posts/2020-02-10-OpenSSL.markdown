@@ -1,0 +1,148 @@
+---
+layout: post
+title:  "OpenSSL"
+date:   2020-02-10 08:00:00 +0800
+categories: 中间件
+keywords: OpenSSL
+description: OpenSSL详解
+commentId: 2020-02-10
+---
+
+## 密码方式加密或解密文件
+
+---
+
+一、使用openssl enc -e加密一个文件（file.txt为原始文件，file.txt.sec为加密之后的文件，加密算法：aes256）
+
+加密过程中会要求输入一个加密密码
+
+```
+openssl enc -e -aes256 -in file.txt -out file.txt.sec
+```
+
+二、使用openssl enc -d解密文件（file.txt.sec为加密的文件，file2.txt为解密之后的文件）
+
+```
+openssl enc -d -aes256 -in file.txt.sec -out file2.txt
+```
+
+<br/>
+
+## 密钥方式加密或解密文件
+
+---
+
+一、首先需要使用openssl genrsa命令生成密钥文件:rsa.key（rsa.key文件中包含了私钥和公钥）
+
+```
+openssl genrsa -aes256 -passout pass:pwd123 -out rsa.key 2048
+```
+
+二、然后从rsa.key密钥文件中提取出公钥rsa.pub
+
+```
+openssl rsa -in rsa.key -passin pass:pwd123 -pubout -out rsa.pub
+```
+
+三、使用rsa.pub公钥加密一个文件（file.txt为原始文件，file.txt.sec为加密之后的文件）
+
+```
+openssl rsautl -encrypt -inkey rsa.pub -pubin -in file.txt -out file.txt.sec
+```
+
+四、使用rsa.key私钥解密一个文件（file.txt.sec为加密的文件，file2.txt为解密之后的文件）
+
+```
+openssl rsautl -decrypt -inkey rsa.key -in file.txt.sec -out file2.txt
+```
+
+**补充**
+
+* 查看私钥明细
+
+    ```
+    openssl rsa -in rsa.key -noout -text
+    ```
+
+* 查看公钥明细
+
+    ```
+    openssl rsa -in rsa.pub -pubin -noout -text
+    ```
+
+* 去除私钥密码
+
+    ```
+    openssl rsa -in rsa.key -passin pass:pwd123 -out rsa.key
+    ```
+
+* 修改私钥密码
+
+    ```
+    openssl rsa -in rsa.key -passin pass:pwd123 -aes256 -out rsa.key
+    ```
+
+* 给私钥增加密码
+
+    ```
+    openssl rsa -in rsa.key -aes256 -passout pass:pwd123 -out rsa.key
+    ```
+
+## 证书
+
+---
+
+* 使用已有RSA私钥生成自签名证书
+
+    ```
+    openssl req -new -x509 -days 365 -key rsa.key -out cert.crt
+    ```
+
+* 生成证书签名请求CSR
+
+    ```
+    openssl req -new -key rsa.key -out cert.csr
+    ```
+
+* 使用CA证书及CA密钥对请求签发证书进行签发，生成x509证书
+
+    ```
+    openssl x509 -req -days 3650 -in rsa.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out rsa.crt
+    ```
+
+* 查询证书详情
+
+    ```
+    openssl x509 -in rsa.crt -noout -text
+    ```
+
+* 使用证书rsa.crt加密码文件（file.txt为原始文件，file.txt.sec为加密之后的文件）
+
+    ```
+    openssl rsautl -encrypt -inkey rsa.crt -certin -in file.txt -out file.txt.sec
+    ```
+
+---
+
+## concept
+
+key通常指私钥
+
+CSR 是Certificate Signing Request的缩写，即证书签名申请，这不是证书，这是要求CA给证书签名的一种正是申请，该申请包含申请证书的实体的公钥及该实体店某些信息。该数据将成为证书的一部分。CSR始终使用它携带的公钥所对应的私钥进行签名。
+
+CRT 即 certificate的缩写，即证书
+
+TLS：传输层安全协议 Transport Layer Security的缩写
+
+SSL：安全套接字层 Secure Socket Layer的缩写
+
+X.509 是一种证书格式.对X.509证书来说，认证者总是CA或由CA指定的人，一份X.509证书是一些标准字段的集合，这些字段包含有关用户或设备及其相应公钥的信息。
+
+X.509的证书文件，一般以.crt结尾，根据该文件的内容编码格式，可以分为以下二种格式：
+
+PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码
+
+该文件实际上是一个CA签发证书的序列号记录文件，大概全名应该是 CA.Serial 这样子的。 在 linux下 可以 Echo "01" > ca.srl 来生成这个文件，win32下自己编辑个类似文件即可。
+
+https://blog.csdn.net/petpig0312/article/details/79784016
+https://blog.csdn.net/bbwangj/article/details/82503675
