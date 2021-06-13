@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="351 476 460 303" width="460" height="303">
+  <defs>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 -3 L 0 3 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker_2" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-9 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M -8 0 L 0 3 L 0 -3 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="PingFang SC" font-size="15" panose-1="2 11 8 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="80" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="600">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Semibold"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Avenir Next" font-size="12" panose-1="2 11 5 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="468" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="400">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Regular"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Avenir Next" font-size="17" panose-1="2 11 5 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="468" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="400">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Regular"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.9.2 
+    <dc:date>2021-06-07 09:48:58 +0000</dc:date>
+  </metadata>
+  <g id="knn" stroke-opacity="1" fill="none" fill-opacity="1" stroke-dasharray="none" stroke="none">
+    <title>knn</title>
+    <rect fill="white" x="351" y="476" width="460" height="303"/>
+    <g id="knn: Layer 1">
+      <title>Layer 1</title>
+      <g id="Line_2">
+        <path d="M 387 486.9 L 387 747 L 800.1 747" marker-end="url(#FilledArrow_Marker)" marker-start="url(#FilledArrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_3">
+        <title>Title</title>
+        <text transform="translate(356 490)" fill="#268bd2">
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="16">电</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="37">影</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="58">中</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="79">出</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="100">现</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="121">的</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="142">接</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="163">吻</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="184">镜</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="205">头</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="226">次</tspan>
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="247">数</tspan>
+        </text>
+      </g>
+      <g id="Graphic_4">
+        <title>Title</title>
+        <text transform="translate(473 752.5)" fill="#268bd2">
+          <tspan font-family="PingFang SC" font-size="15" font-weight="600" fill="#268bd2" x="0" y="16">电影中出现的打斗镜头次数</tspan>
+        </text>
+      </g>
+      <g id="Graphic_5">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(428 518.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#268bd2" x="0" y="12">California Man</tspan>
+        </text>
+      </g>
+      <g id="Graphic_6">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(410 545.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#268bd2" x="0" y="12">He’s Not Really into Dudes</tspan>
+        </text>
+      </g>
+      <g id="Graphic_7">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(401 599.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#268bd2" x="0" y="12">Beautiful Woman</tspan>
+        </text>
+      </g>
+      <g id="Graphic_8">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(698 644.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#268bd2" x="0" y="12">Kevin Longblade</tspan>
+        </text>
+      </g>
+      <g id="Graphic_9">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(671 689.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#268bd2" x="0" y="12">Robo Slayer 3000</tspan>
+        </text>
+      </g>
+      <g id="Graphic_10">
+        <title>Accent Text : Blue</title>
+        <text transform="translate(662 716.5)" fill="#268bd2">
+          <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#268bd2" x="0" y="12">Amped II</tspan>
+        </text>
+      </g>
+      <g id="Graphic_11">
+        <title>Accent Text : Red</title>
+        <text transform="translate(527 572.5)" fill="#dc322f">
+          <tspan font-family="Avenir Next" font-size="17" font-weight="400" fill="#dc322f" x="0" y="17">?</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>

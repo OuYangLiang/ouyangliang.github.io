@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="351 802 460 224" width="460" height="224">
+  <defs>
+    <font-face font-family="PingFang SC" font-size="12" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Avenir Next" font-size="12" panose-1="2 11 5 3 2 2 2 2 2 4" units-per-em="1000" underline-position="-75" underline-thickness="50" slope="0" x-height="468" cap-height="708" ascent="1e3" descent="-365.9973" font-weight="400">
+      <font-face-src>
+        <font-face-name name="AvenirNext-Regular"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="PingFang SC" font-size="12" panose-1="2 11 8 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="80" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="600">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Semibold"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.9.2 
+    <dc:date>2021-06-07 09:48:58 +0000</dc:date>
+  </metadata>
+  <g id="knn_2" stroke-opacity="1" fill="none" fill-opacity="1" stroke-dasharray="none" stroke="none">
+    <title>knn 2</title>
+    <rect fill="white" x="351" y="802" width="460" height="224"/>
+    <g id="knn_2: Layer 1">
+      <title>Layer 1</title>
+      <g id="Group_21">
+        <title>Table</title>
+        <g id="Graphic_57">
+          <text transform="translate(714.5733 1003.5)" fill="#657b83">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#657b83" x="33.213363" y="13">未知</tspan>
+          </text>
+        </g>
+        <g id="Graphic_56">
+          <text transform="translate(541.1415 1004)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="27.23321" y="12">18</tspan>
+          </text>
+        </g>
+        <g id="Graphic_55">
+          <text transform="translate(356 1004)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="0" y="12">?</tspan>
+          </text>
+        </g>
+        <g id="Graphic_54">
+          <text transform="translate(619.52794 1004)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="35.562666" y="12">90</tspan>
+          </text>
+        </g>
+        <g id="Graphic_53">
+          <rect x="709.5733" y="970" width="100.42673" height="28" fill="#eee8d5"/>
+          <text transform="translate(714.5733 975.5)" fill="#657b83">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#657b83" x="27.213363" y="13">动作片</tspan>
+          </text>
+        </g>
+        <g id="Graphic_52">
+          <rect x="614.52794" y="970" width="95.04533" height="28" fill="#eee8d5"/>
+          <text transform="translate(619.52794 976)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="39.042666" y="12">2</tspan>
+          </text>
+        </g>
+        <g id="Graphic_51">
+          <rect x="536.1415" y="970" width="78.38642" height="28" fill="#eee8d5"/>
+          <text transform="translate(541.1415 976)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="27.23321" y="12">98</tspan>
+          </text>
+        </g>
+        <g id="Graphic_50">
+          <rect x="351" y="970" width="185.14152" height="28" fill="#eee8d5"/>
+          <text transform="translate(356 976)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="0" y="12">Amped II</tspan>
+          </text>
+        </g>
+        <g id="Graphic_45">
+          <rect x="351" y="802" width="185.14152" height="28" fill="#eee8d5"/>
+          <text transform="translate(356 807.5)" fill="#586e75">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="#586e75" x="63.57076" y="13">电影名称</tspan>
+          </text>
+        </g>
+        <g id="Graphic_44">
+          <text transform="translate(541.1415 835.9375)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="30.71321" y="12">3</tspan>
+          </text>
+        </g>
+        <g id="Graphic_43">
+          <text transform="translate(541.1415 892)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="30.71321" y="12">1</tspan>
+          </text>
+        </g>
+        <g id="Graphic_42">
+          <rect x="614.52794" y="802" width="95.04533" height="28" fill="#eee8d5"/>
+          <text transform="translate(619.52794 807.5)" fill="#586e75">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="#586e75" x="18.522666" y="13">接吻镜头</tspan>
+          </text>
+        </g>
+        <g id="Graphic_41">
+          <text transform="translate(714.5733 947.5)" fill="#657b83">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#657b83" x="27.213363" y="13">动作片</tspan>
+          </text>
+        </g>
+        <g id="Graphic_40">
+          <text transform="translate(714.5733 835.4375)" fill="#657b83">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#657b83" x="27.213363" y="13">爱情片</tspan>
+          </text>
+        </g>
+        <g id="Graphic_39">
+          <rect x="709.5733" y="914" width="100.42673" height="28" fill="#eee8d5"/>
+          <text transform="translate(714.5733 919.5)" fill="#657b83">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#657b83" x="27.213363" y="13">动作片</tspan>
+          </text>
+        </g>
+        <g id="Graphic_38">
+          <rect x="614.52794" y="914" width="95.04533" height="28" fill="#eee8d5"/>
+          <text transform="translate(619.52794 920)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="35.562666" y="12">10</tspan>
+          </text>
+        </g>
+        <g id="Graphic_37">
+          <text transform="translate(619.52794 892)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="35.562666" y="12">81</tspan>
+          </text>
+        </g>
+        <g id="Graphic_36">
+          <rect x="536.1415" y="914" width="78.38642" height="28" fill="#eee8d5"/>
+          <text transform="translate(541.1415 920)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="23.75321" y="12">101</tspan>
+          </text>
+        </g>
+        <g id="Graphic_35">
+          <rect x="614.52794" y="857.875" width="95.04533" height="28.125" fill="#eee8d5"/>
+          <text transform="translate(619.52794 863.9375)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="32.082666" y="12">100</tspan>
+          </text>
+        </g>
+        <g id="Graphic_34">
+          <text transform="translate(356 835.9375)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="0" y="12">California Man</tspan>
+          </text>
+        </g>
+        <g id="Graphic_33">
+          <text transform="translate(619.52794 835.9375)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="32.082666" y="12">104</tspan>
+          </text>
+        </g>
+        <g id="Graphic_32">
+          <rect x="709.5733" y="857.875" width="100.42673" height="28.125" fill="#eee8d5"/>
+          <text transform="translate(714.5733 863.4375)" fill="#657b83">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#657b83" x="27.213363" y="13">爱情片</tspan>
+          </text>
+        </g>
+        <g id="Graphic_31">
+          <text transform="translate(356 948)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="0" y="12">Robo Slayer 3000</tspan>
+          </text>
+        </g>
+        <g id="Graphic_30">
+          <rect x="351" y="857.875" width="185.14152" height="28.125" fill="#eee8d5"/>
+          <text transform="translate(356 863.9375)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="0" y="12">He’s Not Really into Dudes</tspan>
+          </text>
+        </g>
+        <g id="Graphic_29">
+          <rect x="536.1415" y="857.875" width="78.38642" height="28.125" fill="#eee8d5"/>
+          <text transform="translate(541.1415 863.9375)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="30.71321" y="12">2</tspan>
+          </text>
+        </g>
+        <g id="Graphic_28">
+          <text transform="translate(541.1415 948)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="27.23321" y="12">99</tspan>
+          </text>
+        </g>
+        <g id="Graphic_27">
+          <rect x="536.1415" y="802" width="78.38642" height="28" fill="#eee8d5"/>
+          <text transform="translate(541.1415 807.5)" fill="#586e75">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="#586e75" x="10.19321" y="13">打斗镜头</tspan>
+          </text>
+        </g>
+        <g id="Graphic_26">
+          <rect x="351" y="914" width="185.14152" height="28" fill="#eee8d5"/>
+          <text transform="translate(356 920)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="0" y="12">Kevin Longblade</tspan>
+          </text>
+        </g>
+        <g id="Graphic_25">
+          <text transform="translate(619.52794 948)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="39.042666" y="12">5</tspan>
+          </text>
+        </g>
+        <g id="Graphic_24">
+          <rect x="709.5733" y="802" width="100.42673" height="28" fill="#eee8d5"/>
+          <text transform="translate(714.5733 807.5)" fill="#586e75">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="600" fill="#586e75" x="21.213363" y="13">电影类型</tspan>
+          </text>
+        </g>
+        <g id="Graphic_23">
+          <text transform="translate(714.5733 891.5)" fill="#657b83">
+            <tspan font-family="PingFang SC" font-size="12" font-weight="400" fill="#657b83" x="27.213363" y="13">爱情片</tspan>
+          </text>
+        </g>
+        <g id="Graphic_22">
+          <text transform="translate(356 892)" fill="#657b83">
+            <tspan font-family="Avenir Next" font-size="12" font-weight="400" fill="#657b83" x="0" y="12">Beautiful Woman</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
