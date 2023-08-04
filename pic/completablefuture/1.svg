@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="1638 4800 259 172" width="259" height="172">
+  <defs>
+    <font-face font-family="PingFang SC" font-size="11" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="UMLInheritance_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -8 14 16" markerWidth="14" markerHeight="16" color="#5e5e5e">
+      <g>
+        <path d="M 12 0 L 0 -7 L 0 7 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.19.2\n2023-08-04 08:12:38 +0000</metadata>
+  <g id="Canvas_3" stroke="none" stroke-dasharray="none" fill-opacity="1" stroke-opacity="1" fill="none">
+    <title>Canvas 3</title>
+    <rect fill="white" x="1638" y="4800" width="259" height="172"/>
+    <g id="Canvas_3_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_10">
+        <title>Class with Attributes</title>
+        <g id="Graphic_12">
+          <title>Attributes</title>
+          <rect x="1639" y="4841" width="108" height="24" fill="#929292"/>
+          <rect x="1639" y="4841" width="108" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_11">
+          <title>Class Name</title>
+          <rect x="1639" y="4801" width="108" height="40" fill="#414141"/>
+          <rect x="1639" y="4801" width="108" height="40" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1645 4805)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="18.663" y="12">&lt;interface&gt;</tspan>
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="31.654" y="28">Future</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_7">
+        <title>Class with Attributes</title>
+        <g id="Graphic_9">
+          <title>Attributes</title>
+          <rect x="1698.75" y="4947" width="135.5" height="24" fill="#929292"/>
+          <rect x="1698.75" y="4947" width="135.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_8">
+          <title>Class Name</title>
+          <rect x="1698.75" y="4923" width="135.5" height="24" fill="#414141"/>
+          <rect x="1698.75" y="4923" width="135.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1704.75 4927)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="13.3115" y="12">CompletableFuture</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_6">
+        <path d="M 1743.9167 4923 L 1743.9167 4894 L 1693 4894 L 1693 4878.5" marker-end="url(#UMLInheritance_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Group_3">
+        <title>Class with Attributes</title>
+        <g id="Graphic_5">
+          <title>Attributes</title>
+          <rect x="1788" y="4841" width="108" height="24" fill="#929292"/>
+          <rect x="1788" y="4841" width="108" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_4">
+          <title>Class Name</title>
+          <rect x="1788" y="4801" width="108" height="40" fill="#414141"/>
+          <rect x="1788" y="4801" width="108" height="40" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1794 4805)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="18.663" y="12">&lt;interface&gt;</tspan>
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="5.3365" y="28">CompletionState</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_2">
+        <path d="M 1789.0833 4923 L 1789.0833 4894 L 1842 4894 L 1842 4878.5" marker-end="url(#UMLInheritance_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>
