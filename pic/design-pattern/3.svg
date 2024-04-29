@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="2138 6494 530 289" width="530" height="289">
+  <defs>
+    <font-face font-family="PingFang SC" font-size="11" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="StickArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="#5e5e5e">
+      <g>
+        <path d="M 8 0 L 0 0 M 0 -3 L 8 0 L 0 3" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.19.2\n2022-03-28 08:14:57 +0000</metadata>
+  <g id="Canvas_-2" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none" fill="none">
+    <title>外观</title>
+    <rect fill="white" x="2138" y="6494" width="530" height="289"/>
+    <g id="Canvas_-2_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_2">
+        <title>Class with Attributes</title>
+        <g id="Graphic_4">
+          <title>Attributes</title>
+          <rect x="2139" y="6557" width="98" height="24" fill="#929292"/>
+          <rect x="2139" y="6557" width="98" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_3">
+          <title>Class Name</title>
+          <rect x="2139" y="6533" width="98" height="24" fill="#414141"/>
+          <rect x="2139" y="6533" width="98" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2145 6537)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="28.216" y="12">Client</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_5">
+        <title>Class with Attributes</title>
+        <g id="Graphic_8">
+          <title>Attributes</title>
+          <rect x="2375.5" y="6543" width="122.5" height="76" fill="#929292"/>
+          <rect x="2375.5" y="6543" width="122.5" height="76" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2381.5 6549)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+method1()</tspan>
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="28">+method2()</tspan>
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="44">…</tspan>
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="60">+methodN()</tspan>
+          </text>
+        </g>
+        <g id="Graphic_7">
+          <title>Attributes</title>
+          <rect x="2375.5" y="6519" width="122.5" height="24" fill="#929292"/>
+          <rect x="2375.5" y="6519" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_6">
+          <title>Class Name</title>
+          <rect x="2375.5" y="6495" width="122.5" height="24" fill="#414141"/>
+          <rect x="2375.5" y="6495" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2381.5 6499)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="36.6435" y="12">Facade</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_9">
+        <title>Class with Attributes</title>
+        <g id="Graphic_12">
+          <title>Attributes</title>
+          <rect x="2206.5" y="6754" width="122.5" height="28" fill="#929292"/>
+          <rect x="2206.5" y="6754" width="122.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2212.5 6760)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+method1()</tspan>
+          </text>
+        </g>
+        <g id="Graphic_11">
+          <title>Attributes</title>
+          <rect x="2206.5" y="6730" width="122.5" height="24" fill="#929292"/>
+          <rect x="2206.5" y="6730" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_10">
+          <title>Class Name</title>
+          <rect x="2206.5" y="6706" width="122.5" height="24" fill="#414141"/>
+          <rect x="2206.5" y="6706" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2212.5 6710)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="16.4365" y="12">SubSystemOne</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_13">
+        <title>Class with Attributes</title>
+        <g id="Graphic_16">
+          <title>Attributes</title>
+          <rect x="2375.5" y="6754" width="122.5" height="28" fill="#929292"/>
+          <rect x="2375.5" y="6754" width="122.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2381.5 6760)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+method2()</tspan>
+          </text>
+        </g>
+        <g id="Graphic_15">
+          <title>Attributes</title>
+          <rect x="2375.5" y="6730" width="122.5" height="24" fill="#929292"/>
+          <rect x="2375.5" y="6730" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_14">
+          <title>Class Name</title>
+          <rect x="2375.5" y="6706" width="122.5" height="24" fill="#414141"/>
+          <rect x="2375.5" y="6706" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2381.5 6710)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="16.002" y="12">SubSystemTwo</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_17">
+        <title>Class with Attributes</title>
+        <g id="Graphic_20">
+          <title>Attributes</title>
+          <rect x="2544.5" y="6754" width="122.5" height="28" fill="#929292"/>
+          <rect x="2544.5" y="6754" width="122.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2550.5 6760)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+methodN()</tspan>
+          </text>
+        </g>
+        <g id="Graphic_19">
+          <title>Attributes</title>
+          <rect x="2544.5" y="6730" width="122.5" height="24" fill="#929292"/>
+          <rect x="2544.5" y="6730" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_18">
+          <title>Class Name</title>
+          <rect x="2544.5" y="6706" width="122.5" height="24" fill="#414141"/>
+          <rect x="2544.5" y="6706" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2550.5 6710)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="22.8275" y="12">SubSystemN</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_21">
+        <line x1="2498" y1="6744" x2="2544.5" y2="6744" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_26">
+        <line x1="2237" y1="6557" x2="2365.6" y2="6557" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_27">
+        <path d="M 2436.75 6619 L 2436.75 6662.5 L 2267.75 6662.5 L 2267.75 6696.1" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_28">
+        <line x1="2436.75" y1="6619" x2="2436.75" y2="6696.1" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_29">
+        <path d="M 2436.75 6619 L 2436.75 6662.5 L 2605.75 6662.5 L 2605.75 6696.1" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

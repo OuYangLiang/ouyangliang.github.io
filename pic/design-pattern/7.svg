@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="2369 7425 596 232" width="596" height="232">
+  <defs>
+    <font-face font-family="PingFang SC" font-size="11" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="UMLInheritance_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -8 14 16" markerWidth="14" markerHeight="16" color="#5e5e5e">
+      <g>
+        <path d="M 12 0 L 0 -7 L 0 7 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Diamond_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-13 -6 14 12" markerWidth="14" markerHeight="12" color="#5e5e5e">
+      <g>
+        <path d="M -12 0 L -6 4.5 L 0 0 L -6 -4.5 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="StickArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="#5e5e5e">
+      <g>
+        <path d="M 8 0 L 0 0 M 0 -3 L 8 0 L 0 3" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.19.2\n2022-04-10 10:11:05 +0000</metadata>
+  <g id="Canvas___-1" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none" fill="none">
+    <title>命令模式</title>
+    <rect fill="white" x="2369" y="7425" width="596" height="232"/>
+    <g id="Canvas___-1_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_48">
+        <title>Class with Attributes</title>
+        <g id="Graphic_51">
+          <title>Attributes</title>
+          <rect x="2843.5" y="7484" width="117" height="28" fill="#929292"/>
+          <rect x="2843.5" y="7484" width="117" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2849.5 7490)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+execute():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_50">
+          <title>Attributes</title>
+          <rect x="2843.5" y="7460" width="117" height="24" fill="#929292"/>
+          <rect x="2843.5" y="7460" width="117" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_49">
+          <title>Class Name</title>
+          <rect x="2843.5" y="7436" width="117" height="24" fill="#414141"/>
+          <rect x="2843.5" y="7436" width="117" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2849.5 7440)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="26.496" y="12">Command</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_44">
+        <title>Class with Attributes</title>
+        <g id="Graphic_47">
+          <title>Attributes</title>
+          <rect x="2840.75" y="7632" width="122.5" height="24" fill="#929292"/>
+          <rect x="2840.75" y="7632" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_46">
+          <title>Attributes</title>
+          <rect x="2840.75" y="7604" width="122.5" height="28" fill="#929292"/>
+          <rect x="2840.75" y="7604" width="122.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2846.75 7610)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">-receiver:Receiver</tspan>
+          </text>
+        </g>
+        <g id="Graphic_45">
+          <title>Class Name</title>
+          <rect x="2840.75" y="7580" width="122.5" height="24" fill="#414141"/>
+          <rect x="2840.75" y="7580" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2846.75 7584)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="5.871" y="12">ConcreteCommand</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_43">
+        <line x1="2902" y1="7580" x2="2902" y2="7525.5" marker-end="url(#UMLInheritance_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Group_39">
+        <title>Class with Attributes</title>
+        <g id="Graphic_42">
+          <title>Attributes</title>
+          <rect x="2593.5" y="7478" width="154.5" height="44" fill="#929292"/>
+          <rect x="2593.5" y="7478" width="154.5" height="44" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2599.5 7484)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+set(cmd:Command):void</tspan>
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="28">+action():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_41">
+          <title>Attributes</title>
+          <rect x="2593.5" y="7450" width="154.5" height="28" fill="#929292"/>
+          <rect x="2593.5" y="7450" width="154.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2599.5 7456)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">-cmd:Command</tspan>
+          </text>
+        </g>
+        <g id="Graphic_40">
+          <title>Class Name</title>
+          <rect x="2593.5" y="7426" width="154.5" height="24" fill="#414141"/>
+          <rect x="2593.5" y="7426" width="154.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2599.5 7430)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="53.0285" y="12">Invoker</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_38">
+        <line x1="2761.25" y1="7474" x2="2843.5" y2="7474" marker-start="url(#Diamond_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Group_34">
+        <title>Class with Attributes</title>
+        <g id="Graphic_37">
+          <title>Attributes</title>
+          <rect x="2631" y="7592.5" width="117" height="28" fill="#929292"/>
+          <rect x="2631" y="7592.5" width="117" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2637 7598.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+action():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_36">
+          <title>Attributes</title>
+          <rect x="2631" y="7568.5" width="117" height="24" fill="#929292"/>
+          <rect x="2631" y="7568.5" width="117" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_35">
+          <title>Class Name</title>
+          <rect x="2631" y="7544.5" width="117" height="24" fill="#414141"/>
+          <rect x="2631" y="7544.5" width="117" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2637 7548.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="30.5495" y="12">Receiver</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_33">
+        <path d="M 2827.5 7605.333 L 2794.375 7605.333 L 2794.375 7582.5 L 2748 7582.5" marker-start="url(#Diamond_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Group_29">
+        <title>Class with Attributes</title>
+        <g id="Graphic_32">
+          <title>Attributes</title>
+          <rect x="2370" y="7486" width="117" height="24" fill="#929292"/>
+          <rect x="2370" y="7486" width="117" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_31">
+          <title>Attributes</title>
+          <rect x="2370" y="7462" width="117" height="24" fill="#929292"/>
+          <rect x="2370" y="7462" width="117" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_30">
+          <title>Class Name</title>
+          <rect x="2370" y="7438" width="117" height="24" fill="#414141"/>
+          <rect x="2370" y="7438" width="117" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2376 7442)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="37.716" y="12">Client</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_28">
+        <line x1="2487" y1="7474" x2="2583.6" y2="7474" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_27">
+        <path d="M 2428.5 7510 L 2428.5 7643.333 L 2830.85 7643.333" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

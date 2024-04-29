@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="1822 6090 527 219" width="527" height="219">
+  <defs>
+    <font-face font-family="PingFang SC" font-size="11" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="UMLInheritance_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -8 14 16" markerWidth="14" markerHeight="16" color="#5e5e5e">
+      <g>
+        <path d="M 12 0 L 0 -7 L 0 7 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Diamond_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-13 -6 14 12" markerWidth="14" markerHeight="12" color="#5e5e5e">
+      <g>
+        <path d="M -12 0 L -6 4.5 L 0 0 L -6 -4.5 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.19.2\n2022-03-26 16:16:03 +0000</metadata>
+  <g id="Canvas_" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none" fill="none">
+    <title>桥接</title>
+    <rect fill="white" x="1822" y="6090" width="527" height="219"/>
+    <g id="Canvas__Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_2">
+        <title>Class with Attributes</title>
+        <g id="Graphic_4">
+          <title>Attributes</title>
+          <rect x="1842" y="6115" width="164.5" height="28" fill="#929292"/>
+          <rect x="1842" y="6115" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1848 6121)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operation():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_3">
+          <title>Class Name</title>
+          <rect x="1842" y="6091" width="164.5" height="24" fill="#414141"/>
+          <rect x="1842" y="6091" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1848 6095)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="46.935" y="12">Abstraction</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_5">
+        <title>Class with Attributes</title>
+        <g id="Graphic_7">
+          <title>Attributes</title>
+          <rect x="2183" y="6115" width="164.5" height="28" fill="#929292"/>
+          <rect x="2183" y="6115" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2189 6121)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operationImpl():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_6">
+          <title>Class Name</title>
+          <rect x="2183" y="6091" width="164.5" height="24" fill="#414141"/>
+          <rect x="2183" y="6091" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2189 6095)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="44.6635" y="12">Implementor</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_8">
+        <title>Class with Attributes</title>
+        <g id="Graphic_10">
+          <title>Attributes</title>
+          <rect x="2160" y="6263" width="164.5" height="28" fill="#929292"/>
+          <rect x="2160" y="6263" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2166 6269)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operationImpl():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_9">
+          <title>Class Name</title>
+          <rect x="2160" y="6239" width="164.5" height="24" fill="#414141"/>
+          <rect x="2160" y="6239" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2166 6243)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="21.2885" y="12">ConcreteImplementor</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_14">
+        <title>Class with Attributes</title>
+        <g id="Graphic_16">
+          <title>Attributes</title>
+          <rect x="1823.5" y="6261" width="164.5" height="28" fill="#929292"/>
+          <rect x="1823.5" y="6261" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1829.5 6267)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operation():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_15">
+          <title>Class Name</title>
+          <rect x="1823.5" y="6237" width="164.5" height="24" fill="#414141"/>
+          <rect x="1823.5" y="6237" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1829.5 6241)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="30.6935" y="12">RefineAbstraction</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_17">
+        <title>Class with Attributes</title>
+        <g id="Graphic_19">
+          <title>Attributes</title>
+          <rect x="1832" y="6271" width="164.5" height="28" fill="#929292"/>
+          <rect x="1832" y="6271" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1838 6277)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operation():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_18">
+          <title>Class Name</title>
+          <rect x="1832" y="6247" width="164.5" height="24" fill="#414141"/>
+          <rect x="1832" y="6247" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1838 6251)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="30.6935" y="12">RefineAbstraction</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_20">
+        <title>Class with Attributes</title>
+        <g id="Graphic_22">
+          <title>Attributes</title>
+          <rect x="1842" y="6280" width="164.5" height="28" fill="#929292"/>
+          <rect x="1842" y="6280" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1848 6286)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operation():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_21">
+          <title>Class Name</title>
+          <rect x="1842" y="6256" width="164.5" height="24" fill="#414141"/>
+          <rect x="1842" y="6256" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(1848 6260)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="30.6935" y="12">RefineAbstraction</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_23">
+        <title>Class with Attributes</title>
+        <g id="Graphic_25">
+          <title>Attributes</title>
+          <rect x="2171.5" y="6271.5" width="164.5" height="28" fill="#929292"/>
+          <rect x="2171.5" y="6271.5" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2177.5 6277.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operationImpl():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_24">
+          <title>Class Name</title>
+          <rect x="2171.5" y="6247.5" width="164.5" height="24" fill="#414141"/>
+          <rect x="2171.5" y="6247.5" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2177.5 6251.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="21.2885" y="12">ConcreteImplementor</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_26">
+        <title>Class with Attributes</title>
+        <g id="Graphic_28">
+          <title>Attributes</title>
+          <rect x="2183" y="6280" width="164.5" height="28" fill="#929292"/>
+          <rect x="2183" y="6280" width="164.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2189 6286)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+operationImpl():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_27">
+          <title>Class Name</title>
+          <rect x="2183" y="6256" width="164.5" height="24" fill="#414141"/>
+          <rect x="2183" y="6256" width="164.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2189 6260)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="21.2885" y="12">ConcreteImplementor</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_29">
+        <line x1="1924.25" y1="6256" x2="1924.25" y2="6156.5" marker-end="url(#UMLInheritance_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_30">
+        <line x1="2265.25" y1="6256" x2="2265.25" y2="6156.5" marker-end="url(#UMLInheritance_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Line_31">
+        <line x1="2019.75" y1="6117" x2="2183" y2="6117" marker-start="url(#Diamond_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

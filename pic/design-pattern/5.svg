@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="2459 6871 498 304" width="498" height="304">
+  <defs>
+    <font-face font-family="PingFang SC" font-size="11" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Diamond_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-13 -6 14 12" markerWidth="14" markerHeight="12" color="#5e5e5e">
+      <g>
+        <path d="M -12 0 L -6 4.5 L 0 0 L -6 -4.5 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="StickArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="#5e5e5e">
+      <g>
+        <path d="M 8 0 L 0 0 M 0 -3 L 8 0 L 0 3" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.19.2\n2022-04-10 14:55:03 +0000</metadata>
+  <g id="Canvas__-2" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none" fill="none">
+    <title>享元 </title>
+    <rect fill="white" x="2459" y="6871" width="498" height="304"/>
+    <g id="Canvas__-2_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_17">
+        <title>Class with Attributes</title>
+        <g id="Graphic_20">
+          <title>Attributes</title>
+          <rect x="2460.75" y="7037" width="223.5" height="28" fill="#929292"/>
+          <rect x="2460.75" y="7037" width="223.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2466.75 7043)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">+getFlyweight(key:String):Flyweight</tspan>
+          </text>
+        </g>
+        <g id="Graphic_19">
+          <title>Attributes</title>
+          <rect x="2460.75" y="7009" width="223.5" height="28" fill="#929292"/>
+          <rect x="2460.75" y="7009" width="223.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2466.75 7015)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">-pool:HashMap&lt;String, ExtrinsicState&gt;</tspan>
+          </text>
+        </g>
+        <g id="Graphic_18">
+          <title>Class Name</title>
+          <rect x="2460.75" y="6985" width="223.5" height="24" fill="#414141"/>
+          <rect x="2460.75" y="6985" width="223.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2466.75 6989)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="62.5145" y="12">FlyweightFactory</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_13">
+        <title>Class with Attributes</title>
+        <g id="Graphic_16">
+          <title>Attributes</title>
+          <rect x="2511.25" y="6920" width="122.5" height="24" fill="#929292"/>
+          <rect x="2511.25" y="6920" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_15">
+          <title>Attributes</title>
+          <rect x="2511.25" y="6896" width="122.5" height="24" fill="#929292"/>
+          <rect x="2511.25" y="6896" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_14">
+          <title>Class Name</title>
+          <rect x="2511.25" y="6872" width="122.5" height="24" fill="#414141"/>
+          <rect x="2511.25" y="6872" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2517.25 6876)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="40.466" y="12">Client</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_8">
+        <title>Class with Attributes</title>
+        <g id="Graphic_11">
+          <title>Attributes</title>
+          <rect x="2833" y="7039" width="122.5" height="24" fill="#929292"/>
+          <rect x="2833" y="7039" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_10">
+          <title>Attributes</title>
+          <rect x="2833" y="7011" width="122.5" height="28" fill="#929292"/>
+          <rect x="2833" y="7011" width="122.5" height="28" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2839 7017)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="0" y="12">-state:ExtrinsicState</tspan>
+          </text>
+        </g>
+        <g id="Graphic_9">
+          <title>Class Name</title>
+          <rect x="2833" y="6987" width="122.5" height="24" fill="#414141"/>
+          <rect x="2833" y="6987" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2839 6991)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="31.182" y="12">Flyweight</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_4">
+        <title>Class with Attributes</title>
+        <g id="Graphic_7">
+          <title>Attributes</title>
+          <rect x="2833" y="7149.5" width="122.5" height="24" fill="#929292"/>
+          <rect x="2833" y="7149.5" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_6">
+          <title>Attributes</title>
+          <rect x="2833" y="7125.5" width="122.5" height="24" fill="#929292"/>
+          <rect x="2833" y="7125.5" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_5">
+          <title>Class Name</title>
+          <rect x="2833" y="7101.5" width="122.5" height="24" fill="#414141"/>
+          <rect x="2833" y="7101.5" width="122.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(2839 7105.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="19.8025" y="12">ExtrinsicState</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_21">
+        <path d="M 2572.5 7078.25 L 2572.5 7137.5 L 2833 7137.5" marker-start="url(#Diamond_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_22">
+        <line x1="2894.25" y1="7063" x2="2894.25" y2="7091.6" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_23">
+        <line x1="2572.5" y1="6944" x2="2572.5" y2="6975.1" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_24">
+        <path d="M 2633.75 6908 L 2894.25 6908 L 2894.25 6977.1" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_25">
+        <line x1="2684.25" y1="7025" x2="2823.1" y2="7025" marker-end="url(#StickArrow_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

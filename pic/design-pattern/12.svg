@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="3323 8357 435 249" width="435" height="249">
+  <defs>
+    <font-face font-family="Helvetica Neue" font-size="11" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Helvetica Neue" font-size="11" panose-1="2 0 5 3 0 0 0 9 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="-1090.9091" x-height="517" cap-height="714" ascent="957.0007" descent="-212.99744" font-style="italic" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue-Italic"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="PingFang SC" font-size="11" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="UMLInheritance_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -8 14 16" markerWidth="14" markerHeight="16" color="#5e5e5e">
+      <g>
+        <path d="M 12 0 L 0 -7 L 0 7 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.19.2\n2022-04-19 06:11:56 +0000</metadata>
+  <g id="Canvas_____" stroke-opacity="1" stroke="none" fill-opacity="1" fill="none" stroke-dasharray="none">
+    <title>模板方法模式</title>
+    <rect fill="white" x="3323" y="8357" width="435" height="249"/>
+    <g id="Canvas______Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_38">
+        <title>Class with Attributes</title>
+        <g id="Graphic_41">
+          <title>Attributes</title>
+          <rect x="3445.5" y="8406.5" width="189.5" height="50.923996" fill="#929292"/>
+          <rect x="3445.5" y="8406.5" width="189.5" height="50.923996" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(3451.5 8412.5)" fill="white">
+            <tspan font-family="Helvetica Neue" font-size="11" font-weight="400" fill="white" x="0" y="10">+templateMethod():void</tspan>
+            <tspan font-family="Helvetica Neue" font-size="11" font-style="italic" font-weight="400" fill="white" x="0" y="23.308">+doSomething1():void</tspan>
+            <tspan font-family="Helvetica Neue" font-size="11" font-style="italic" font-weight="400" fill="white" x="0" y="36.615997">+doSomething2():void</tspan>
+          </text>
+        </g>
+        <g id="Graphic_40">
+          <title>Attributes</title>
+          <rect x="3445.5" y="8382.5" width="189.5" height="24" fill="#929292"/>
+          <rect x="3445.5" y="8382.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_39">
+          <title>Class Name</title>
+          <rect x="3445.5" y="8358.5" width="189.5" height="24" fill="#414141"/>
+          <rect x="3445.5" y="8358.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(3451.5 8362.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="53.2145" y="12">AbstractClass</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Group_34">
+        <title>Class with Attributes</title>
+        <g id="Graphic_37">
+          <title>Attributes</title>
+          <rect x="3324.25" y="8580.5" width="189.5" height="24" fill="#929292"/>
+          <rect x="3324.25" y="8580.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_36">
+          <title>Attributes</title>
+          <rect x="3324.25" y="8556.5" width="189.5" height="24" fill="#929292"/>
+          <rect x="3324.25" y="8556.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_35">
+          <title>Class Name</title>
+          <rect x="3324.25" y="8532.5" width="189.5" height="24" fill="#414141"/>
+          <rect x="3324.25" y="8532.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(3330.25 8536.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="51.449" y="12">ConcreteClass</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_29">
+        <path d="M 3419 8532.5 L 3419 8494.962 L 3477.0833 8494.962 L 3477.0833 8470.924" marker-end="url(#UMLInheritance_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+      <g id="Group_43">
+        <title>Class with Attributes</title>
+        <g id="Graphic_46">
+          <title>Attributes</title>
+          <rect x="3566.75" y="8580.5" width="189.5" height="24" fill="#929292"/>
+          <rect x="3566.75" y="8580.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_45">
+          <title>Attributes</title>
+          <rect x="3566.75" y="8556.5" width="189.5" height="24" fill="#929292"/>
+          <rect x="3566.75" y="8556.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_44">
+          <title>Class Name</title>
+          <rect x="3566.75" y="8532.5" width="189.5" height="24" fill="#414141"/>
+          <rect x="3566.75" y="8532.5" width="189.5" height="24" stroke="#b9c0c1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(3572.75 8536.5)" fill="white">
+            <tspan font-family="PingFang SC" font-size="11" font-weight="400" fill="white" x="51.449" y="12">ConcreteClass</tspan>
+          </text>
+        </g>
+      </g>
+      <g id="Line_47">
+        <path d="M 3661.5 8532.5 L 3661.5 8494.962 L 3603.4167 8494.962 L 3603.4167 8470.924" marker-end="url(#UMLInheritance_Marker)" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4.0,4.0" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>
